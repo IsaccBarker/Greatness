@@ -1,0 +1,24 @@
+[package]
+name = "greatness"
+version = "0.1.0"
+authors = ["IsaccBarker <plutoisaplanet4324@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "3.0.0-beta.2"
+log = "0.4.14"
+env_logger = "0.8.4"
+snafu = "0.6.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.8"
+home = "0.5.3"
+nix = "0.21.0"
+chrono = "0.4"
+symlink = "0.1.0"
+indicatif = "0.16.2"
+rand = "0.8.4"
+which = "4.1.0"
+execute = "0.2.9"
+
