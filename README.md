@@ -20,14 +20,14 @@ Greatness is you being great and better than everyone else. You have to uphold t
 Simple! Use this tool. This tool is designed to bring your system up to a working state that you like in a small amount of time. It is *very* flexible, 100% modular, and fast.
 
 ## Why is Greatness *the* best?
-Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.
-[greatness]: https://github.com/IsaccBarker/greatness
-[chezmoi]: https://chezmoi.io/
-[dotbot]: https://github.com/anishathalye/dotbot
-[rcm]: https://github.com/thoughtbot/rcm
-[homesick]: https://github.com/technicalpickles/homesick
-[yadm]: https://yadm.io/
-[bare git]: https://www.atlassian.com/git/tutorials/dotfiles "bare git"
+Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.  
+[greatness]: https://github.com/IsaccBarker/greatness  
+[chezmoi]: https://chezmoi.io/  
+[dotbot]: https://github.com/anishathalye/dotbot  
+[rcm]: https://github.com/thoughtbot/rcm  
+[homesick]: https://github.com/technicalpickles/homesick  
+[yadm]: https://yadm.io/  
+[bare git]: https://www.atlassian.com/git/tutorials/dotfiles "bare git"  
 
 |                                        | [greatness]       | [chezmoi]     | [dotbot]          | [rcm]             | [homesick]        | [yadm]        | [bare git] |
 | -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | ------------- | ---------- |
