@@ -21,6 +21,8 @@ Simple! Use this tool. This tool is designed to bring your system up to a workin
 
 ## Why is Greatness *the* best?
 Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.  
+#### Disclaimer
+While the chart below is will be true for greatness, it may not be accurate just yet. This chart will only be accurate once we reach the great version of v1.0.0.
 
 |                                        | [greatness]       | [chezmoi]     | [dotbot]          | [rcm]             | [homesick]        | [yadm]        | [bare git] |
 | -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | ------------- | ---------- |
