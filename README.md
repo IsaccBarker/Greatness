@@ -21,13 +21,6 @@ Simple! Use this tool. This tool is designed to bring your system up to a workin
 
 ## Why is Greatness *the* best?
 Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.  
-[greatness]: https://github.com/IsaccBarker/greatness  
-[chezmoi]: https://chezmoi.io/  
-[dotbot]: https://github.com/anishathalye/dotbot  
-[rcm]: https://github.com/thoughtbot/rcm  
-[homesick]: https://github.com/technicalpickles/homesick  
-[yadm]: https://yadm.io/  
-[bare git]: https://www.atlassian.com/git/tutorials/dotfiles "bare git"  
 
 |                                        | [greatness]       | [chezmoi]     | [dotbot]          | [rcm]             | [homesick]        | [yadm]        | [bare git] |
 | -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | ------------- | ---------- |
