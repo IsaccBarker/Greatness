@@ -1,4 +1,7 @@
 # Greatness!
+<p align="center">
+  <a href="github.com/IsaccBarker/Greatness" target="blank"><img src="assets/greatness_transparent.png" alt="Greatness Logo" /></a>
+</p>
 Achieve it! How you ask? Well, it's pretty simple; just use greatness!
 
 ## Install greatness
