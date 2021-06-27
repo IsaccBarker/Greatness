@@ -17,7 +17,7 @@ pub fn new_progress_bar(length: u64) -> ProgressBar {
         "🕛🕐🕑🕒🕓🕔🕕🕖🕗🕘🕙🕚",
         "🌍🌎🌏",
         "🌑🌒🌓🌔🌕🌖🌗🌘",
-        "-=≡"
+        "-=≡",
     ];
 
     let pb = ProgressBar::new(length);
@@ -30,4 +30,3 @@ pub fn new_progress_bar(length: u64) -> ProgressBar {
 
     return pb;
 }
-

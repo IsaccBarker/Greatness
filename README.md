@@ -62,3 +62,24 @@ As you can see, greatness is best. However, a sort of close second [chezmoi], ha
 3. It's very diferent than MacOS and Unix, where most development happens.
 4. I don't have a Windows machine.
 Windows support may or may not be added in the future. The underlying code for supporting Windows is added to the best of my ability, but overall it should not work. Please note that not providing Windows support is mainly for your safety; I would hate for anything bad to happen to your files.
+
+## How does it work?
+Great question! Lets walk through the basic subcommands:
+_add_
+1. Checks if the files exist, and makes sure that they aren't symlinks
+2. Adds them to the manifest
+
+_pull_
+1. Pull the repository
+2. Run *install*
+
+_install_
+1. Read the generified manifest
+2. Make sure their aren't any conflicts; if so ask the user to resolve.
+3. Merge.
+4. Install needed packages!
+
+
+_update_
+1. Runs *pull* on every repository that the local manifest knows about.
+

@@ -1,19 +1,21 @@
-#![feature(command_access)]
-
+mod add;
 mod log_utils;
-mod progress;
 mod manifest;
-mod track;
-mod install;
+mod progress;
+mod pull;
+mod pack;
+mod utils;
 
 use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
 use log::LevelFilter;
 use log::{debug, error};
+use manifest::ManifestData;
 use nix::unistd::Uid;
 use std::io::Write;
-use manifest::ManifestData;
+use std::path::PathBuf;
 
+/// Main
 fn main() {
     // Initialize logging
     let mut builder = Builder::from_default_env();
@@ -40,7 +42,7 @@ fn main() {
 
     let matches = App::new("Achieve Greatness!")
         .version("0.1.0")
-        .author("Milo Banks (Isacc Barker) <plutoisaplanet4324@gmail.com>")
+        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
         .about("Helps you to achieve greatness!")
         .arg(
             Arg::from("<ignore-root-check> --ignore-root-check 'allow to run as root'")
@@ -61,7 +63,7 @@ fn main() {
                 .default_value(default_greatness_dir.as_os_str().to_str().unwrap())
         )
         .subcommand(
-            App::new("track")
+            App::new("add")
                 .about("Adds (a) file(s) to the manifest")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
@@ -69,17 +71,19 @@ fn main() {
                 .arg(Arg::from("<files>... 'File(s) to add'").required(true)),
         )
         .subcommand(
-            App::new("install")
-                .about("Installs tracked files")
-                .version("0.1.0")
-                .author("Milo Banks (Iascc Barker) <milobanks@zincsoft.dev>")
-        )
-        .subcommand(
-            App::new("get")
+            App::new("pull")
                 .about("Fetches and merges external manifests")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
-                .arg(Arg::from("<from> -f,--from 'where to fetch the external manifest'").required(true)),
+                .arg(Arg::from("<from> 'where to fetch the external manifest'").required(true).index(1)),
+        )
+        .subcommand(
+            App::new("pack")
+                .about("Pack all your dotfiles and configurations into multiple formats")
+                .version("0.1.0")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincosft.dev>")
+                .arg(Arg::from("<type> 'what to pack into. values: git'").required(true).index(1))
+                .arg(Arg::from("<where> 'where to pack into'").required(true).index(2))
         )
         .get_matches(); // TODO: Push and pull commands?
 
@@ -101,7 +105,7 @@ on the directory."
     );
 
     let mut manifest: manifest::Manifest;
-    match manifest::Manifest::new() {
+    match manifest::Manifest::new(PathBuf::from(matches.value_of("greatness-dir").unwrap())) {
         Ok(m) => manifest = m,
         Err(e) => {
             error!(
@@ -125,10 +129,10 @@ on the directory."
     manifest.data = manifest_data;
 
     match matches.subcommand() {
-        Some(("track", track_matches)) => {
-            match track::track_files(
+        Some(("add", add_matches)) => {
+            match add::add_files(
                 &matches,
-                track_matches
+                add_matches
                     .values_of("files")
                     .unwrap()
                     .into_iter()
@@ -145,19 +149,35 @@ on the directory."
             }
         }
 
-        Some(("install", _install_matches)) => {
-            match install::install_files(&mut manifest) {
+        Some(("pull", get_matches)) => {
+            match pull::clone_and_install_repo(
+                get_matches.value_of("from").unwrap().to_string(),
+                get_matches,
+                &mut manifest,
+                false, // This is the original project
+            ) {
                 Ok(()) => (),
                 Err(e) => {
-                    error!("An error occured whilst installing great files: {}", e);
+                    error!("An error occured whilst cloning/installing the repo: {}", e);
 
                     std::process::exit(1);
                 }
             }
         }
 
-        Some(("get", _get_matches)) => {
-            println!("get");
+        Some(("pack", pack_matches)) => {
+            match pack::pack(
+                pack_matches.value_of("type").unwrap().to_string(),
+                &mut manifest,
+                pack_matches,
+            ) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst packing greatness into a small space: {}", e);
+
+                    std::process::exit(1);
+                }
+            }
         }
 
         None => eprintln!("Please use the --help flag to get great knowlage!"),
