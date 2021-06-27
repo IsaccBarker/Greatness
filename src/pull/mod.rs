@@ -64,6 +64,7 @@ pub fn clone_and_install_repo(
     let new_url = make_url_valid(url);
 
     let mut clone_to = PathBuf::from(&manifest.greatness_pulled_dir);
+    #[allow(unused_assignments)]
     let mut dest_tmp = new_url.replace("https://", "");
     dest_tmp = new_url.replace("http://", "");
     dest_tmp = dest_tmp.replace(".git", "");

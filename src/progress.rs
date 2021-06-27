@@ -1,6 +1,7 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::seq::SliceRandom;
 
+#[allow(dead_code)]
 pub fn new_progress_bar(length: u64) -> ProgressBar {
     let spinners = vec![
         "|/-\\",

@@ -48,20 +48,6 @@ fn main() {
             Arg::from("<ignore-root-check> --ignore-root-check 'allow to run as root'")
                 .required(false),
         )
-        .arg(
-            Arg::from("<root> -r,--root 'the root to merge greatness into'")
-                .required(false)
-                .default_value(match std::path::MAIN_SEPARATOR {
-                    '/' => "/",
-                    '\\' => "C:\\",
-                    _ => unreachable!(),
-                }),
-        )
-        .arg(
-            Arg::from("<greatness-dir> -g,--greatness 'the directory that your great configuration is stored in'")
-                .required(false)
-                .default_value(default_greatness_dir.as_os_str().to_str().unwrap())
-        )
         .subcommand(
             App::new("add")
                 .about("Adds (a) file(s) to the manifest")
