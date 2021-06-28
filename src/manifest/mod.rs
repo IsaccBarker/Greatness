@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use std::result::Result;
+use crate::utils;
 
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -12,40 +13,11 @@ use serde::{Deserialize, Serialize};
 #[snafu(visibility = "pub(crate)")]
 /// Errors pretaining to the local manifest
 pub enum ManifestError {
-    #[snafu(display("Could not create great file/directory ({}): {}", filename.display(), source))]
-    Createmanifest {
-        filename: PathBuf,
-        source: std::io::Error,
-    },
-
-    #[snafu(display("Could not open great manifest file ({}): {}", filename.display(), source))]
-    Openmanifest {
-        filename: PathBuf,
-        source: std::io::Error,
-    },
-
-    #[snafu(display("Could not read great manifest file ({}): {}", filename.display(), source))]
-    Readmanifest {
-        filename: PathBuf,
-        source: std::io::Error,
-    },
-
-    #[snafu(display("Could not write to great manifest file ({}): {}", filename.display(), source))]
-    Writemanifest {
-        filename: PathBuf,
-        source: std::io::Error,
-    },
-
     #[snafu(display("Could not parse great configuration file ({}): {}", filename.display(), source))]
     ParseError {
         filename: PathBuf,
         source: serde_yaml::Error,
     },
-    /* #[snafu(display("File {} does not have the correct great permisions: {}", filename.display(), source))]
-    PermsError {
-        filename: PathBuf,
-        source: std::io::Error,
-    } */
 }
 
 /// Contains local data on disk and paths got dynamically
@@ -75,8 +47,8 @@ impl ManifestData {
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let manifest_file = &manifest_info.greatness_manifest;
         let x = serde_yaml::from_str(&fs::read_to_string(&manifest_file).context(
-            super::manifest::Readmanifest {
-                filename: &manifest_file,
+            utils::FileReadError {
+                file: &manifest_file,
             },
         )?)
         .context(ParseError {
@@ -93,6 +65,21 @@ impl ManifestData {
         f.set_len(0).unwrap(); // Erase the file;
         f.write_all(unsafe { s.as_mut_vec() }).unwrap();
     }
+
+    /// Detects if we already contain a file
+    /// If I'm not mistaken, this is O(n)?
+    pub fn contains(&self, looking_for: &PathBuf) -> bool {
+        if let Some(files) = &self.files {
+            for file in files {
+                if looking_for.clone().canonicalize().unwrap().into_os_string().to_str().unwrap().to_string() ==
+                    file.clone().into_os_string().into_string().unwrap() {
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
 }
 
 impl Default for ManifestData {
@@ -106,7 +93,7 @@ impl Default for ManifestData {
 
 impl Manifest {
     /// Creates a new local manifest
-    pub fn new(manifest_dir: PathBuf) -> Result<Self, ManifestError> {
+    pub fn new(manifest_dir: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
         let mut greatness_pulled_dir = PathBuf::from(manifest_dir.clone());
         greatness_pulled_dir.push("pulled");
         let mut greatness_manifest = PathBuf::from(manifest_dir.clone());
@@ -117,30 +104,7 @@ impl Manifest {
             manifest_dir.display()
         );
 
-        if !manifest_dir.as_path().exists() {
-            fs::create_dir(&manifest_dir).context(Createmanifest {
-                filename: &manifest_dir,
-            })?;
-        }
-
-        if !greatness_pulled_dir.as_path().exists() {
-            fs::create_dir(&greatness_pulled_dir).context(Createmanifest {
-                filename: &greatness_pulled_dir,
-            })?;
-        }
-
-        let mut file;
-        if !greatness_manifest.as_path().exists() {
-            file = File::create(&greatness_manifest).context(Createmanifest {
-                filename: &greatness_manifest,
-            })?;
-
-            file.write_all(b"{}").context(Writemanifest {
-                // For some reason, we need non-valid YAML to not get an error
-                filename: &greatness_manifest,
-            })?;
-        }
-
+        
         Ok(Self {
             greatness_dir: manifest_dir,
             greatness_manifest,
@@ -149,3 +113,4 @@ impl Manifest {
         })
     }
 }
+

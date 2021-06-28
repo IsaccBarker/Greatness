@@ -29,32 +29,28 @@ pub fn add_files(
     manifest_info: &mut Manifest,
 ) -> Result<(), Box<dyn std::error::Error>> {
 
+    // Do some checks to figure out which files we should include
     files.retain(|file| {
         if !std::path::Path::new(file).is_file() {
             info!(
-                    "The file {} doesn't exist, and thus cannot become great (be added). Skipping....",
-                    file.display());
+                "The file {} doesn't exist, and thus cannot become great (be added). Skipping....",
+                file.display());
             return false;
         }
 
-        if let Some(data) = manifest_info.data.files.clone() {
-            for recorded_manifest_file in data {
-                // TODO: I must be stupid. I spent about an hour trying to figure out how to do with
-                // this out clones. Fix this, future me.
-                if file.clone().canonicalize().unwrap().into_os_string().to_str().unwrap().to_string() ==
-                    recorded_manifest_file.clone().into_os_string().into_string().unwrap() {
-                    info!(
-                            "The file {} is already great (already added)! Skipping....",
-                            file.display());
-                    return false; // Don't keep the element
-                }
-            }
+        if manifest_info.data.contains(file) {
+            info!(
+                "The file {} is already great (already added)! Skipping....",
+                file.display());
+
+            return false;
         }
 
         if file.symlink_metadata().unwrap().file_type().is_symlink() {
             info!(
-                    "The file {} is a symlink. Greatness cannot handle symlinks. Skipping....",
-                    file.display());
+                "The file {} is a symlink. Greatness cannot handle symlinks. Skipping....",
+                file.display());
+
             return false;
         }
 

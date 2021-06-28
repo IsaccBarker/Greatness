@@ -52,7 +52,7 @@ While the chart below is will be true for greatness, it may not be accurate just
 | Shell completion                       | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
 | Archive import                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Archive export                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
-| Implementation language                | Rust, Mun         | Go            | Python            | Perl              | Ruby              | Bash          | C          |
+| Implementation language                | Rust, Rhai        | Go            | Python            | Perl              | Ruby              | Bash          | C          |
 
 As you can see, greatness is best. However, a sort of close second [chezmoi], has a weird name, is not scriptable, doesn't support dotfile merging, and isn't modular. This makes it not ideal for situations where you might want to pick parts of diferent peoples rices, merge them, script program installation (or have greatness do it for you), and then put it out into the world as a repository, which other people can then use as modules.
 
