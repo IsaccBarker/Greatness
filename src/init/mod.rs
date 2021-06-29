@@ -11,14 +11,20 @@ use std::io::Write;
 /// not delete any dotfiles themselves.
 pub fn init(_matches: &ArgMatches, manifest: &Manifest) -> Result<(), Box<dyn std::error::Error>> {
     if !manifest.greatness_dir.as_path().exists() {
-        fs::create_dir(&manifest.greatness_dir).context(utils::DirCreationError {
+        fs::create_dir_all(&manifest.greatness_dir).context(utils::DirCreationError {
             dir: &manifest.greatness_dir,
         })?;
     }
 
     if !manifest.greatness_pulled_dir.as_path().exists() {
-        fs::create_dir(&manifest.greatness_pulled_dir).context(utils::DirCreationError {
+        fs::create_dir_all(&manifest.greatness_pulled_dir).context(utils::DirCreationError {
             dir: &manifest.greatness_pulled_dir,
+        })?;
+    }
+
+    if !manifest.greatness_git_pack_dir.as_path().exists() {
+        fs::create_dir_all(&manifest.greatness_git_pack_dir).context(utils::DirCreationError {
+            dir: &manifest.greatness_git_pack_dir,
         })?;
     }
 

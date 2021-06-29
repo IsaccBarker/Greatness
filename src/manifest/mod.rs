@@ -25,8 +25,9 @@ pub enum ManifestError {
 #[derive(Debug, PartialEq)]
 pub struct Manifest {
     pub greatness_dir: PathBuf,
-    pub greatness_manifest: PathBuf,
     pub greatness_pulled_dir: PathBuf,
+    pub greatness_manifest: PathBuf,
+    pub greatness_git_pack_dir: PathBuf,
 
     pub data: ManifestData,
 }
@@ -172,6 +173,9 @@ impl Manifest {
         greatness_pulled_dir.push("pulled");
         let mut greatness_manifest = PathBuf::from(manifest_dir.clone());
         greatness_manifest.push("greatness.yaml");
+        let mut greatness_git_pack_dir = PathBuf::from(manifest_dir.clone());
+        greatness_git_pack_dir.push("packed");
+        greatness_git_pack_dir.push("git");
 
         debug!(
             "Working the greatest directory of {}!",
@@ -182,6 +186,7 @@ impl Manifest {
             greatness_dir: manifest_dir,
             greatness_manifest,
             greatness_pulled_dir,
+            greatness_git_pack_dir,
             data: ManifestData::default(),
         })
     }
