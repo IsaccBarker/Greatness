@@ -16,24 +16,6 @@ pub enum PackError {
 
 /// Pack, and automatically call a packing backend
 pub fn pack(
-    pack_type: String,
-    manifest: &mut Manifest,
-    matches: &ArgMatches,
-) -> Result<(), Box<dyn std::error::Error>> {
-    match pack_type.as_str() {
-        "git" => {
-            pack_git(manifest, matches)?;
-        }
-
-        _ => Err(std::io::Error::from(std::io::ErrorKind::InvalidInput))
-            .context(PackType { pack_type })?,
-    }
-
-    Ok(())
-}
-
-/// Pack the specified styles, git style
-fn pack_git(
     manifest: &mut Manifest,
     matches: &ArgMatches,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -67,7 +49,7 @@ fn pack_git(
     // Pack the files mentioned by the manifest
     if let Some(files) = &manifest.data.files {
         for file in files {
-            pack_git_file(&base, &file.path)?;
+            pack_file(&base, &file.path)?;
         }
     }
 
@@ -75,7 +57,7 @@ fn pack_git(
 }
 
 /// Pack a file, git style
-fn pack_git_file(base: &PathBuf, file: &PathBuf) -> Result<(), utils::CommonErrors> {
+fn pack_file(base: &PathBuf, file: &PathBuf) -> Result<(), utils::CommonErrors> {
     let absolute_file = utils::special_to_absolute(file);
     let mut to = base.clone();
     to.push("files");

@@ -121,16 +121,6 @@ fn main() {
                 .about("Pack all your dotfiles and configurations into multiple formats")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincosft.dev>")
-                .arg(
-                    Arg::from("<type> 'what to pack into. values: git'")
-                        .required(true)
-                        .index(1),
-                )
-                .arg(
-                    Arg::from("<where> 'where to pack into'")
-                        .required(true)
-                        .index(2),
-                ),
         )
         // TODO: run (manually run the RHAI scripts)
         .get_matches(); // TODO: Push and pull commands?
@@ -271,7 +261,6 @@ on the directory."
 
         Some(("pack", pack_matches)) => {
             match pack::pack(
-                pack_matches.value_of("type").unwrap().to_string(),
                 &mut manifest,
                 pack_matches,
             ) {
