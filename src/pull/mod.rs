@@ -71,7 +71,7 @@ pub fn clone_and_install_repo(
     for requirement in external_manifest.data.requires.unwrap_or(vec![]) {
         clone_and_install_repo(
             requirement.0.unwrap_or("".to_string()),
-            _matches,
+            matches,
             manifest,
             true,
         )?;
