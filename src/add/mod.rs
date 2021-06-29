@@ -1,9 +1,9 @@
 use clap::ArgMatches;
 use snafu::Snafu;
 
-use log::{debug, info};
-use crate::manifest::Manifest;
+use crate::manifest::{AddedFile, Manifest};
 use crate::utils;
+use log::{debug, info};
 use std::fs;
 use std::path::PathBuf;
 
@@ -28,20 +28,25 @@ pub fn add_files(
     mut files: Vec<PathBuf>,
     manifest_info: &mut Manifest,
 ) -> Result<(), Box<dyn std::error::Error>> {
-
     // Do some checks to figure out which files we should include
+    // println!("{:?}", files);
     files.retain(|file| {
         if !std::path::Path::new(file).is_file() {
             info!(
                 "The file {} doesn't exist, and thus cannot become great (be added). Skipping....",
-                file.display());
+                file.display()
+            );
             return false;
         }
 
-        if manifest_info.data.contains(file) {
+
+        if manifest_info.data.contains(
+            &utils::absolute_to_special(&file.canonicalize().unwrap())
+        ).is_some() {
             info!(
                 "The file {} is already great (already added)! Skipping....",
-                file.display());
+                file.display()
+            );
 
             return false;
         }
@@ -49,7 +54,8 @@ pub fn add_files(
         if file.symlink_metadata().unwrap().file_type().is_symlink() {
             info!(
                 "The file {} is a symlink. Greatness cannot handle symlinks. Skipping....",
-                file.display());
+                file.display()
+            );
 
             return false;
         }
@@ -76,9 +82,9 @@ fn add_file(
     let special_file;
     special_file = utils::absolute_to_special(absolute_file);
     if let Some(ref mut files) = manifest.data.files {
-        files.push(special_file.clone());
+        files.push(AddedFile::from(special_file.clone()));
     } else {
-        manifest.data.files = Some(vec![special_file.clone()]);
+        manifest.data.files = Some(vec![AddedFile::from(special_file.clone())]);
     }
 
     Ok(())

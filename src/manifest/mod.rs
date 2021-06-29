@@ -1,10 +1,11 @@
+use crate::utils;
 use snafu::{ResultExt, Snafu};
+use std::convert::From;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use std::result::Result;
-use crate::utils;
 
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -30,14 +31,39 @@ pub struct Manifest {
     pub data: ManifestData,
 }
 
+/// Contains information about an added file
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+pub struct AddedFile {
+    pub path: PathBuf,
+    pub tag: Option<String>,
+}
+
 /// Data stored in the manifest that is stored locally on the computer
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ManifestData {
     /// Dot files
-    pub files: Option<Vec<PathBuf>>,
+    pub files: Option<Vec<AddedFile>>,
     /// Required repositories of dotfiles. First element is an optional URL
     /// in which to update, and the second is a required path on the local disk.
     pub requires: Option<Vec<(Option<String>, PathBuf)>>,
+}
+
+impl From<PathBuf> for AddedFile {
+    fn from(path: PathBuf) -> Self {
+        Self {
+            path,
+            tag: Some("".to_owned()),
+        }
+    }
+}
+
+impl From<(PathBuf, String)> for AddedFile {
+    fn from((path, tag): (PathBuf, String)) -> Self {
+        Self {
+            path,
+            tag: Some(tag),
+        }
+    }
 }
 
 impl ManifestData {
@@ -62,23 +88,71 @@ impl ManifestData {
     pub fn populate_file(&self, manifest: &Manifest) {
         let mut s = serde_yaml::to_string(self).unwrap(); // TODO: Figure out if we actually have to worry about this
         let mut f = File::create(&manifest.greatness_manifest).unwrap();
+
+        debug!("Writing to file:\n{}", s);
+
         f.set_len(0).unwrap(); // Erase the file;
         f.write_all(unsafe { s.as_mut_vec() }).unwrap();
     }
 
     /// Detects if we already contain a file
-    /// If I'm not mistaken, this is O(n)?
-    pub fn contains(&self, looking_for: &PathBuf) -> bool {
+    /// It returns the matching element, and its index.
+    pub fn contains(&self, looking_for: &PathBuf) -> Option<(&AddedFile, usize)> {
+        // BUG: ALLWAYS RETURNS 0 FOR THE INDEX.
+        let looking_for_normalized = looking_for; // &utils::absolute_to_special(&looking_for.canonicalize().unwrap());
         if let Some(files) = &self.files {
+            let mut i: usize = 0;
             for file in files {
-                if looking_for.clone().canonicalize().unwrap().into_os_string().to_str().unwrap().to_string() ==
-                    file.clone().into_os_string().into_string().unwrap() {
-                    return true;
+                if looking_for_normalized
+                    .clone()
+                    .into_os_string()
+                    .to_str()
+                    .unwrap()
+                    .to_string()
+                    == file.clone().path.into_os_string().into_string().unwrap()
+                {
+                    return Some((file, i));
                 }
+
+                i += 1;
             }
         }
 
-        false
+        None
+    }
+
+    /// Adds a file. Will not add if the file
+    /// it is not unique
+    pub fn add_file(&mut self, file: AddedFile) {
+        let mut files = self.files.take().unwrap_or(vec![]);
+        self.files.replace(files.clone());
+        let contains = self.contains(&file.path);
+
+        if contains.is_some() {
+            files.remove(contains.unwrap().1);
+        }
+
+        if contains.is_some() {
+            files.push(file);
+        } else {
+            files = vec![file];
+        }
+
+        self.files.replace(files);
+    }
+
+    /// Gets all the tags in use
+    pub fn all_tags(&self) -> Option<Vec<String>> {
+        let mut tags = vec![];
+        if self.files.is_none() { return None; }
+
+        for file in self.files.clone().unwrap() {
+            if file.tag.is_none() { continue; }
+
+            tags.push(file.tag.unwrap());
+        }
+
+        Some(tags)
     }
 }
 
@@ -104,7 +178,6 @@ impl Manifest {
             manifest_dir.display()
         );
 
-        
         Ok(Self {
             greatness_dir: manifest_dir,
             greatness_manifest,
@@ -113,4 +186,3 @@ impl Manifest {
         })
     }
 }
-

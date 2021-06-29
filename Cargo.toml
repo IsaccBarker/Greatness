@@ -24,5 +24,6 @@ git2 = "0.13.20"
 osstrtools = "0.1.8"
 question = "0.2.2"
 tempfile = "3.2.0"
-cocoon = "0.2.3"
+rhai = "0.20.3"
+strsim = "0.10.0"
 

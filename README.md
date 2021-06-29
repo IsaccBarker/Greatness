@@ -49,6 +49,7 @@ While the chart below is will be true for greatness, it may not be accurate just
 | Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ❌            | ❌         |
 | Run once scripts                       | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Machine-to-machine symlink differences | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ❌         |
+| File Tagging                           | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Shell completion                       | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
 | Archive import                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Archive export                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |

@@ -1,12 +1,11 @@
-use clap::ArgMatches;
-use git2::Repository;
-use std::path::PathBuf;
 use crate::manifest::{Manifest, ManifestData};
 use crate::utils;
-use snafu::{ResultExt, Snafu};
+use clap::ArgMatches;
+use git2::Repository;
 use log::{debug, info};
 use question::{Answer, Question};
-
+use snafu::{ResultExt, Snafu};
+use std::path::PathBuf;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]
@@ -34,11 +33,9 @@ pub enum InstallError {
     BackupFile {
         src: PathBuf,
         dest: PathBuf,
-        source: std::io::Error
+        source: std::io::Error,
     },
 }
-
-
 
 /// Clone and install a repository
 pub fn clone_and_install_repo(
@@ -54,7 +51,7 @@ pub fn clone_and_install_repo(
     if clone_to.exists() {
         std::fs::remove_dir_all(&clone_to).context(RemoveFailure { dir: &clone_to })?;
     }
-    
+
     // TODO: Implement a progress bar. https://docs.rs/git2/0.13.20/git2/struct.Progress.html
     info!("Cloning from {} into {}....", url, &clone_to.display());
     clone_repo(&url, &clone_to)?;
@@ -63,9 +60,20 @@ pub fn clone_and_install_repo(
     let mut external_manifest = Manifest::new(PathBuf::from(clone_to.to_str().unwrap()))?;
     external_manifest.data = ManifestData::populate_from_file(&&external_manifest)?;
 
-    install(Some(url), &mut clone_to, manifest, &external_manifest, sub_manifest)?;
+    install(
+        Some(url),
+        &mut clone_to,
+        manifest,
+        &external_manifest,
+        sub_manifest,
+    )?;
     for requirement in external_manifest.data.requires.unwrap_or(vec![]) {
-        clone_and_install_repo(requirement.0.unwrap_or("".to_string()), _matches, manifest, true)?;
+        clone_and_install_repo(
+            requirement.0.unwrap_or("".to_string()),
+            _matches,
+            manifest,
+            true,
+        )?;
     }
 
     Ok(())
@@ -96,15 +104,16 @@ fn get_git_pair(manifest: &Manifest, user_url: String) -> (String, PathBuf) {
 fn clone_repo(url: &String, clone_to: &PathBuf) -> Result<(), CloneError> {
     Repository::clone(&url, &clone_to).context(CloneFailure {
         url,
-        dest: clone_to
+        dest: clone_to,
     })?;
 
     Ok(())
 }
 
 /// Transmute urls into something git can handle. For example:
-/// github.com/Zincsoft/CATNET -> https://github.com/Zincsoft/CATNET.git
-/// Zincsoft/CATNET -> https://github.com/ZincSoft/CATNET.git
+/// Pattern 	        HTTPS Repo
+/// user 	            https://github.com/user/dotfiles.git
+/// user/repo 	        https://github.com/user/repo.git
 fn make_url_valid(url: String) -> String {
     let mut new: Vec<&str> = Vec::new();
 
@@ -126,7 +135,6 @@ fn make_url_valid(url: String) -> String {
     new.join("")
 }
 
-
 /// Install external from a local directory
 /// * `url` - Optional URL that it was cloned from. Is used to update when wanted.
 /// * `from` - Where the external manifest is located on disk.
@@ -143,7 +151,7 @@ pub fn install(
         install_from.push("files");
 
         for file in files {
-            install_file(install_from, file)?;
+            install_file(install_from, file.path)?;
         }
     }
 
@@ -154,17 +162,23 @@ pub fn install(
         let mut add = true;
 
         // Check is already added. We do this last because the user may want to re-merge everything
-        requires.iter().for_each(|x| { if x.1 == utils::absolute_to_special(install_from) { add = false; }});
+        requires.iter().for_each(|x| {
+            if x.1 == utils::absolute_to_special(install_from) {
+                add = false;
+            }
+        });
 
-        if add && ! sub_manifest {
+        if add && !sub_manifest {
             requires.push((url, utils::absolute_to_special(&install_from.clone())));
         }
     } else {
-        manifest.data.requires = Some(vec![(url, utils::absolute_to_special(&install_from.clone()))]);
+        manifest.data.requires = Some(vec![(
+            url,
+            utils::absolute_to_special(&install_from.clone()),
+        )]);
     }
 
     manifest.data.populate_file(manifest);
-
 
     Ok(())
 }
@@ -175,10 +189,20 @@ fn install_file(install_from: &PathBuf, file: PathBuf) -> Result<(), Box<dyn std
     let mut install_from_intr: PathBuf = PathBuf::from(std::path::MAIN_SEPARATOR.to_string()); // Using "/" here simply makes home/milo turn into /home/milo, so we can replace it with {{HOME}}
     let install_to = utils::special_to_absolute(&file);
 
-    install_to.to_str().unwrap().to_string().split(std::path::MAIN_SEPARATOR).into_iter().for_each(|e| install_from_intr.push(e));
+    install_to
+        .to_str()
+        .unwrap()
+        .to_string()
+        .split(std::path::MAIN_SEPARATOR)
+        .into_iter()
+        .for_each(|e| install_from_intr.push(e));
     install_from_now.push(utils::absolute_to_special(&install_from_intr));
 
-    debug!("Installing great file to great location; {} to {}....", install_from_now.display(), install_to.display());
+    debug!(
+        "Installing great file to great location; {} to {}....",
+        install_from_now.display(),
+        install_to.display()
+    );
 
     if install_to.as_path().exists() {
         // We need to make a backup
@@ -202,21 +226,25 @@ fn install_file(install_from: &PathBuf, file: PathBuf) -> Result<(), Box<dyn std
         create_dirs_for_file_install(&install_to)?;
     }
 
-    std::fs::copy(&install_from_now, &install_to).context(utils::FileCopyError{src: &install_from_now, dest: &install_to})?;
+    std::fs::copy(&install_from_now, &install_to).context(utils::FileCopyError {
+        src: &install_from_now,
+        dest: &install_to,
+    })?;
 
     Ok(())
 }
 
 fn create_dirs_for_file_install(install_to: &PathBuf) -> Result<(), utils::CommonErrors> {
-    let as_vec =  &install_to.to_str().unwrap().to_string();
+    let as_vec = &install_to.to_str().unwrap().to_string();
     let splitted = as_vec.split(std::path::MAIN_SEPARATOR);
     let mut dirs_to_create = splitted.clone().collect::<Vec<&str>>();
-    dirs_to_create.remove(dirs_to_create.len()-1);
+    dirs_to_create.remove(dirs_to_create.len() - 1);
     let str_dirs_to_create = dirs_to_create.join(std::path::MAIN_SEPARATOR.to_string().as_str());
 
-    std::fs::create_dir_all(&str_dirs_to_create).context(utils::DirCreationError{dir: PathBuf::from(str_dirs_to_create)})?;
-    std::fs::File::create(&install_to).context(utils::FileCreationError{file: &install_to})?;
+    std::fs::create_dir_all(&str_dirs_to_create).context(utils::DirCreationError {
+        dir: PathBuf::from(str_dirs_to_create),
+    })?;
+    std::fs::File::create(&install_to).context(utils::FileCreationError { file: &install_to })?;
 
     Ok(())
 }
-

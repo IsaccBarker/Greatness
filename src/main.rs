@@ -1,16 +1,19 @@
 mod add;
+mod init;
 mod log_utils;
+mod doctor;
 mod manifest;
+mod pack;
 mod progress;
 mod pull;
-mod pack;
+mod status;
+mod tag;
 mod utils;
-mod init;
 
 use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
+use log::{info, error};
 use log::LevelFilter;
-use log::error;
 use manifest::ManifestData;
 use nix::unistd::Uid;
 use std::io::Write;
@@ -50,6 +53,33 @@ fn main() {
                 .required(false),
         )
         .subcommand(
+            App::new("init")
+                .about("Initializes greatness!")
+                .version("0.1.0")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                .arg(
+                    Arg::from("--force 'Force to reinitialize'")
+                        .required(false)
+                        .takes_value(false),
+                ),
+        )
+        // TODO: purge (removed all traces of greatness; in short, make your computer not great)
+        .subcommand(
+            App::new("doctor")
+                .about("Finds errors. Not that there are any, this software is great after all!")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>"),
+        )
+        .subcommand(
+            App::new("status")
+                .about("Prints the status of the configuration")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                .arg(
+                    Arg::from("<file> 'a specific great file to get the status of'")
+                        .required(false)
+                        .index(1)
+                ),
+        )
+        .subcommand(
             App::new("add")
                 .about("Adds (a) file(s) to the manifest")
                 .version("0.1.0")
@@ -57,28 +87,52 @@ fn main() {
                 .setting(AppSettings::TrailingVarArg)
                 .arg(Arg::from("<files>... 'File(s) to add'").required(true)),
         )
-        .subcommand(
-            App::new("init")
-                .about("Initializes greatness!")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
-                .arg(Arg::from("--force 'Force to reinitialize'").required(false).takes_value(false)),
-        )
+        // TODO: rm (don't remove the file, but unadd it)
         .subcommand(
             App::new("pull")
                 .about("Fetches and merges external manifests")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
-                .arg(Arg::from("<from> 'where to fetch the external manifest'").required(true).index(1)),
+                .arg(
+                    Arg::from("<from> 'where to fetch the external manifest'")
+                        .required(true)
+                        .index(1),
+                ),
+        )
+        // TODO: repel (un-pull)
+        .subcommand(
+            App::new("tag")
+                .about("Tag(s) (a) file(s)")
+                .version("0.1.0")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                .arg(
+                    Arg::from("<tag> 'What to tag the file(s) as'")
+                        .required(true)
+                        .index(1),
+                )
+                .arg(
+                    Arg::from("<files>... 'File(s) to add'")
+                        .required(true)
+                        .index(2),
+                ),
         )
         .subcommand(
             App::new("pack")
                 .about("Pack all your dotfiles and configurations into multiple formats")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincosft.dev>")
-                .arg(Arg::from("<type> 'what to pack into. values: git'").required(true).index(1))
-                .arg(Arg::from("<where> 'where to pack into'").required(true).index(2))
+                .arg(
+                    Arg::from("<type> 'what to pack into. values: git'")
+                        .required(true)
+                        .index(1),
+                )
+                .arg(
+                    Arg::from("<where> 'where to pack into'")
+                        .required(true)
+                        .index(2),
+                ),
         )
+        // TODO: run (manually run the RHAI scripts)
         .get_matches(); // TODO: Push and pull commands?
 
     if Uid::effective().is_root() {
@@ -93,14 +147,16 @@ on the directory."
     }
 
     // Check if we are initialized
-    if ! default_greatness_dir.as_path().exists() && matches.subcommand_name().unwrap() != "init" {
+    if !default_greatness_dir.as_path().exists() && matches.subcommand_name().unwrap() != "init" {
         error!("It looks you haven't initialized yet! Use `greatness init` to initialize. P.S, we found this out by looking through some pretty great binoculars.");
 
         std::process::exit(1);
     }
 
     let mut manifest: manifest::Manifest;
-    match manifest::Manifest::new(PathBuf::from(default_greatness_dir.as_os_str().to_str().unwrap())) {
+    match manifest::Manifest::new(PathBuf::from(
+        default_greatness_dir.as_os_str().to_str().unwrap(),
+    )) {
         Ok(m) => manifest = m,
         Err(e) => {
             error!(
@@ -111,7 +167,7 @@ on the directory."
         }
     }
 
-    if matches.subcommand_name().unwrap() != "init" {
+    if matches.subcommand_name().unwrap_or("") != "init" {
         let manifest_data: ManifestData = match ManifestData::populate_from_file(&manifest) {
             Ok(md) => md,
             Err(e) => {
@@ -127,6 +183,39 @@ on the directory."
     }
 
     match matches.subcommand() {
+        Some(("status", status_matches)) => {
+            if status_matches.is_present("file") {
+                match status::print_file_status(&manifest, status_matches) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!("An error occured whilst getting the status of the specified file: {}", e);
+
+                        std::process::exit(1);
+                    }
+                }
+
+                std::process::exit(0);
+            }
+
+            status::print_status(&mut manifest);
+        }
+
+        Some(("doctor", doctor_matches)) => {
+            let verdict = doctor::doctor(&manifest, doctor_matches);
+            if verdict.is_none() {
+                info!("No errors in your great configuration were found!");
+
+                std::process::exit(0);
+            }
+
+            error!("An/some errors in your configuration were found!");
+            for err in verdict.unwrap() {
+                error!("\t{}", err);
+            }
+
+            std::process::exit(1);
+        }
+
         Some(("add", add_matches)) => {
             match add::add_files(
                 &matches,
@@ -148,7 +237,7 @@ on the directory."
         }
 
         Some(("init", init_matches)) => {
-            if default_greatness_dir.as_path().exists() && ! init_matches.is_present("force") {
+            if default_greatness_dir.as_path().exists() && !init_matches.is_present("force") {
                 error!("It looks like you've already initialized. \x1b[5m\x1b[1m\x1b[3m\x1b[4mReinitializing would overwrite your current configuration.\x1b[0m\x1b[31m\nPlease pass the --force flag to reinitialize.");
 
                 std::process::exit(1);
@@ -188,12 +277,24 @@ on the directory."
             ) {
                 Ok(()) => (),
                 Err(e) => {
-                    error!("An error occured whilst packing greatness into a small space: {}", e);
+                    error!(
+                        "An error occured whilst packing greatness into a small space: {}",
+                        e
+                    );
 
                     std::process::exit(1);
                 }
             }
         }
+
+        Some(("tag", tag_matches)) => match tag::tag(tag_matches, &mut manifest) {
+            Ok(()) => (),
+            Err(e) => {
+                error!("An error occured whilst tagging the file(s): {}", e);
+
+                std::process::exit(1);
+            }
+        },
 
         None => eprintln!("Please use the --help flag to get great knowlage!"),
         _ => unreachable!(),
