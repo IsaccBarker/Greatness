@@ -8,6 +8,8 @@ mod progress;
 mod pull;
 mod status;
 mod tag;
+mod rm;
+mod repel;
 mod utils;
 
 use clap::{App, AppSettings, Arg};
@@ -89,6 +91,14 @@ fn main() {
         )
         // TODO: rm (don't remove the file, but unadd it)
         .subcommand(
+            App::new("rm")
+                .about("Removes a file from the manifest. Does not remove the file itself")
+                .version("0.1.0")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                .setting(AppSettings::TrailingVarArg)
+                .arg(Arg::from("<files>... 'File(s) to remove'").required(true))
+        )
+        .subcommand(
             App::new("pull")
                 .about("Fetches and merges external manifests")
                 .version("0.1.0")
@@ -109,6 +119,7 @@ fn main() {
                 .about("Tag(s) (a) file(s)")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                .setting(AppSettings::TrailingVarArg)
                 .arg(
                     Arg::from("<tag> 'What to tag the file(s) as'")
                         .required(true)
@@ -223,7 +234,18 @@ on the directory."
             ) {
                 Ok(()) => (),
                 Err(e) => {
-                    error!("An error occured whilst tracking great files: {}", e);
+                    error!("An error occured whilst tracking great file(s): {}", e);
+
+                    std::process::exit(1);
+                }
+            }
+        }
+
+        Some(("rm", rm_matches)) => {
+            match rm::rm(rm_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst removing (untracking) great file(s): {}", e);
 
                     std::process::exit(1);
                 }

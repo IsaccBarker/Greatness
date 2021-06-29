@@ -5,7 +5,13 @@ use std::time::{SystemTime, UNIX_EPOCH};
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]
 pub enum CommonErrors {
-    #[snafu(display("File {} does not exist!", file.display()))]
+    #[snafu(display("Not-yet-great file {} is not yet tracked!", file.display()))]
+    FileNotTracked {
+        file: PathBuf,
+        source: std::io::Error,
+    },
+
+    #[snafu(display("Great file {} does not exist!", file.display()))]
     NoFileExistsError {
         file: PathBuf,
         source: std::io::Error,
@@ -53,7 +59,7 @@ pub enum CommonErrors {
         source: std::io::Error,
     },
 
-    #[snafu(display("Failed to copy file from {} -> {}: {}", src.display(), dest.display(), source))]
+    #[snafu(display("Failed to copy great file from {} -> {}: {}", src.display(), dest.display(), source))]
     FileCopyError {
         src: PathBuf,
         dest: PathBuf,
