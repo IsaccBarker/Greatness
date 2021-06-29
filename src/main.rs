@@ -97,6 +97,10 @@ fn main() {
                     Arg::from("<from> 'where to fetch the external manifest'")
                         .required(true)
                         .index(1),
+                )
+                .arg(
+                    Arg::from("<only-with-tag> -t, --only-with-tag 'only merge files with a specific tag'")
+                        .required(false)
                 ),
         )
         // TODO: repel (un-pull)

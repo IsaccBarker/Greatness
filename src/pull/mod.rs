@@ -40,7 +40,7 @@ pub enum InstallError {
 /// Clone and install a repository
 pub fn clone_and_install_repo(
     user_url: String,
-    _matches: &ArgMatches,
+    matches: &ArgMatches,
     manifest: &mut Manifest,
     sub_manifest: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -61,6 +61,7 @@ pub fn clone_and_install_repo(
     external_manifest.data = ManifestData::populate_from_file(&&external_manifest)?;
 
     install(
+        matches,
         Some(url),
         &mut clone_to,
         manifest,
@@ -140,6 +141,7 @@ fn make_url_valid(url: String) -> String {
 /// * `from` - Where the external manifest is located on disk.
 /// * `manfiest` - Manifest to write into.
 pub fn install(
+    matches: &ArgMatches,
     url: Option<String>,
     install_from: &mut PathBuf,
     manifest: &mut Manifest,
@@ -151,6 +153,10 @@ pub fn install(
         install_from.push("files");
 
         for file in files {
+            if matches.is_present("only-with-tag") && matches.value_of("only-with-tag").unwrap() == file.tag.unwrap_or("".to_owned()) {
+                continue;
+            }
+
             install_file(install_from, file.path)?;
         }
     }
