@@ -1,6 +1,6 @@
+mod prompt;
 mod add;
 mod init;
-mod log_utils;
 mod doctor;
 mod manifest;
 mod pack;
@@ -11,6 +11,7 @@ mod tag;
 mod rm;
 mod repel;
 mod utils;
+mod log_utils;
 
 use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
@@ -51,7 +52,7 @@ fn main() {
         .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
         .about("Helps you to achieve greatness!")
         .arg(
-            Arg::from("<ignore-root-check> --ignore-root-check 'allow to run as root'")
+            Arg::from("<ignore-root-check> --ignore-root-check 'Allow to run as root.'")
                 .required(false),
         )
         .subcommand(
@@ -60,7 +61,7 @@ fn main() {
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .arg(
-                    Arg::from("--force 'Force to reinitialize'")
+                    Arg::from("--force 'Force to reinitialize.'")
                         .required(false)
                         .takes_value(false),
                 ),
@@ -69,51 +70,61 @@ fn main() {
         .subcommand(
             App::new("doctor")
                 .about("Finds errors. Not that there are any, this software is great after all!")
+                .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>"),
         )
         .subcommand(
             App::new("status")
-                .about("Prints the status of the configuration")
+                .about("Prints the status of the configuration.")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .arg(
-                    Arg::from("<file> 'a specific great file to get the status of'")
+                    Arg::from("<file> 'A specific great file to get the status of.'")
                         .required(false)
                         .index(1)
                 ),
         )
         .subcommand(
             App::new("add")
-                .about("Adds (a) file(s) to the manifest")
+                .about("Adds (a) file(s) to the manifest.")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .setting(AppSettings::TrailingVarArg)
-                .arg(Arg::from("<files>... 'File(s) to add'").required(true)),
+                .arg(Arg::from("<files>... 'File(s) to add.'").required(true)),
         )
         // TODO: rm (don't remove the file, but unadd it)
         .subcommand(
             App::new("rm")
-                .about("Removes a file from the manifest. Does not remove the file itself")
+                .about("Removes a file from the manifest. Does not remove the file itself.")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .setting(AppSettings::TrailingVarArg)
-                .arg(Arg::from("<files>... 'File(s) to remove'").required(true))
+                .arg(Arg::from("<files>... 'File(s) to remove.'").required(true))
         )
         .subcommand(
             App::new("pull")
-                .about("Fetches and merges external manifests")
+                .about("Fetches and merges external manifests.")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .arg(
-                    Arg::from("<from> 'where to fetch the external manifest'")
+                    Arg::from("<from> 'Where to fetch the external manifest.'")
                         .required(true)
                         .index(1),
                 )
                 .arg(
-                    Arg::from("<only-with-tag> -t, --only-with-tag 'only merge files with a specific tag'")
+                    Arg::from("<only-with-tag> -t, --only-with-tag 'Only merge files with a specific tag.'")
                         .required(false)
                 ),
         )
-        // TODO: repel (un-pull)
+        .subcommand(
+            App::new("repel")
+                .about("Unmerges and deleted an external manifest.")
+                .version("0.1.0")
+                .arg(
+                    Arg::from("<name> 'Name of the external manifest to repel.'")
+                        .required(true)
+                        .index(1)
+                )
+        )
         .subcommand(
             App::new("tag")
                 .about("Tag(s) (a) file(s)")
@@ -121,21 +132,27 @@ fn main() {
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .setting(AppSettings::TrailingVarArg)
                 .arg(
-                    Arg::from("<tag> 'What to tag the file(s) as'")
+                    Arg::from("<tag> 'What to tag the file(s) as.'")
                         .required(true)
                         .index(1),
                 )
                 .arg(
-                    Arg::from("<files>... 'File(s) to add'")
+                    Arg::from("<files>... 'File(s) to add.'")
                         .required(true)
                         .index(2),
                 ),
         )
         .subcommand(
             App::new("pack")
-                .about("Pack all your dotfiles and configurations into multiple formats")
+                .about("Pack all your dotfiles into a git repository.")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincosft.dev>")
+        )
+        .subcommand(
+            App::new("prompt")
+                .about("Change directory into the git repository, with special environment variables set for git.")
+                .version("0.1.0")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
         )
         // TODO: run (manually run the RHAI scripts)
         .get_matches(); // TODO: Push and pull commands?
@@ -278,7 +295,18 @@ on the directory."
             ) {
                 Ok(()) => (),
                 Err(e) => {
-                    error!("An error occured whilst cloning/installing the repo: {}", e);
+                    error!("An error occured whilst cloning/installing the external manifest: {}", e);
+
+                    std::process::exit(1);
+                }
+            }
+        }
+
+        Some(("repel", repel_matches)) => {
+            match repel::repel(repel_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst repeling (unpulling) the external manifest: {}", e);
 
                     std::process::exit(1);
                 }
@@ -310,6 +338,17 @@ on the directory."
                 std::process::exit(1);
             }
         },
+
+        Some(("prompt", prompt_matches)) => {
+            match prompt::prompt(prompt_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst changing directories into the git repository: {}", e);
+
+                    std::process::exit(1);
+                }
+            }
+        }
 
         None => eprintln!("Please use the --help flag to get great knowlage!"),
         _ => unreachable!(),

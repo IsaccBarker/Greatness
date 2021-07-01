@@ -65,6 +65,12 @@ pub enum CommonErrors {
         dest: PathBuf,
         source: std::io::Error,
     },
+
+    #[snafu(display("Failed to change directories to {}: {}", dir.display(), source))]
+    ChangeDirError {
+        dir: PathBuf,
+        source: std::io::Error
+    },
 }
 
 /// Transforms an absolute path to a special one.

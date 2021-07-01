@@ -56,7 +56,7 @@ pub fn clone_and_install_repo(
     info!("Cloning from {} into {}....", url, &clone_to.display());
     clone_repo(&url, &clone_to)?;
 
-    // Parse the file
+    // Parse the file. False as we want to enable git
     let mut external_manifest = Manifest::new(PathBuf::from(clone_to.to_str().unwrap()))?;
     external_manifest.data = ManifestData::populate_from_file(&&external_manifest)?;
 

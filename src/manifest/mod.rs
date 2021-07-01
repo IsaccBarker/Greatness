@@ -1,3 +1,4 @@
+use git2::Repository;
 use crate::utils;
 use snafu::{ResultExt, Snafu};
 use std::convert::From;
@@ -22,12 +23,12 @@ pub enum ManifestError {
 }
 
 /// Contains local data on disk and paths got dynamically
-#[derive(Debug, PartialEq)]
 pub struct Manifest {
     pub greatness_dir: PathBuf,
     pub greatness_pulled_dir: PathBuf,
     pub greatness_manifest: PathBuf,
     pub greatness_git_pack_dir: PathBuf,
+    pub repository: Option<Repository>,
 
     pub data: ManifestData,
 }
@@ -177,6 +178,12 @@ impl Manifest {
         greatness_git_pack_dir.push("packed");
         greatness_git_pack_dir.push("git");
 
+        let mut repository: Option<Repository> = None;
+
+        if greatness_git_pack_dir.exists() {
+            repository = Some(Repository::open(&greatness_git_pack_dir).unwrap());
+        }
+
         debug!(
             "Working the greatest directory of {}!",
             manifest_dir.display()
@@ -187,6 +194,7 @@ impl Manifest {
             greatness_manifest,
             greatness_pulled_dir,
             greatness_git_pack_dir,
+            repository,
             data: ManifestData::default(),
         })
     }

@@ -17,10 +17,10 @@ pub enum PackError {
 /// Pack, and automatically call a packing backend
 pub fn pack(
     manifest: &mut Manifest,
-    matches: &ArgMatches,
+    _matches: &ArgMatches,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let original_manifest_location = manifest.greatness_manifest.clone();
-    let base = PathBuf::from(matches.value_of("where").unwrap());
+    let base = PathBuf::from(&manifest.greatness_git_pack_dir);
     manifest.greatness_manifest = base.clone();
     if !base.as_path().exists() {
         std::fs::create_dir(&base).context(utils::DirCreationError { dir: &base })?;
