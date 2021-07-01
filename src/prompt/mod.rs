@@ -1,9 +1,7 @@
 use clap::ArgMatches;
 use crate::manifest::Manifest;
-use log::{debug, info, warn};
-use snafu::ResultExt;
+use log::info;
 use crate::utils;
-use std::io::Write;
 
 // const PRELUDE_PS1: &str = r#"\e[1;30mgreatness ($(whoami) at $(pwd)) >> \e[0m"#;
 const PRELUDE_PS1: &str = "greatness (git prompt) > ";
