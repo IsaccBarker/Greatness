@@ -153,6 +153,10 @@ fn main() {
                 .about("Change directory into the git repository, with special environment variables set for git.")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                .arg(
+                    Arg::from("<no-overwite-ps1> -c, --no-overwrite-ps1 'Dont overwrite the ps1 of your shell.'")
+                        .required(false)
+                )
         )
         // TODO: run (manually run the RHAI scripts)
         .get_matches(); // TODO: Push and pull commands?
