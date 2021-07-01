@@ -113,6 +113,10 @@ fn main() {
                 .arg(
                     Arg::from("<only-with-tag> -t, --only-with-tag 'Only merge files with a specific tag.'")
                         .required(false)
+                )
+                .arg(
+                    Arg::from("<as-main> -m, --as-main 'Install the file, overwriting the main configuration.'")
+                        .required(false)
                 ),
         )
         .subcommand(

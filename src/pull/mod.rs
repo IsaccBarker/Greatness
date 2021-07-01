@@ -44,14 +44,18 @@ pub fn clone_and_install_repo(
     manifest: &mut Manifest,
     sub_manifest: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    if matches.is_present("as-main") {
+        debug!("Installing as main!");
+    }
+
     // Normallize the URL and get a valid location to clone to
-    let (url, mut clone_to) = get_git_pair(manifest, user_url);
+    let (url, mut clone_to) = get_git_pair(manifest, user_url, matches);
 
     // Create the clone to directory if none exists
     if clone_to.exists() {
         std::fs::remove_dir_all(&clone_to).context(RemoveFailure { dir: &clone_to })?;
     }
-
+    
     // TODO: Implement a progress bar. https://docs.rs/git2/0.13.20/git2/struct.Progress.html
     info!("Cloning from {} into {}....", url, &clone_to.display());
     clone_repo(&url, &clone_to)?;
@@ -82,7 +86,7 @@ pub fn clone_and_install_repo(
 
 /// Return a tuple contains the URL of a repository and where
 /// to clone it to.
-fn get_git_pair(manifest: &Manifest, user_url: String) -> (String, PathBuf) {
+fn get_git_pair(manifest: &Manifest, user_url: String, matches: &ArgMatches) -> (String, PathBuf) {
     let url = make_url_valid(user_url);
 
     let mut clone_to = PathBuf::from(&manifest.greatness_pulled_dir);
@@ -90,13 +94,19 @@ fn get_git_pair(manifest: &Manifest, user_url: String) -> (String, PathBuf) {
     let mut dest_tmp = url.replace("https://", "");
     dest_tmp = url.replace("http://", "");
     dest_tmp = dest_tmp.replace(".git", "");
-    let dest: PathBuf = PathBuf::from(
-        dest_tmp
-            .split("/")
-            .collect::<Vec<&str>>()
-            .join(std::path::MAIN_SEPARATOR.to_string().as_str()),
-    );
-    clone_to.push(&dest);
+
+    if ! matches.is_present("as-main") {
+        let dest: PathBuf = PathBuf::from(
+            dest_tmp
+                .split("/")
+                .collect::<Vec<&str>>()
+                .join(std::path::MAIN_SEPARATOR.to_string().as_str()),
+        );
+
+        clone_to.push(&dest);
+    } else {
+        clone_to = manifest.greatness_dir.clone();
+    }
 
     (url, clone_to)
 }
@@ -163,28 +173,37 @@ pub fn install(
 
     // Merge it all
 
-    // Make sure we mark this as a dependency
-    if let Some(requires) = &mut manifest.data.requires {
-        let mut add = true;
+    // Make sure we mark this as a dependency, only if we are not
+    // installing it as main
+    if ! matches.is_present("as-main") {
+        if let Some(requires) = &mut manifest.data.requires {
+            let mut add = true;
 
-        // Check is already added. We do this last because the user may want to re-merge everything
-        requires.iter().for_each(|x| {
-            if x.1 == utils::absolute_to_special(install_from) {
-                add = false;
+            // Check is already added. We do this last because the user may want to re-merge everything
+            requires.iter().for_each(|x| {
+                if x.1 == utils::absolute_to_special(install_from) {
+                    add = false;
+                }
+            });
+
+            if add && !sub_manifest {
+                requires.push((url, utils::absolute_to_special(&install_from.clone())));
             }
-        });
-
-        if add && !sub_manifest {
-            requires.push((url, utils::absolute_to_special(&install_from.clone())));
+        } else {
+            manifest.data.requires = Some(vec![(
+                url,
+                utils::absolute_to_special(&install_from.clone()),
+            )]);
         }
     } else {
-        manifest.data.requires = Some(vec![(
-            url,
-            utils::absolute_to_special(&install_from.clone()),
-        )]);
+        debug!("--as-main specified, not marking specfied as a dependency....");
     }
 
-    manifest.data.populate_file(manifest);
+    // Don't overwrite the manifest with nothing if
+    // we plan to pull as main.
+    if ! matches.is_present("as-main") {
+        manifest.data.populate_file(manifest);
+    }
 
     Ok(())
 }
