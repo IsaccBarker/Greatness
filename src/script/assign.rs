@@ -1,7 +1,7 @@
 use crate::manifest::{AddedFile, Manifest};
 use crate::utils;
 use clap::ArgMatches;
-use log::debug;
+use log::{debug, warn};
 use snafu::ResultExt;
 use std::path::PathBuf;
 
@@ -38,6 +38,8 @@ pub fn assign(
                 if let Some(scripts) = &mut file.scripts {
                     if !scripts.contains(&script) {
                         scripts.push(script);
+                    } else {
+                        warn!("The script {} is already assigned/associated with this file! Skipping....", script.display());
                     }
 
                     break;

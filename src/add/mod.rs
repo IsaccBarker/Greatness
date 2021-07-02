@@ -3,7 +3,7 @@ use snafu::Snafu;
 
 use crate::manifest::{AddedFile, Manifest};
 use crate::utils;
-use log::{debug, info};
+use log::{debug, info, warn};
 use std::fs;
 use std::path::PathBuf;
 
@@ -44,7 +44,7 @@ pub fn add_files(
             .contains(&utils::absolute_to_special(&file.canonicalize().unwrap()))
             .is_some()
         {
-            info!(
+            warn!(
                 "The file {} is already great (already added)! Skipping....",
                 file.display()
             );
@@ -53,7 +53,7 @@ pub fn add_files(
         }
 
         if file.symlink_metadata().unwrap().file_type().is_symlink() {
-            info!(
+            warn!(
                 "The file {} is a symlink. Greatness cannot handle symlinks. Skipping....",
                 file.display()
             );
