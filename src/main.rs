@@ -121,7 +121,7 @@ fn main() {
         )
         .subcommand(
             App::new("repel")
-                .about("Unmerges and deleted an external manifest.")
+                .about("Unmerges and deleted an external manifest. Takes the name of the manifest, not the url.")
                 .version("0.1.0")
                 .arg(
                     Arg::from("<name> 'Name of the external manifest to repel.'")
