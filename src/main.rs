@@ -1,22 +1,23 @@
-mod prompt;
 mod add;
-mod init;
 mod doctor;
+mod init;
+mod log_utils;
 mod manifest;
 mod pack;
 mod progress;
+mod prompt;
 mod pull;
+mod repel;
+mod rm;
+mod script;
 mod status;
 mod tag;
-mod rm;
-mod repel;
 mod utils;
-mod log_utils;
 
 use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
-use log::{info, error};
 use log::LevelFilter;
+use log::{error, info};
 use manifest::ManifestData;
 use nix::unistd::Uid;
 use std::io::Write;
@@ -61,7 +62,7 @@ fn main() {
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .arg(
-                    Arg::from("--force 'Force to reinitialize.'")
+                    Arg::from("--force 'Force to reinitialize greatness.'")
                         .required(false)
                         .takes_value(false),
                 ),
@@ -91,7 +92,6 @@ fn main() {
                 .setting(AppSettings::TrailingVarArg)
                 .arg(Arg::from("<files>... 'File(s) to add.'").required(true)),
         )
-        // TODO: rm (don't remove the file, but unadd it)
         .subcommand(
             App::new("rm")
                 .about("Removes a file from the manifest. Does not remove the file itself.")
@@ -162,7 +162,59 @@ fn main() {
                         .required(false)
                 )
         )
-        // TODO: run (manually run the RHAI scripts)
+        .subcommand(
+            App::new("script")
+                .setting(AppSettings::SubcommandRequired)
+                .about("Deal with Rhai scripts.")
+                .version("0.1.0")
+                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                .subcommand(
+                    App::new("assign")
+                        .about("Assign a Rhai script to a added file.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                        .arg(
+                            Arg::from("<file> 'The file to operate on.'")
+                        )
+                        .arg(
+                            Arg::from("<script> 'The script to operate on.'")
+                        )
+                )
+                .subcommand(
+                    App::new("rm")    
+                        .setting(AppSettings::TrailingVarArg)
+                        .about("Remove all scripts from a file or only one.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                        .arg(
+                            Arg::from("<file> 'The file to operate on'")
+                                .required(true)
+                        )
+                        .arg(
+                            Arg::from("<scripts>... 'The script to operate on'")
+                                .required(true)
+                        )
+
+                )
+                .subcommand(
+                    App::new("jog")
+                        .about("Run script associated with a file.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                )
+                .subcommand(
+                    App::new("marathon")
+                        .about("Run all scripts for the main manifest.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                )
+                .subcommand(
+                    App::new("fold-fitted-sheet")
+                        .about("Run all scripts everywhere. It's almost as crazy as trying to fold a fitted sheet!")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                )
+        )
         .get_matches(); // TODO: Push and pull commands?
 
     if Uid::effective().is_root() {
@@ -218,7 +270,10 @@ on the directory."
                 match status::print_file_status(&manifest, status_matches) {
                     Ok(()) => (),
                     Err(e) => {
-                        error!("An error occured whilst getting the status of the specified file: {}", e);
+                        error!(
+                            "An error occured whilst getting the status of the specified file: {}",
+                            e
+                        );
 
                         std::process::exit(1);
                     }
@@ -266,16 +321,17 @@ on the directory."
             }
         }
 
-        Some(("rm", rm_matches)) => {
-            match rm::rm(rm_matches, &mut manifest) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst removing (untracking) great file(s): {}", e);
+        Some(("rm", rm_matches)) => match rm::rm(rm_matches, &mut manifest) {
+            Ok(()) => (),
+            Err(e) => {
+                error!(
+                    "An error occured whilst removing (untracking) great file(s): {}",
+                    e
+                );
 
-                    std::process::exit(1);
-                }
+                std::process::exit(1);
             }
-        }
+        },
 
         Some(("init", init_matches)) => {
             if default_greatness_dir.as_path().exists() && !init_matches.is_present("force") {
@@ -303,33 +359,8 @@ on the directory."
             ) {
                 Ok(()) => (),
                 Err(e) => {
-                    error!("An error occured whilst cloning/installing the external manifest: {}", e);
-
-                    std::process::exit(1);
-                }
-            }
-        }
-
-        Some(("repel", repel_matches)) => {
-            match repel::repel(repel_matches, &mut manifest) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst repeling (unpulling) the external manifest: {}", e);
-
-                    std::process::exit(1);
-                }
-            }
-        }
-
-        Some(("pack", pack_matches)) => {
-            match pack::pack(
-                &mut manifest,
-                pack_matches,
-            ) {
-                Ok(()) => (),
-                Err(e) => {
                     error!(
-                        "An error occured whilst packing greatness into a small space: {}",
+                        "An error occured whilst cloning/installing the external manifest: {}",
                         e
                     );
 
@@ -337,6 +368,30 @@ on the directory."
                 }
             }
         }
+
+        Some(("repel", repel_matches)) => match repel::repel(repel_matches, &mut manifest) {
+            Ok(()) => (),
+            Err(e) => {
+                error!(
+                    "An error occured whilst repeling (unpulling) the external manifest: {}",
+                    e
+                );
+
+                std::process::exit(1);
+            }
+        },
+
+        Some(("pack", pack_matches)) => match pack::pack(&mut manifest, pack_matches) {
+            Ok(()) => (),
+            Err(e) => {
+                error!(
+                    "An error occured whilst packing greatness into a small space: {}",
+                    e
+                );
+
+                std::process::exit(1);
+            }
+        },
 
         Some(("tag", tag_matches)) => match tag::tag(tag_matches, &mut manifest) {
             Ok(()) => (),
@@ -347,16 +402,44 @@ on the directory."
             }
         },
 
-        Some(("prompt", prompt_matches)) => {
-            match prompt::prompt(prompt_matches, &mut manifest) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst changing directories into the git repository: {}", e);
+        Some(("prompt", prompt_matches)) => match prompt::prompt(prompt_matches, &mut manifest) {
+            Ok(()) => (),
+            Err(e) => {
+                error!(
+                    "An error occured whilst changing directories into the git repository: {}",
+                    e
+                );
 
-                    std::process::exit(1);
+                std::process::exit(1);
+            }
+        },
+
+        Some(("script", script_matches)) => match script_matches.subcommand() {
+            Some(("assign", assign_matches)) => {
+                match script::assign::assign(assign_matches, &mut manifest) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!(
+                            "An error occured whilst assigning a script to a file: {}",
+                            e
+                        );
+                    }
                 }
             }
-        }
+
+            Some(("rm", rm_matches)) => {}
+
+            Some(("jog", jog_matches)) => {}
+
+            Some(("marathon", marathon_matches)) => {}
+
+            Some(("fold-fitted-sheet", fold_matches)) => {}
+
+            None => {
+                eprintln!("Please use the --help flag to get great knowlage!")
+            }
+            _ => unreachable!(),
+        },
 
         None => eprintln!("Please use the --help flag to get great knowlage!"),
         _ => unreachable!(),

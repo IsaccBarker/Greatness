@@ -69,7 +69,7 @@ pub enum CommonErrors {
     #[snafu(display("Failed to change directories to {}: {}", dir.display(), source))]
     ChangeDirError {
         dir: PathBuf,
-        source: std::io::Error
+        source: std::io::Error,
     },
 }
 

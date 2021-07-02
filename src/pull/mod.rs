@@ -55,7 +55,7 @@ pub fn clone_and_install_repo(
     if clone_to.exists() {
         std::fs::remove_dir_all(&clone_to).context(RemoveFailure { dir: &clone_to })?;
     }
-    
+
     // TODO: Implement a progress bar. https://docs.rs/git2/0.13.20/git2/struct.Progress.html
     info!("Cloning from {} into {}....", url, &clone_to.display());
     clone_repo(&url, &clone_to)?;
@@ -81,6 +81,10 @@ pub fn clone_and_install_repo(
         )?;
     }
 
+    if matches.is_present("as-main") {
+        crate::init::init_no_damage(matches, manifest)?;
+    }
+
     Ok(())
 }
 
@@ -95,7 +99,7 @@ fn get_git_pair(manifest: &Manifest, user_url: String, matches: &ArgMatches) -> 
     dest_tmp = url.replace("http://", "");
     dest_tmp = dest_tmp.replace(".git", "");
 
-    if ! matches.is_present("as-main") {
+    if !matches.is_present("as-main") {
         let dest: PathBuf = PathBuf::from(
             dest_tmp
                 .split("/")
@@ -163,7 +167,9 @@ pub fn install(
         install_from.push("files");
 
         for file in files {
-            if matches.is_present("only-with-tag") && matches.value_of("only-with-tag").unwrap() == file.tag.unwrap_or("".to_owned()) {
+            if matches.is_present("only-with-tag")
+                && matches.value_of("only-with-tag").unwrap() == file.tag.unwrap_or("".to_owned())
+            {
                 continue;
             }
 
@@ -175,7 +181,7 @@ pub fn install(
 
     // Make sure we mark this as a dependency, only if we are not
     // installing it as main
-    if ! matches.is_present("as-main") {
+    if !matches.is_present("as-main") {
         if let Some(requires) = &mut manifest.data.requires {
             let mut add = true;
 
@@ -201,7 +207,7 @@ pub fn install(
 
     // Don't overwrite the manifest with nothing if
     // we plan to pull as main.
-    if ! matches.is_present("as-main") {
+    if !matches.is_present("as-main") {
         manifest.data.populate_file(manifest);
     }
 

@@ -1,8 +1,8 @@
-use std::path::PathBuf;
-use crate::utils;
 use crate::manifest::Manifest;
+use crate::utils;
 use clap::ArgMatches;
 use snafu::ResultExt;
+use std::path::PathBuf;
 
 pub fn rm(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::CommonErrors> {
     let files = matches.values_of("files").unwrap();
@@ -11,14 +11,17 @@ pub fn rm(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::Co
         // We cannot canonicalize path if it doesn't exist, so we create it temporalily.
         let mut must_delete_tmp = false;
         if !PathBuf::from(file).exists() {
-            std::fs::File::create(file).context(utils::FileCreationError{file})?;
+            std::fs::File::create(file).context(utils::FileCreationError { file })?;
             must_delete_tmp = true;
         }
 
         let data = manifest.data.clone();
-        let contains = data.contains(&utils::absolute_to_special(&PathBuf::from(file).canonicalize().unwrap()));
+        let contains = data.contains(&utils::absolute_to_special(
+            &PathBuf::from(file).canonicalize().unwrap(),
+        ));
         if contains.is_none() {
-            Err(std::io::Error::from(std::io::ErrorKind::NotFound)).context(utils::FileNotTracked{file})?;
+            Err(std::io::Error::from(std::io::ErrorKind::NotFound))
+                .context(utils::FileNotTracked { file })?;
         }
 
         let mut added_files = manifest.data.files.take().unwrap_or(vec![]);
@@ -27,7 +30,7 @@ pub fn rm(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::Co
 
         // Delete said temporary file if it exists
         if must_delete_tmp {
-            std::fs::remove_file(file).context(utils::FileDeletionError{file})?;
+            std::fs::remove_file(file).context(utils::FileDeletionError { file })?;
         }
     }
 

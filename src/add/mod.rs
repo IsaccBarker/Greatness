@@ -39,10 +39,11 @@ pub fn add_files(
             return false;
         }
 
-
-        if manifest_info.data.contains(
-            &utils::absolute_to_special(&file.canonicalize().unwrap())
-        ).is_some() {
+        if manifest_info
+            .data
+            .contains(&utils::absolute_to_special(&file.canonicalize().unwrap()))
+            .is_some()
+        {
             info!(
                 "The file {} is already great (already added)! Skipping....",
                 file.display()

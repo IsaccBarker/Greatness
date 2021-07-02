@@ -1,5 +1,6 @@
-use git2::Repository;
+use crate::script::ScriptsState;
 use crate::utils;
+use git2::Repository;
 use snafu::{ResultExt, Snafu};
 use std::convert::From;
 use std::fs;
@@ -28,7 +29,9 @@ pub struct Manifest {
     pub greatness_pulled_dir: PathBuf,
     pub greatness_manifest: PathBuf,
     pub greatness_git_pack_dir: PathBuf,
+    pub greatness_scripts_dir: PathBuf,
     pub repository: Option<Repository>,
+    pub script_state: ScriptsState,
 
     pub data: ManifestData,
 }
@@ -38,6 +41,7 @@ pub struct Manifest {
 pub struct AddedFile {
     pub path: PathBuf,
     pub tag: Option<String>,
+    pub scripts: Option<Vec<PathBuf>>,
 }
 
 /// Data stored in the manifest that is stored locally on the computer
@@ -55,6 +59,7 @@ impl From<PathBuf> for AddedFile {
         Self {
             path,
             tag: Some("".to_owned()),
+            scripts: None,
         }
     }
 }
@@ -64,6 +69,7 @@ impl From<(PathBuf, String)> for AddedFile {
         Self {
             path,
             tag: Some(tag),
+            scripts: None,
         }
     }
 }
@@ -146,10 +152,14 @@ impl ManifestData {
     /// Gets all the tags in use
     pub fn all_tags(&self) -> Option<Vec<String>> {
         let mut tags = vec![];
-        if self.files.is_none() { return None; }
+        if self.files.is_none() {
+            return None;
+        }
 
         for file in self.files.clone().unwrap() {
-            if file.tag.is_none() { continue; }
+            if file.tag.is_none() {
+                continue;
+            }
 
             tags.push(file.tag.unwrap());
         }
@@ -177,6 +187,10 @@ impl Manifest {
         let mut greatness_git_pack_dir = PathBuf::from(manifest_dir.clone());
         greatness_git_pack_dir.push("packed");
         greatness_git_pack_dir.push("git");
+        let mut greatness_scripts_dir = PathBuf::from(manifest_dir.clone());
+        greatness_scripts_dir.push("scripts");
+
+        let script_state = ScriptsState::new();
 
         let mut repository: Option<Repository> = None;
 
@@ -194,7 +208,9 @@ impl Manifest {
             greatness_manifest,
             greatness_pulled_dir,
             greatness_git_pack_dir,
+            greatness_scripts_dir,
             repository,
+            script_state,
             data: ManifestData::default(),
         })
     }
