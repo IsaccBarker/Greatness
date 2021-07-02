@@ -1,6 +1,7 @@
 use snafu::{ResultExt, Snafu};
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
+use crate::manifest::Manifest;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]
@@ -85,6 +86,12 @@ pub fn absolute_to_special(absolute: &PathBuf) -> PathBuf {
     )
 }
 
+/// Calls absolute_to_special, but calls .cannonicalize()
+/// on the relative path first.
+pub fn relative_to_special(relative: &PathBuf) -> Result<PathBuf, std::io::Error> {
+    Ok(absolute_to_special(&relative.canonicalize()?))
+}
+
 /// Transforms a special path to an absolute one.
 /// {{HOME}}/.zshrc -> /home/milo/.zshrc
 pub fn special_to_absolute(special: &PathBuf) -> PathBuf {
@@ -92,6 +99,15 @@ pub fn special_to_absolute(special: &PathBuf) -> PathBuf {
     let special_string = special.to_str().unwrap().to_string();
 
     PathBuf::from(special_string.replace("{{HOME}}", home_to_substitute.to_str().unwrap()))
+}
+
+/// Supplied a relative path, this function returns that
+/// scripts location in the script directory
+pub fn relative_to_script(manifest: &Manifest, rel: &PathBuf) -> PathBuf {
+    let mut ret = manifest.greatness_scripts_dir.clone();
+    ret.push(rel);
+
+    ret
 }
 
 /// Given a origin file, create a backup file with a unique name

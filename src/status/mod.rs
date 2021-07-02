@@ -57,11 +57,7 @@ pub fn print_file_status(
     manifest: &Manifest,
     matches: &ArgMatches,
 ) -> Result<(), utils::CommonErrors> {
-    let file = utils::absolute_to_special(
-        &PathBuf::from(matches.value_of("file").unwrap())
-            .canonicalize()
-            .unwrap(),
-    );
+    let file = utils::relative_to_special(&PathBuf::from(matches.value_of("file").unwrap())).unwrap();
     let contains = manifest.data.contains(&file);
     let contains_unwrapped;
 

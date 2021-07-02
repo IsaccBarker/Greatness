@@ -107,7 +107,7 @@ impl ManifestData {
     /// It returns the matching element, and its index.
     pub fn contains(&self, looking_for: &PathBuf) -> Option<(&AddedFile, usize)> {
         // BUG: ALLWAYS RETURNS 0 FOR THE INDEX.
-        let looking_for_normalized = looking_for; // &utils::absolute_to_special(&looking_for.canonicalize().unwrap());
+        let looking_for_normalized = looking_for;
         if let Some(files) = &self.files {
             let mut i: usize = 0;
             for file in files {

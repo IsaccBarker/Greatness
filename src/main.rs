@@ -183,18 +183,19 @@ fn main() {
                 .subcommand(
                     App::new("rm")    
                         .setting(AppSettings::TrailingVarArg)
-                        .about("Remove all scripts from a file or only one.")
+                        .about("Remove a scripts from a file.")
                         .version("0.1.0")
                         .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<file> 'The file to operate on'")
+                                .index(1)
                                 .required(true)
                         )
                         .arg(
-                            Arg::from("<scripts>... 'The script to operate on'")
+                            Arg::from("<script> 'The script to operate on'")
+                                .index(2)
                                 .required(true)
                         )
-
                 )
                 .subcommand(
                     App::new("jog")
@@ -423,11 +424,25 @@ on the directory."
                             "An error occured whilst assigning a script to a file: {}",
                             e
                         );
+
+                        std::process::exit(1);
                     }
                 }
             }
 
-            Some(("rm", rm_matches)) => {}
+            Some(("rm", rm_matches)) => {
+                match script::rm::rm(rm_matches, &mut manifest) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!(
+                            "An error occured whilst un-tethering a script and a file: {}",
+                            e
+                        );
+
+                        std::process::exit(1);
+                    }
+                }
+            }
 
             Some(("jog", jog_matches)) => {}
 

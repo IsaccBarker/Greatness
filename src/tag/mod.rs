@@ -43,7 +43,7 @@ pub fn tag_file(
         .context(utils::NoFileExistsError { file: &file })?;
     }
 
-    let normalized_file = utils::absolute_to_special(&file.canonicalize().unwrap());
+    let normalized_file = utils::relative_to_special(&file)?;
     let mut contains = match manifest.data.contains(&normalized_file) {
         Some(c) => c.0.clone(),
         None => {

@@ -11,16 +11,13 @@ pub fn assign(
     manifest: &mut Manifest,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let target_base = PathBuf::from(matches.value_of("file").unwrap());
-    let mut script_base = manifest.greatness_scripts_dir.clone();
-    script_base.push(PathBuf::from(matches.value_of("script").unwrap()));
+    let script_base = utils::relative_to_script(manifest, &PathBuf::from(matches.value_of("script").unwrap()));
 
     debug!("Assigning script at {} to {} (non special paths)....", script_base.display(), target_base.display());
 
-    let target = utils::absolute_to_special(
-        &PathBuf::from(&target_base)
-            .canonicalize()
-            .context(utils::NoFileExistsError { file: target_base })?,
-    );
+    let target = utils::relative_to_special(
+        &PathBuf::from(&target_base),
+    )?;
     let script = utils::absolute_to_special(
         &PathBuf::from(&script_base)
             .canonicalize()

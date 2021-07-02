@@ -41,7 +41,7 @@ pub fn add_files(
 
         if manifest_info
             .data
-            .contains(&utils::absolute_to_special(&file.canonicalize().unwrap()))
+            .contains(&utils::relative_to_special(&file).unwrap())
             .is_some()
         {
             warn!(
@@ -79,9 +79,7 @@ fn add_file(
     manifest: &mut Manifest,
     _matches: &ArgMatches,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let absolute_file = &fs::canonicalize(file).unwrap();
-    let special_file;
-    special_file = utils::absolute_to_special(absolute_file);
+    let special_file = utils::relative_to_special(&file)?;
     if let Some(ref mut files) = manifest.data.files {
         files.push(AddedFile::from(special_file.clone()));
     } else {
