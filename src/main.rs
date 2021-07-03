@@ -266,7 +266,10 @@ on the directory."
     }
 
     if matches.subcommand_name().unwrap_or("") == "script" {
-        match manifest.script_state.parse_all_scripts(&mut manifest.data.clone()) {
+        match manifest
+            .script_state
+            .parse_all_scripts(&mut manifest.data.clone())
+        {
             Ok(()) => (),
             Err(e) => {
                 error!("An error occured whilst parsing an rhai script: {}", e);
@@ -440,37 +443,34 @@ on the directory."
                 }
             }
 
-            Some(("rm", rm_matches)) => {
-                match script::rm::rm(rm_matches, &mut manifest) {
-                    Ok(()) => (),
-                    Err(e) => {
-                        error!(
-                            "An error occured whilst un-tethering a script and a file: {}",
-                            e
-                        );
+            Some(("rm", rm_matches)) => match script::rm::rm(rm_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!(
+                        "An error occured whilst un-tethering a script and a file: {}",
+                        e
+                    );
 
-                        std::process::exit(1);
-                    }
+                    std::process::exit(1);
                 }
+            },
+
+            Some(("jog", _jog_matches)) => match script::jog::jog(&mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst going jogging: {}", e);
+
+                    std::process::exit(1);
+                }
+            },
+
+            Some(("marathon", _marathon_matches)) => {
+                unimplemented!();
             }
 
-            Some(("jog", jog_matches)) => {
-                match script::jog::jog(jog_matches, &mut manifest) {
-                    Ok(()) => (),
-                    Err(e) => {
-                        error!(
-                            "An error occured whilst going jogging: {}",
-                            e
-                        );
-
-                        std::process::exit(1);
-                    }
-                }
+            Some(("fold-fitted-sheet", _fold_matches)) => {
+                unimplemented!();
             }
-
-            Some(("marathon", marathon_matches)) => {}
-
-            Some(("fold-fitted-sheet", fold_matches)) => {}
 
             None => {
                 eprintln!("Please use the --help flag to get great knowlage!")

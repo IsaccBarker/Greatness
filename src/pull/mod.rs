@@ -1,3 +1,4 @@
+use crate::init;
 use crate::manifest::{Manifest, ManifestData};
 use crate::utils;
 use clap::ArgMatches;
@@ -82,7 +83,7 @@ pub fn clone_and_install_repo(
     }
 
     if matches.is_present("as-main") {
-        crate::init::init_no_damage(matches, manifest)?;
+        init::init_no_damage(matches, manifest)?;
     }
 
     Ok(())

@@ -2,14 +2,22 @@ use crate::manifest::Manifest;
 use crate::utils;
 use clap::ArgMatches;
 use snafu::ResultExt;
-use std::path::PathBuf;
+use std::fs::File;
+use std::io::Write;
 
-pub fn jog(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn jog(manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(files) = &manifest.data.files {
         for file in files {
             if let Some(scripts) = &file.scripts {
                 for script in scripts {
-                    manifest.script_state.script_on_file(&utils::special_to_absolute(&file.path), &utils::special_to_absolute(script))?;
+                    let abs = utils::special_to_absolute(&file.path);
+                    let processed = manifest
+                        .script_state
+                        .script_on_file(&abs, &utils::special_to_absolute(script))?;
+                    File::create(&abs)
+                        .context(utils::FileOpenError { file: &abs })?
+                        .write_all(processed.as_bytes())
+                        .context(utils::FileWriteError { file: &abs })?;
                 }
             }
         }

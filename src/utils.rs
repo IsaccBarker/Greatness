@@ -1,7 +1,7 @@
+use crate::manifest::Manifest;
 use snafu::{ResultExt, Snafu};
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
-use crate::manifest::Manifest;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]

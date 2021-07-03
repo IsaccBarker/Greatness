@@ -4,7 +4,6 @@ use snafu::Snafu;
 use crate::manifest::{AddedFile, Manifest};
 use crate::utils;
 use log::{debug, info, warn};
-use std::fs;
 use std::path::PathBuf;
 
 #[derive(Debug, Snafu)]

@@ -1,4 +1,4 @@
-use crate::manifest::{AddedFile, Manifest};
+use crate::manifest::Manifest;
 use crate::utils;
 use clap::ArgMatches;
 use log::{debug, warn};
@@ -11,13 +11,18 @@ pub fn assign(
     manifest: &mut Manifest,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let target_base = PathBuf::from(matches.value_of("file").unwrap());
-    let script_base = utils::relative_to_script(manifest, &PathBuf::from(matches.value_of("script").unwrap()));
+    let script_base = utils::relative_to_script(
+        manifest,
+        &PathBuf::from(matches.value_of("script").unwrap()),
+    );
 
-    debug!("Assigning script at {} to {} (non special paths)....", script_base.display(), target_base.display());
+    debug!(
+        "Assigning script at {} to {} (non special paths)....",
+        script_base.display(),
+        target_base.display()
+    );
 
-    let target = utils::relative_to_special(
-        &PathBuf::from(&target_base),
-    )?;
+    let target = utils::relative_to_special(&PathBuf::from(&target_base))?;
     let script = utils::absolute_to_special(
         &PathBuf::from(&script_base)
             .canonicalize()

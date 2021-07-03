@@ -1,15 +1,15 @@
-pub mod register;
-pub mod parse;
-pub mod run;
 pub mod assign;
 pub mod fitted;
 pub mod jog;
 pub mod marathon;
+pub mod parse;
+pub mod register;
 pub mod rm;
+pub mod run;
 
 use rhai::{Engine, AST};
-use std::path::PathBuf;
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 /// Contains pre compiled script information
 pub struct ScriptsState {

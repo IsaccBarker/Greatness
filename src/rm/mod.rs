@@ -16,9 +16,7 @@ pub fn rm(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::Co
         }
 
         let data = manifest.data.clone();
-        let contains = data.contains(&utils::relative_to_special(
-            &PathBuf::from(file),
-        ).unwrap());
+        let contains = data.contains(&utils::relative_to_special(&PathBuf::from(file)).unwrap());
         if contains.is_none() {
             Err(std::io::Error::from(std::io::ErrorKind::NotFound))
                 .context(utils::FileNotTracked { file })?;

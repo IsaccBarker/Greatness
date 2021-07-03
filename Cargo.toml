@@ -27,4 +27,5 @@ tempfile = "3.2.0"
 rhai = "0.20.3"
 strsim = "0.10.0"
 subprocess = "0.2.7"
+lazy_static = "1.4.0"
 

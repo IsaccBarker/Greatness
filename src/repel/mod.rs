@@ -6,9 +6,17 @@ use clap::ArgMatches;
 
 pub fn repel(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::CommonErrors> {
     let to_repel = matches.value_of("name").unwrap();
-    
+
     if let Some(requires) = &mut manifest.data.requires {
-        requires.retain(|e| e.1.components().last().unwrap().as_os_str().to_str().unwrap() != to_repel );
+        requires.retain(|e| {
+            e.1.components()
+                .last()
+                .unwrap()
+                .as_os_str()
+                .to_str()
+                .unwrap()
+                != to_repel
+        });
     }
 
     manifest.data.populate_file(&manifest);
