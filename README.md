@@ -25,7 +25,7 @@ Well, just remember the name. Greatness has to be the best. But if you are stupi
 #### Disclaimer
 While the chart below is will be true for greatness, it may not be accurate just yet. This chart will only be accurate once we reach the great version of v1.0.0.
 
-|                                        | [greatness]       | [chezmoi]     | [dotbot]          | [rcm]             | [homesick]        | [yadm]        | [bare git] |
+|                                        | greatness         | chezmoi       | dotbot            | rcm               | homesick          | yadm          | bare git   |
 | -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | ------------- | ---------- |
 | Distribution                           | Single Binary     | Single binary | Python package    | Multiple files    | Ruby gem          | Single script | n/a        |
 | Install method                         | Many              | Many          | git submodule     | Many              | Ruby gem          | Many          | Manual     |
