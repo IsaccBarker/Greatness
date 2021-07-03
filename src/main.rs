@@ -252,7 +252,7 @@ on the directory."
 
     if matches.subcommand_name().unwrap_or("") != "init" {
         let manifest_data: ManifestData = match ManifestData::populate_from_file(&manifest) {
-            Ok(md) => md,
+            Ok(m) => m,
             Err(e) => {
                 error!(
                     "An error occured whilst parsing the greatness manifest: {}",
@@ -263,6 +263,16 @@ on the directory."
         };
 
         manifest.data = manifest_data;
+    }
+
+    if matches.subcommand_name().unwrap_or("") == "script" {
+        match manifest.script_state.parse_all_scripts(&mut manifest.data.clone()) {
+            Ok(()) => (),
+            Err(e) => {
+                error!("An error occured whilst parsing an rhai script: {}", e);
+                std::process::exit(1);
+            }
+        };
     }
 
     match matches.subcommand() {
@@ -444,7 +454,19 @@ on the directory."
                 }
             }
 
-            Some(("jog", jog_matches)) => {}
+            Some(("jog", jog_matches)) => {
+                match script::jog::jog(jog_matches, &mut manifest) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!(
+                            "An error occured whilst going jogging: {}",
+                            e
+                        );
+
+                        std::process::exit(1);
+                    }
+                }
+            }
 
             Some(("marathon", marathon_matches)) => {}
 

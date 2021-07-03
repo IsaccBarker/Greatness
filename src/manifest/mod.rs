@@ -23,7 +23,8 @@ pub enum ManifestError {
     },
 }
 
-/// Contains local data on disk and paths got dynamically
+/// Contains local data on disk and paths got dynamically.
+/// For any new entry, please add to the status code.
 pub struct Manifest {
     pub greatness_dir: PathBuf,
     pub greatness_pulled_dir: PathBuf,
@@ -36,7 +37,8 @@ pub struct Manifest {
     pub data: ManifestData,
 }
 
-/// Contains information about an added file
+/// Contains information about an added file.
+/// For any new entry, please add to the status code.
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AddedFile {
     pub path: PathBuf,
@@ -190,7 +192,8 @@ impl Manifest {
         let mut greatness_scripts_dir = PathBuf::from(manifest_dir.clone());
         greatness_scripts_dir.push("scripts");
 
-        let script_state = ScriptsState::new();
+        let mut script_state = ScriptsState::new();
+        script_state.register_all();
 
         let mut repository: Option<Repository> = None;
 

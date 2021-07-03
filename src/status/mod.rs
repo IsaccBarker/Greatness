@@ -18,6 +18,14 @@ pub fn print_status(manifest: &Manifest) {
         "Greatness manifest : \x1b[1m{}\x1b[0m",
         manifest.greatness_manifest.display()
     );
+    info!(
+        "Greatness git pack : \x1b[1m{}\x1b[0m",
+        manifest.greatness_git_pack_dir.display(),
+    );
+    info!(
+        "Greatness scripts  : \x1b[1m{}\x1b[0m",
+        manifest.greatness_scripts_dir.display()
+    );
 
     print!("\n");
 
@@ -32,6 +40,13 @@ pub fn print_status(manifest: &Manifest) {
 
             if file.tag.is_some() && file.tag != Some("".to_owned()) {
                 info!("\t\ttag : {}", file.tag.clone().unwrap());
+            }
+
+            if file.scripts.is_some() {
+                info!("\t\tscripts:");
+                for script in file.scripts.as_ref().unwrap() {
+                    info!("\t\t\t{}", utils::special_to_absolute(script).display());
+                }
             }
         }
     } else {
