@@ -1,4 +1,5 @@
 # Greatness!
+### Not yet ready for use! Please wait until v1.0.0!
 <p align="center">
   <a href="github.com/IsaccBarker/Greatness" target="blank"><img src="assets/greatness.png" alt="Greatness Logo" /></a>
 </p>
