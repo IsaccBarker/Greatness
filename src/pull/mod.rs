@@ -1,6 +1,7 @@
 use crate::init;
 use crate::manifest::{Manifest, ManifestData};
 use crate::utils;
+use crate::script::jog;
 use clap::ArgMatches;
 use git2::Repository;
 use log::{debug, info};
@@ -70,7 +71,7 @@ pub fn clone_and_install_repo(
         Some(url),
         &mut clone_to,
         manifest,
-        &external_manifest,
+        &mut external_manifest,
         sub_manifest,
     )?;
     for requirement in external_manifest.data.requires.unwrap_or(vec![]) {
@@ -160,7 +161,7 @@ pub fn install(
     url: Option<String>,
     install_from: &mut PathBuf,
     manifest: &mut Manifest,
-    external_manifest: &Manifest,
+    external_manifest: &mut Manifest,
     sub_manifest: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let external_manifest_data = external_manifest.data.clone();
@@ -205,6 +206,9 @@ pub fn install(
     } else {
         debug!("--as-main specified, not marking specfied as a dependency....");
     }
+
+    // Run the scripts
+    jog::jog(external_manifest)?;
 
     // Don't overwrite the manifest with nothing if
     // we plan to pull as main.
