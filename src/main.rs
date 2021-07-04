@@ -1,3 +1,4 @@
+mod encrypt;
 mod add;
 mod doctor;
 mod init;
@@ -160,6 +161,35 @@ fn main() {
                 .arg(
                     Arg::from("<no-overwite-ps1> -c, --no-overwrite-ps1 'Dont overwrite the ps1 of your shell.'")
                         .required(false)
+                )
+        )
+        .subcommand(
+            App::new("encrypt")
+                .setting(AppSettings::SubcommandRequired)
+                .about("Encrypt a/some file(s).")
+                .version("0.1.0")
+                .author("Milo Banks (Isacc Barker <milobanks@zincsoft.dev>)")
+                .subcommand(
+                    App::new("add")
+                        .about("Make a file encrypted.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                        .arg(
+                            Arg::from("<files>... 'File(s) to encrypt.'")
+                                .required(true)
+                                .index(1)
+                        )
+                )
+                .subcommand(
+                    App::new("rm")
+                        .about("Make a file not encrypted.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                        .arg(
+                            Arg::from("<files>... 'File(s) to remove from encryption.'")
+                                .required(true)
+                                .index(1)
+                        )
                 )
         )
         .subcommand(
@@ -361,6 +391,35 @@ on the directory."
 
                     std::process::exit(1);
                 }
+            }
+        }
+
+        Some(("encrypt", encrypt_matches)) => {
+            match encrypt_matches.subcommand() {
+                Some(("add", add_matches)) => {
+                    match encrypt::add::add(add_matches, &mut manifest) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!("An error occured whilst encrypting file(s): {}", e);
+
+                            std::process::exit(1);
+                        }
+                    }
+                }
+
+                Some(("rm", rm_matches)) => {
+                    match encrypt::rm::rm(rm_matches, &mut manifest) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!("An error occured whilst making file(s) not encrypted: {}", e);
+
+                            std::process::exit(1);
+                        }
+                    }
+                }
+
+                None => { unreachable!(); }
+                _ => { unreachable!(); }
             }
         }
 

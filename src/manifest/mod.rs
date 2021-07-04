@@ -41,9 +41,14 @@ pub struct Manifest {
 /// For any new entry, please add to the status code.
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AddedFile {
+    #[serde(default)]
     pub path: PathBuf,
+    #[serde(default)]
     pub tag: Option<String>,
+    #[serde(default)]
     pub scripts: Option<Vec<PathBuf>>,
+    #[serde(default)]
+    pub encrypted: bool,
 }
 
 /// Data stored in the manifest that is stored locally on the computer
@@ -62,6 +67,7 @@ impl From<PathBuf> for AddedFile {
             path,
             tag: Some("".to_owned()),
             scripts: None,
+            encrypted: false,
         }
     }
 }
@@ -72,6 +78,18 @@ impl From<(PathBuf, String)> for AddedFile {
             path,
             tag: Some(tag),
             scripts: None,
+            encrypted: false,
+        }
+    }
+}
+
+impl Default for AddedFile {
+    fn default() -> Self {
+        Self {
+            path: PathBuf::from(""),
+            tag: None,
+            scripts: None,
+            encrypted: false
         }
     }
 }
