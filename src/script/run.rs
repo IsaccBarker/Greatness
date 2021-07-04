@@ -1,7 +1,7 @@
 use super::ScriptsState;
 use crate::utils;
 use log::debug;
-use rhai::{Dynamic, Scope};
+use rhai::Scope;
 use snafu::{ResultExt, Snafu};
 use std::path::PathBuf;
 

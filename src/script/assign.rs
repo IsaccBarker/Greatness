@@ -1,3 +1,4 @@
+use crate::manifest::AddedFile;
 use crate::manifest::Manifest;
 use crate::utils;
 use clap::ArgMatches;
@@ -36,20 +37,8 @@ pub fn assign(
 
     if let Some(files) = &mut manifest.data.files {
         for file in files {
-            if file.path == target {
-                if let Some(scripts) = &mut file.scripts {
-                    if !scripts.contains(&script) {
-                        scripts.push(script);
-                    } else {
-                        warn!("The script {} is already assigned/associated with this file! Skipping....", script.display());
-                    }
-
-                    break;
-                } else {
-                    file.scripts = Some(vec![script]);
-
-                    break;
-                }
+            if assign_file(file, script.clone(), &target) {
+                break;
             }
         }
     }
@@ -57,4 +46,27 @@ pub fn assign(
     manifest.data.populate_file(&manifest);
 
     Ok(())
+}
+
+fn assign_file(file: &mut AddedFile, script: PathBuf, target: &PathBuf) -> bool {
+    if &file.path == target {
+        if let Some(scripts) = &mut file.scripts {
+            if !scripts.contains(&script) {
+                scripts.push(script);
+            } else {
+                warn!(
+                    "The script {} is already assigned/associated with this file! Skipping....",
+                    script.display()
+                );
+            }
+
+            return true;
+        } else {
+            file.scripts = Some(vec![script]);
+
+            return true;
+        }
+    }
+
+    false
 }

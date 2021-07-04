@@ -89,7 +89,7 @@ impl Default for AddedFile {
             path: PathBuf::from(""),
             tag: None,
             scripts: None,
-            encrypted: false
+            encrypted: false,
         }
     }
 }

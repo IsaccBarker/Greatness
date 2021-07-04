@@ -1,6 +1,5 @@
 use crate::manifest::Manifest;
 use crate::utils;
-use clap::ArgMatches;
 use snafu::ResultExt;
 use std::fs::File;
 use std::io::Write;

@@ -1,7 +1,7 @@
 use crate::init;
 use crate::manifest::{Manifest, ManifestData};
-use crate::utils;
 use crate::script::jog;
+use crate::utils;
 use clap::ArgMatches;
 use git2::Repository;
 use log::{debug, info};
@@ -179,30 +179,10 @@ pub fn install(
         }
     }
 
-    // Merge it all
-
     // Make sure we mark this as a dependency, only if we are not
     // installing it as main
     if !matches.is_present("as-main") {
-        if let Some(requires) = &mut manifest.data.requires {
-            let mut add = true;
-
-            // Check is already added. We do this last because the user may want to re-merge everything
-            requires.iter().for_each(|x| {
-                if x.1 == utils::absolute_to_special(install_from) {
-                    add = false;
-                }
-            });
-
-            if add && !sub_manifest {
-                requires.push((url, utils::absolute_to_special(&install_from.clone())));
-            }
-        } else {
-            manifest.data.requires = Some(vec![(
-                url,
-                utils::absolute_to_special(&install_from.clone()),
-            )]);
-        }
+        mark_as_dependency(manifest, install_from, url, sub_manifest);
     } else {
         debug!("--as-main specified, not marking specfied as a dependency....");
     }
@@ -217,6 +197,33 @@ pub fn install(
     }
 
     Ok(())
+}
+
+fn mark_as_dependency(
+    manifest: &mut Manifest,
+    install_from: &mut PathBuf,
+    url: Option<String>,
+    sub_manifest: bool,
+) {
+    if let Some(requires) = &mut manifest.data.requires {
+        let mut add = true;
+
+        // Check is already added. We do this last because the user may want to re-merge everything
+        requires.iter().for_each(|x| {
+            if x.1 == utils::absolute_to_special(install_from) {
+                add = false;
+            }
+        });
+
+        if add && !sub_manifest {
+            requires.push((url, utils::absolute_to_special(&install_from.clone())));
+        }
+    } else {
+        manifest.data.requires = Some(vec![(
+            url,
+            utils::absolute_to_special(&install_from.clone()),
+        )]);
+    }
 }
 
 /// Install a file

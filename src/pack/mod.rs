@@ -1,6 +1,6 @@
+use crate::encrypt;
 use crate::manifest::Manifest;
 use crate::utils;
-use crate::encrypt;
 use clap::ArgMatches;
 use log::debug;
 use snafu::{ResultExt, Snafu};
@@ -34,6 +34,17 @@ pub fn pack(
         })?;
     }
 
+    pack_manifest(manifest, &original_manifest_location)?;
+    pack_files(manifest, &base)?;
+
+    Ok(())
+}
+
+/// Pack the manifest. Thats it.
+fn pack_manifest(
+    manifest: &mut Manifest,
+    original_manifest_location: &PathBuf,
+) -> Result<(), Box<dyn std::error::Error>> {
     // Pack the manifest
     debug!(
         "Packing manifest from {} -> {}....",
@@ -47,7 +58,11 @@ pub fn pack(
         },
     )?;
 
-    // Pack the files mentioned by the manifest
+    Ok(())
+}
+
+/// Packs all the files.
+pub fn pack_files(manifest: &Manifest, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(files) = &manifest.data.files {
         for file in files {
             if file.encrypted {

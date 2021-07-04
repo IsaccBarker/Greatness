@@ -1,6 +1,6 @@
-mod encrypt;
 mod add;
 mod doctor;
+mod encrypt;
 mod init;
 mod log_utils;
 mod manifest;
@@ -52,10 +52,6 @@ fn main() {
         .version("0.1.0")
         .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
         .about("Helps you to achieve greatness!")
-        .arg(
-            Arg::from("<ignore-root-check> --ignore-root-check 'Allow to run as root.'")
-                .required(false),
-        )
         .subcommand(
             App::new("init")
                 .about("Initializes greatness!")
@@ -78,11 +74,6 @@ fn main() {
             App::new("status")
                 .about("Prints the status of the configuration.")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
-                .arg(
-                    Arg::from("<file> 'A specific great file to get the status of.'")
-                        .required(false)
-                        .index(1)
-                ),
         )
         .subcommand(
             App::new("add")
@@ -239,18 +230,6 @@ fn main() {
                         .version("0.1.0")
                         .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 )
-                .subcommand(
-                    App::new("marathon")
-                        .about("Run all scripts for the main manifest.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
-                )
-                .subcommand(
-                    App::new("fold-fitted-sheet")
-                        .about("Run all scripts everywhere. It's almost as crazy as trying to fold a fitted sheet!")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
-                )
         )
         .get_matches(); // TODO: Push and pull commands?
 
@@ -266,7 +245,9 @@ on the directory."
     }
 
     // Check if we are initialized
-    if !default_greatness_dir.as_path().exists() && matches.subcommand_name().unwrap_or("") != "init" {
+    if !default_greatness_dir.as_path().exists()
+        && matches.subcommand_name().unwrap_or("") != "init"
+    {
         error!("It looks you haven't initialized yet! Use `greatness init` to initialize. P.S, we found this out by looking through some pretty great binoculars.");
 
         std::process::exit(1);
@@ -315,23 +296,7 @@ on the directory."
     }
 
     match matches.subcommand() {
-        Some(("status", status_matches)) => {
-            if status_matches.is_present("file") {
-                match status::print_file_status(&manifest, status_matches) {
-                    Ok(()) => (),
-                    Err(e) => {
-                        error!(
-                            "An error occured whilst getting the status of the specified file: {}",
-                            e
-                        );
-
-                        std::process::exit(1);
-                    }
-                }
-
-                std::process::exit(0);
-            }
-
+        Some(("status", _status_matches)) => {
             status::print_status(&mut manifest);
         }
 
@@ -400,34 +365,35 @@ on the directory."
             }
         }
 
-        Some(("encrypt", encrypt_matches)) => {
-            match encrypt_matches.subcommand() {
-                Some(("add", add_matches)) => {
-                    match encrypt::add::add(add_matches, &mut manifest) {
-                        Ok(()) => (),
-                        Err(e) => {
-                            error!("An error occured whilst encrypting file(s): {}", e);
+        Some(("encrypt", encrypt_matches)) => match encrypt_matches.subcommand() {
+            Some(("add", add_matches)) => match encrypt::add::add(add_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst encrypting file(s): {}", e);
 
-                            std::process::exit(1);
-                        }
-                    }
+                    std::process::exit(1);
                 }
+            },
 
-                Some(("rm", rm_matches)) => {
-                    match encrypt::rm::rm(rm_matches, &mut manifest) {
-                        Ok(()) => (),
-                        Err(e) => {
-                            error!("An error occured whilst making file(s) not encrypted: {}", e);
+            Some(("rm", rm_matches)) => match encrypt::rm::rm(rm_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!(
+                        "An error occured whilst making file(s) not encrypted: {}",
+                        e
+                    );
 
-                            std::process::exit(1);
-                        }
-                    }
+                    std::process::exit(1);
                 }
+            },
 
-                None => { unreachable!(); }
-                _ => { unreachable!(); }
+            None => {
+                unreachable!();
             }
-        }
+            _ => {
+                unreachable!();
+            }
+        },
 
         Some(("pull", get_matches)) => {
             match get_matches.subcommand() {
@@ -450,25 +416,24 @@ on the directory."
                     }
                 }
 
-                Some(("rm", rm_matches)) => {
-                    match pull::rm::repel(
-                        rm_matches,
-                        &mut manifest,
-                    ) {
-                        Ok(()) => (),
-                        Err(e) => {
-                            error!(
-                                "An error occured whilst removing an external manifest: {}",
-                                e
-                            );
+                Some(("rm", rm_matches)) => match pull::rm::repel(rm_matches, &mut manifest) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!(
+                            "An error occured whilst removing an external manifest: {}",
+                            e
+                        );
 
-                            std::process::exit(1);
-                        }
+                        std::process::exit(1);
                     }
-                }
+                },
 
-                None => { unreachable!(); },
-                _ => { unreachable!(); }
+                None => {
+                    unreachable!();
+                }
+                _ => {
+                    unreachable!();
+                }
             }
         }
 
@@ -540,14 +505,6 @@ on the directory."
                     std::process::exit(1);
                 }
             },
-
-            Some(("marathon", _marathon_matches)) => {
-                unimplemented!();
-            }
-
-            Some(("fold-fitted-sheet", _fold_matches)) => {
-                unimplemented!();
-            }
 
             None => {
                 eprintln!("Please use the --help flag to get great knowlage!")

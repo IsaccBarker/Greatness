@@ -1,9 +1,6 @@
 use crate::manifest::Manifest;
 use crate::utils;
-use clap::ArgMatches;
 use log::info;
-use snafu::ResultExt;
-use std::path::PathBuf;
 
 pub fn print_status(manifest: &Manifest) {
     info!(
@@ -68,32 +65,4 @@ pub fn print_status(manifest: &Manifest) {
     } else {
         info!("\x1b[1mNo external repositories installed!\x1b[0m");
     }
-}
-
-pub fn print_file_status(
-    manifest: &Manifest,
-    matches: &ArgMatches,
-) -> Result<(), utils::CommonErrors> {
-    let file =
-        utils::relative_to_special(&PathBuf::from(matches.value_of("file").unwrap())).unwrap();
-    let contains = manifest.data.contains(&file);
-    let contains_unwrapped;
-
-    if contains.is_none() {
-        return Err(std::io::Error::from(std::io::ErrorKind::NotFound))
-            .context(utils::NoFileExistsError { file });
-    } else {
-        contains_unwrapped = contains.unwrap().0;
-    }
-
-    info!(
-        "path: {}",
-        utils::special_to_absolute(&contains_unwrapped.path).display()
-    );
-
-    if contains_unwrapped.tag.is_some() {
-        info!("tag : {}", contains_unwrapped.tag.clone().unwrap());
-    }
-
-    Ok(())
 }

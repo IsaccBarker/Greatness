@@ -1,7 +1,5 @@
 pub mod assign;
-pub mod fitted;
 pub mod jog;
-pub mod marathon;
 pub mod parse;
 pub mod register;
 pub mod rm;

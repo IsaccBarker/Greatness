@@ -29,6 +29,19 @@ pub fn add_files(
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Do some checks to figure out which files we should include
     // println!("{:?}", files);
+    only_retain_correct_files(&mut files, manifest_info);
+
+    for file in files.iter() {
+        debug!("Adding file {}....", file.display());
+        add_file(&PathBuf::from(file), manifest_info, matches)?;
+    }
+
+    manifest_info.data.populate_file(manifest_info);
+
+    Ok(())
+}
+
+fn only_retain_correct_files(files: &mut Vec<PathBuf>, manifest_info: &mut Manifest) {
     files.retain(|file| {
         if !std::path::Path::new(file).is_file() {
             info!(
@@ -62,15 +75,6 @@ pub fn add_files(
 
         return true; // Keep the element
     });
-
-    for file in files.iter() {
-        debug!("Adding file {}....", file.display());
-        add_file(&PathBuf::from(file), manifest_info, matches)?;
-    }
-
-    manifest_info.data.populate_file(manifest_info);
-
-    Ok(())
 }
 
 fn add_file(
