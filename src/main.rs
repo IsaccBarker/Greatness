@@ -266,7 +266,7 @@ on the directory."
     }
 
     // Check if we are initialized
-    if !default_greatness_dir.as_path().exists() && matches.subcommand_name().unwrap() != "init" {
+    if !default_greatness_dir.as_path().exists() && matches.subcommand_name().unwrap_or("") != "init" {
         error!("It looks you haven't initialized yet! Use `greatness init` to initialize. P.S, we found this out by looking through some pretty great binoculars.");
 
         std::process::exit(1);
@@ -433,8 +433,8 @@ on the directory."
             match get_matches.subcommand() {
                 Some(("add", add_matches)) => {
                     match pull::add::clone_and_install_repo(
-                        get_matches.value_of("from").unwrap().to_string(),
-                        get_matches,
+                        add_matches.value_of("from").unwrap().to_string(),
+                        add_matches,
                         &mut manifest,
                         false, // This is the original project
                     ) {
