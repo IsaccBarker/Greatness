@@ -20,6 +20,8 @@ Greatness is you being great and better than everyone else. You have to uphold t
 ## How do I achieve greatness?
 Simple! Use this tool. This tool is designed to bring your system up to a working state that you like in a small amount of time. It is *very* flexible, 100% modular, and fast.
 
+You can view the documentation [here](docs/SUMMARY.md)!
+
 ## Why is Greatness *the* best?
 Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.  
 #### Disclaimer
