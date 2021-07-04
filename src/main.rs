@@ -8,7 +8,6 @@ mod pack;
 mod progress;
 mod prompt;
 mod pull;
-mod repel;
 mod rm;
 mod script;
 mod status;
@@ -106,28 +105,35 @@ fn main() {
                 .about("Fetches and merges external manifests.")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
-                .arg(
-                    Arg::from("<from> 'Where to fetch the external manifest.'")
-                        .required(true)
-                        .index(1),
+                .subcommand(
+                    App::new("add")
+                        .about("Fetches and merges an external manifest.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                        .arg(
+                            Arg::from("<from> 'Where to fetch the external manifest.'")
+                                .required(true)
+                                .index(1),
+                        )
+                        .arg(
+                            Arg::from("<only-with-tag> -t, --only-with-tag 'Only merge files with a specific tag.'")
+                                .required(false)
+                        )
+                        .arg(
+                            Arg::from("<as-main> -m, --as-main 'Install the file, overwriting the main configuration.'")
+                                .required(false)
+                        )
                 )
-                .arg(
-                    Arg::from("<only-with-tag> -t, --only-with-tag 'Only merge files with a specific tag.'")
-                        .required(false)
-                )
-                .arg(
-                    Arg::from("<as-main> -m, --as-main 'Install the file, overwriting the main configuration.'")
-                        .required(false)
-                ),
-        )
-        .subcommand(
-            App::new("repel")
-                .about("Unmerges and deleted an external manifest. Takes the name of the manifest, not the url.")
-                .version("0.1.0")
-                .arg(
-                    Arg::from("<name> 'Name of the external manifest to repel.'")
-                        .required(true)
-                        .index(1)
+                .subcommand(
+                    App::new("rm")
+                        .about("Removes an external manifest.")
+                        .version("0.1.0")
+                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
+                        .arg(
+                            Arg::from("<name> 'The name of the external manifest to remove.'")
+                                .required(false)
+                                .index(1)
+                        )
                 )
         )
         .subcommand(
@@ -424,35 +430,47 @@ on the directory."
         }
 
         Some(("pull", get_matches)) => {
-            match pull::clone_and_install_repo(
-                get_matches.value_of("from").unwrap().to_string(),
-                get_matches,
-                &mut manifest,
-                false, // This is the original project
-            ) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!(
-                        "An error occured whilst cloning/installing the external manifest: {}",
-                        e
-                    );
+            match get_matches.subcommand() {
+                Some(("add", add_matches)) => {
+                    match pull::add::clone_and_install_repo(
+                        get_matches.value_of("from").unwrap().to_string(),
+                        get_matches,
+                        &mut manifest,
+                        false, // This is the original project
+                    ) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!(
+                                "An error occured whilst cloning/installing the external manifest: {}",
+                                e
+                            );
 
-                    std::process::exit(1);
+                            std::process::exit(1);
+                        }
+                    }
                 }
+
+                Some(("rm", rm_matches)) => {
+                    match pull::rm::repel(
+                        rm_matches,
+                        &mut manifest,
+                    ) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!(
+                                "An error occured whilst removing an external manifest: {}",
+                                e
+                            );
+
+                            std::process::exit(1);
+                        }
+                    }
+                }
+
+                None => { unreachable!(); },
+                _ => { unreachable!(); }
             }
         }
-
-        Some(("repel", repel_matches)) => match repel::repel(repel_matches, &mut manifest) {
-            Ok(()) => (),
-            Err(e) => {
-                error!(
-                    "An error occured whilst repeling (unpulling) the external manifest: {}",
-                    e
-                );
-
-                std::process::exit(1);
-            }
-        },
 
         Some(("pack", pack_matches)) => match pack::pack(&mut manifest, pack_matches) {
             Ok(()) => (),
