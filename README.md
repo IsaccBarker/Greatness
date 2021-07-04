@@ -29,7 +29,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 
 |                                        | greatness         | chezmoi       | dotbot            | rcm               | homesick          | yadm          | bare git   |
 | -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | ------------- | ---------- |
-| Distribution                           | Single Binary     | Single binary | Python package    | Multiple files    | Ruby gem          | Single script | n/a        |
+| Distribution                           | Source/Binary     | Single binary | Python package    | Multiple files    | Ruby gem          | Single script | n/a        |
 | Install method                         | Many              | Many          | git submodule     | Many              | Ruby gem          | Many          | Manual     |
 | Non-root install on bare system        | ✅                | ✅            | Difficult         | Difficult         | Difficult         | ✅            | ✅         |
 | Windows support                        | ❌                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
