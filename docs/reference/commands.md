@@ -55,12 +55,15 @@ Remove a external configuration. Does not remove it if installed as main.
 Deal with Rhai scripts.
 #### Subcommands
 ##### Assign
+`assign <file> <script>`
 Assigns/adds a script to a file.
 
 ##### Rm
+`rm`
 Removes a script from a file. Doesn't delete the script or the file.
 
 ##### Jog
+`jog`
 Run all scripts associated with all files in the main configuration.
 
 ### Status
