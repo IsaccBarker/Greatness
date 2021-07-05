@@ -35,8 +35,6 @@ pub fn print_status(manifest: &Manifest) {
                 utils::special_to_absolute(&file.path).display()
             );
 
-            info!("\t\tencrypted: {}", file.encrypted);
-
             if file.tag.is_some() && file.tag != Some("".to_owned()) {
                 info!("\t\ttag: {}", file.tag.clone().unwrap());
             }

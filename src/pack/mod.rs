@@ -1,4 +1,3 @@
-use crate::encrypt;
 use crate::manifest::Manifest;
 use crate::utils;
 use clap::ArgMatches;
@@ -65,14 +64,6 @@ fn pack_manifest(
 pub fn pack_files(manifest: &Manifest, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(files) = &manifest.data.files {
         for file in files {
-            if file.encrypted {
-                let to = utils::special_to_absolute(&encrypt::get_retname(&file.path));
-                // TODO: Remove the packed file just in case?
-                pack_file(&base, &to)?;
-
-                continue;
-            }
-
             pack_file(&base, &file.path)?;
         }
     }

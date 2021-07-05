@@ -250,7 +250,7 @@ fn install_file(install_from: &PathBuf, file: PathBuf) -> Result<(), Box<dyn std
     if install_to.as_path().exists() {
         // We need to make a backup
 
-        info!("{} already exists (which is great!) Specify the -y (for yes) or the -n (for no) options to skip user input.", install_to.display());
+        info!("{} already exists (which is great)!", install_to.display());
         info!("Note that skipping doing this could cause the dotfiles you are pulling and merging to not work. A backup WILL be made!");
         let answer = Question::new("Do you want to overwrite?")
             .default(Answer::YES)

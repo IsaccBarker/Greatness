@@ -1,6 +1,5 @@
 mod add;
 mod doctor;
-mod encrypt;
 mod init;
 mod log_utils;
 mod manifest;
@@ -364,36 +363,6 @@ on the directory."
                 }
             }
         }
-
-        Some(("encrypt", encrypt_matches)) => match encrypt_matches.subcommand() {
-            Some(("add", add_matches)) => match encrypt::add::add(add_matches, &mut manifest) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst encrypting file(s): {}", e);
-
-                    std::process::exit(1);
-                }
-            },
-
-            Some(("rm", rm_matches)) => match encrypt::rm::rm(rm_matches, &mut manifest) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!(
-                        "An error occured whilst making file(s) not encrypted: {}",
-                        e
-                    );
-
-                    std::process::exit(1);
-                }
-            },
-
-            None => {
-                unreachable!();
-            }
-            _ => {
-                unreachable!();
-            }
-        },
 
         Some(("pull", get_matches)) => {
             match get_matches.subcommand() {
