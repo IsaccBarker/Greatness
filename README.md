@@ -37,7 +37,6 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | dotfiles are...                        | Files             | Files         | Symlinks          | Files             | Symlinks          | Files         | Files      |
 | Config file                            | Required, Managed | Optional      | Required          | Optional          | None              | None          | Optional   |
 | Show differences without applying      | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
-| Whole file encryption                  | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ❌         |
 | Password manager integration           | ❓                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Machine-to-machine file differences    | Scripting         | Templates     | Alternative files | Alternative files | Alternative files | Templates     | Manual     |
 | Custom variables in templates          | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
