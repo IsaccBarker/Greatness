@@ -8,7 +8,7 @@ use std::path::PathBuf;
 /// Currently checks for:
 ///     1. Simular tag names
 ///     2. Non-existant files
-///
+///     3. Non-existant scripts
 pub fn doctor(manifest: &Manifest, _matches: &ArgMatches) -> Option<Vec<String>> {
     let mut warnings = vec![];
 
