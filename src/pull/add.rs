@@ -93,7 +93,7 @@ pub fn clone_and_install_repo(
 /// Return a tuple contains the URL of a repository and where
 /// to clone it to.
 fn get_git_pair(manifest: &Manifest, user_url: String, matches: &ArgMatches) -> (String, PathBuf) {
-    let url = make_url_valid(user_url);
+    let url = utils::make_url_valid(user_url);
 
     let mut clone_to = PathBuf::from(&manifest.greatness_pulled_dir);
     #[allow(unused_assignments)]
@@ -125,31 +125,6 @@ fn clone_repo(url: &String, clone_to: &PathBuf) -> Result<(), CloneError> {
     })?;
 
     Ok(())
-}
-
-/// Transmute urls into something git can handle. For example:
-/// Pattern 	        HTTPS Repo
-/// user 	            https://github.com/user/dotfiles.git
-/// user/repo 	        https://github.com/user/repo.git
-fn make_url_valid(url: String) -> String {
-    let mut new: Vec<&str> = Vec::new();
-
-    if !url.contains("https://") {
-        new.push("https://");
-    }
-
-    if url.matches("/").count() == 1 {
-        // Assume its github
-        new.push("github.com/");
-    }
-
-    new.push(&url);
-
-    if !url.contains(".git") {
-        new.push(".git");
-    }
-
-    new.join("")
 }
 
 /// Install external from a local directory

@@ -74,6 +74,31 @@ pub enum CommonErrors {
     },
 }
 
+/// Transmute urls into something git can handle. For example:
+/// Pattern 	        HTTPS Repo
+/// user 	            https://github.com/user/dotfiles.git
+/// user/repo 	        https://github.com/user/repo.git
+pub fn make_url_valid(url: String) -> String {
+    let mut new: Vec<&str> = Vec::new();
+
+    if !url.contains("https://") {
+        new.push("https://");
+    }
+
+    if url.matches("/").count() == 1 {
+        // Assume its github
+        new.push("github.com/");
+    }
+
+    new.push(&url);
+
+    if !url.contains(".git") {
+        new.push(".git");
+    }
+
+    new.join("")
+}
+
 /// Transforms an absolute path to a special one.
 /// /home/milo/.zshrc -> {{HOME}}/.zshrc
 pub fn absolute_to_special(absolute: &PathBuf) -> PathBuf {

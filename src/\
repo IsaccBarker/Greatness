@@ -450,7 +450,7 @@ on the directory."
                 }
 
                 Some(("add", add_matches)) => {
-                    match git::add::add(add_matches, &mut manifest) {
+                    match git::add::add(add_matches, &mut manfiest) {
                         Ok(()) => (),
                         Err(e) => {
                             error!(

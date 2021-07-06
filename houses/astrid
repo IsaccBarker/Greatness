@@ -1,7 +1,7 @@
-NAME: astrid greenwood
+NAME: astrid {{ astrid:lastname }}
 LOCATION: northern canada
 SITUATION: lost in the quiet apocalypse
-EX-SPOUSE: will mackenzie
+EX-SPOUSE: {{ mack:firstname }} mackenzie
 
 
 already already already processed!
