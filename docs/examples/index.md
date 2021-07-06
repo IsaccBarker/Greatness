@@ -14,33 +14,46 @@ greatness add ~/.bashrc ~/.zshrc ~/.config/alacritty/alacritty.yml ~/.config/sta
 ```
 
 ## Encryption
-Lets say I have secrets inside my alacritty configuration file. Not sure why I would, but maybe it contains a big secret THAT YOU CAN'T KNOW!!! I don't trust you....
-```bash
-greatness encryption add ~/.config/alacritty/alacritty.yml
-```
+Encryption is not implemented yet. I just need to figure out how `rust-crypto` works.... **PRs welcome**!
 
 ## Scripting
 Lets also assume I'm horrible at writting machine agnostic configuration files, and we need to resolve our home directory before using our .zshrc...  
-*~/.greatness/scripts/zshrc.rhai*
-```rust
-fn process(data, filename) {
-    data.replace("{{ username }}", "milo");
-    return data;
-}
+*~/.greatness/scripts/names.lua*
+```lua
+function process(data, filename)
+    if string.find(data, 'COMMENT: Managed by Greatness!')
+        data = 'COMMENT: Managed by Greatness!\n\n' .. data
+    end
+
+    data = string.gsub(data, [[{{ astrid:lastname }}]], 'greenwod')
+    data = string.gsub(data, [[{{ mack:firstname }}]], 'will')
+
+    return data
+end
 ```
-*~/.zshrc*
-```zsh
-# ...
-echo "You are currently in /home/{{ username }}!"
-# ...
+*[old] ~/.astrid.data*
+```sql
+NAME: astrid {{ astrid:lastname }}
+LOCATION: northern canada
+SITUATION: lost in the quiet apocalypse
+EX-SPOUSE: will mackenzie
+```
+*[new] ~/.astrid.data*
+```sql
+COMMENT: Managed by Greatness!
+
+NAME: astrid greenwood
+LOCATION: northern canada
+SITUATION: lost in the quiet apocalypse
+EX-SPOUSE: will mackenzie
 ```
 
 *run*
 ```bash
-greatness script assign ~/.zshrc zshrc.rhai # Don't provide the full name to the script file
+greatness script assign ~/.astrid.data names.lua # Don't provide the full name to the script file
 ```
 
-Bang! Now run `greatness jog` to rerun the script files, or `greatness pull` will do it for you.
+Bang! Now run `greatness jog` to rerun the script files, or `greatness pull` will do it for you if you push and repull.
 
 ## Packing
 In order to push your dotfiles to a remote, you must first pack them:

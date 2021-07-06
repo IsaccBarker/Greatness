@@ -1,17 +1,30 @@
 use super::ScriptsState;
 use crate::utils;
 use log::debug;
-use rhai::Scope;
+use rlua::Function;
 use snafu::{ResultExt, Snafu};
 use std::path::PathBuf;
 
 #[derive(Debug, Snafu)]
 pub enum ScriptRunErrors {
-    #[snafu(display("Function not found for {}. Is the signature correct? Please check the documentation for the expected signatures of functions called by greatness! Raw error: {}", name, source))]
+    #[snafu(display("Failed to load lua code in script {}. Rlua Error:\n{}", file.display(), source))]
+    LuaLoadError {
+        file: PathBuf,
+        source: rlua::Error,
+    },
+
+    #[snafu(display("Function not found for {} in file {}. Is the signature correct? Please check the documentation for the expected signatures of functions called by greatness! Rlua error:\n{}", name, file.display(), source))]
     FunctionNotFound {
         name: String,
-        source: rhai::EvalAltResult,
+        file: PathBuf,
+        source: rlua::Error,
     },
+
+    #[snafu(display("An error occured while executing file {}! Rlua error:\n{}", file.display(), source))]
+    RuntimeError {
+        file: PathBuf,
+        source: rlua::Error,
+    }
 }
 
 impl ScriptsState {
@@ -29,23 +42,20 @@ impl ScriptsState {
             file.display()
         );
 
-        let mut scope = Scope::new();
         let data = std::fs::read_to_string(file).context(utils::FileReadError { file })?;
-        let asts = self.asts.as_ref().unwrap();
-        let script_ast = asts.get(script).unwrap();
+        let script_src = std::fs::read_to_string(script).context(utils::FileReadError { file: script})?;
 
-        let result: Result<String, Box<rhai::EvalAltResult>> = self.engine.call_fn(
-            &mut scope,
-            script_ast,
-            "process",
-            (data, file.clone().as_os_str().to_str().unwrap().to_string()),
-        );
-        if result.is_err() {
-            Err(*result.err().unwrap()).context(FunctionNotFound { name: "process" })?;
+        let output_res: Result<String, ScriptRunErrors> = self.engine.context(|lua_ctx: rlua::prelude::LuaContext| {
+            let globals = lua_ctx.globals();
+            let process;
 
-            unreachable!();
-        }
+            lua_ctx.load(&script_src).exec().context(LuaLoadError{file: script})?;
 
-        Ok(result.unwrap())
+            process = globals.get::<_, Function>("process").context(FunctionNotFound{name: "process".to_owned(), file: script})?;
+            Ok(process.call::<(String, String), String>((data, file.clone().as_os_str().to_str().unwrap().to_string())).context(RuntimeError{file: script})?)
+        });
+        let output = output_res?;
+
+        Ok(output)
     }
 }

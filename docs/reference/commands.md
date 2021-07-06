@@ -53,11 +53,13 @@ Remove a external configuration. Does not remove it if installed as main.
 ```rm <name>```
 
 ### Script
-Deal with Rhai scripts.
+Deal with Lua scripts.
 #### Subcommands
 ##### Assign
 Assigns/adds a script to a file.
 ```assign <file> <script>```
+###### Note
+* `script`, Do not provide the full path to the script. Just the name works! 
 
 ##### Rm
 Removes a script from a file. Doesn't delete the script or the file.

@@ -5,12 +5,13 @@
 Achieve it! How you ask? Well, it's pretty simple; just use greatness!
 
 ## Install greatness
+### Long way:
 ```bash
 # Only run this if you don't have rust installed.
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # Inside the cloned repo
-cargo install
+cargo install --path .
 ```
 
 ## What is greatness?
@@ -51,7 +52,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Shell completion                       | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
 | Archive import                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Archive export                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
-| Implementation language                | Rust, Rhai        | Go            | Python            | Perl              | Ruby              | Bash          | C          |
+| Implementation language                | Rust, Lua         | Go            | Python            | Perl              | Ruby              | Bash          | C          |
 
 As you can see, greatness is best. However, a sort of close second [chezmoi], has a weird name, is not scriptable, doesn't support dotfile merging, and isn't modular. This makes it not ideal for situations where you might want to pick parts of diferent peoples rices, merge them, script program installation (or have greatness do it for you), and then put it out into the world as a repository, which other people can then use as modules.
 

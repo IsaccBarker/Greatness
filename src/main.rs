@@ -191,12 +191,12 @@ fn main() {
         .subcommand(
             App::new("script")
                 .setting(AppSettings::SubcommandRequired)
-                .about("Deal with Rhai scripts.")
+                .about("Deal with Lua scripts.")
                 .version("0.1.0")
                 .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .subcommand(
                     App::new("assign")
-                        .about("Assign a Rhai script to a added file.")
+                        .about("Assign a Lua script to a added file.")
                         .version("0.1.0")
                         .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
@@ -279,19 +279,6 @@ on the directory."
         };
 
         manifest.data = manifest_data;
-    }
-
-    if matches.subcommand_name().unwrap_or("") == "script" {
-        match manifest
-            .script_state
-            .parse_all_scripts(&mut manifest.data.clone())
-        {
-            Ok(()) => (),
-            Err(e) => {
-                error!("An error occured whilst parsing an rhai script: {}", e);
-                std::process::exit(1);
-            }
-        };
     }
 
     match matches.subcommand() {
