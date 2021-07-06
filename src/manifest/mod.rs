@@ -181,6 +181,30 @@ impl ManifestData {
 
         Some(tags)
     }
+
+    /// Gets all scripts in use
+    pub fn all_scripts(&self) -> Option<Vec<PathBuf>> {
+        let mut scripts = vec![];
+        if self.files.is_none() {
+            return None;
+        }
+
+        for file in self.files.clone().unwrap() {
+            if file.scripts.is_none() {
+                continue;
+            }
+
+            if let Some(file_scripts) = file.scripts {
+                for script in file_scripts {
+                    scripts.push(script); 
+                }
+            }
+        }
+
+        if scripts.len() == 0 { return None; }
+
+        Some(scripts)
+    }
 }
 
 impl Default for ManifestData {
