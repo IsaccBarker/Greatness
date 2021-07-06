@@ -2,6 +2,7 @@ use crate::init;
 use crate::manifest::{Manifest, ManifestData};
 use crate::script::jog;
 use crate::utils;
+use crate::git::clone;
 use clap::ArgMatches;
 use git2::Repository;
 use log::{debug, info};
@@ -60,7 +61,7 @@ pub fn clone_and_install_repo(
 
     // TODO: Implement a progress bar. https://docs.rs/git2/0.13.20/git2/struct.Progress.html
     info!("Cloning from {} into {}....", url, &clone_to.display());
-    clone_repo(&url, &clone_to)?;
+    clone::clone_repo(&url, &clone_to)?;
 
     // Parse the file. False as we want to enable git
     let mut external_manifest = Manifest::new(PathBuf::from(clone_to.to_str().unwrap()))?;
@@ -115,16 +116,6 @@ fn get_git_pair(manifest: &Manifest, user_url: String, matches: &ArgMatches) -> 
     }
 
     (url, clone_to)
-}
-
-/// Clones a repository from url to clone_to.
-fn clone_repo(url: &String, clone_to: &PathBuf) -> Result<(), CloneError> {
-    Repository::clone(&url, &clone_to).context(CloneFailure {
-        url,
-        dest: clone_to,
-    })?;
-
-    Ok(())
 }
 
 /// Install external from a local directory

@@ -80,6 +80,9 @@ fn normal_merge(
 }
 
 pub fn pull(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+    let mut cb = git2::RemoteCallbacks::new();
+    cb.transfer_progress(super::transfer_progress);
+
     let mut fo = git2::FetchOptions::new();
     fo.download_tags(git2::AutotagOption::All);
 

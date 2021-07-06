@@ -37,6 +37,7 @@ pub fn push(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn
 
             git2::Cred::userpass_plaintext(&username, &password)
         });
+        callbacks.transfer_progress(super::transfer_progress);
 
         opts.remote_callbacks(callbacks);
         
