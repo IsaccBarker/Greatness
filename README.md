@@ -13,6 +13,11 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Inside the cloned repo
 cargo install --path .
 ```
+### Short way
+```bash
+bash -c "$(curl -fsLS https://git.io/JcDJe)"
+great pull add -m Wowee/GreatnessIsAmazing # Defaults to github. Put in a full URL if you don't use GitHub!
+```
 
 ## What is greatness?
 Greatness is you being great and better than everyone else. You have to uphold that superoprity complex don't you?
