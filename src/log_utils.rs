@@ -12,11 +12,11 @@ pub fn get_logging_prefix(record: &log::Record) -> String {
 
 pub fn get_logging_prefix_for_level(level: log::Level) -> String {
     match level {
-        Level::Trace => "\x1b[0;33m",
-        Level::Debug => "\x1b[0;36m",
-        Level::Info => "",
-        Level::Warn => "\x1b[1;33m",
-        Level::Error => "\x1b[0;31m",
+        Level::Trace => "🐭\x1b[0;33m ",
+        Level::Debug => "🐱\x1b[0;36m ",
+        Level::Info => "🦔 ",
+        Level::Warn => "😺\x1b[1;33m ",
+        Level::Error => "🙀\x1b[0;31m ",
     }
     .to_owned()
 }

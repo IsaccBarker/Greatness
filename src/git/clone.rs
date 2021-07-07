@@ -1,4 +1,3 @@
-use git2::Repository;
 use snafu::{Snafu, ResultExt};
 use std::path::PathBuf;
 use std::io::Write;
@@ -26,7 +25,6 @@ struct State {
     total: usize,
     current: usize,
     path: Option<PathBuf>,
-    newline: bool,
 }
 
 /// Clones a repository from url to clone_to.
@@ -36,7 +34,6 @@ pub fn clone_repo(url: &String, clone_to: &PathBuf) -> Result<(), CloneError> {
         total: 0,
         current: 0,
         path: None,
-        newline: false,
     });
 
     let mut cb = git2::RemoteCallbacks::new();
@@ -80,37 +77,27 @@ fn clone_progress(state: &mut State) {
         0
     };
     let kbytes = stats.received_bytes() / 1024;
-    if stats.received_objects() == stats.total_objects() {
-        if !state.newline {
-            println!();
-            state.newline = true;
-        }
-        print!(
-            "Resolving deltas {}/{}\r",
-            stats.indexed_deltas(),
-            stats.total_deltas()
-        );
-    } else {
-        print!(
-            "net {:3}% ({:4} kb, {:5}/{:5})  /  idx {:3}% ({:5}/{:5})  \
-             /  chk {:3}% ({:4}/{:4}) {}\r",
-            network_pct,
-            kbytes,
-            stats.received_objects(),
-            stats.total_objects(),
-            index_pct,
-            stats.indexed_objects(),
-            stats.total_objects(),
-            co_pct,
-            state.current,
-            state.total,
-            state
-                .path
-                .as_ref()
-                .map(|s| s.to_string_lossy().into_owned())
-                .unwrap_or_default()
-        )
-    }
+
+    // TODO: Replace with fancy indicatif progress bar
+    print!(
+        "net {:3}% ({:4} kb, {:5}/{:5})  /  idx {:3}% ({:5}/{:5})  \
+         /  chk {:3}% ({:4}/{:4}) {}\r",
+        network_pct,
+        kbytes,
+        stats.received_objects(),
+        stats.total_objects(),
+        index_pct,
+        stats.indexed_objects(),
+        stats.total_objects(),
+        co_pct,
+        state.current,
+        state.total,
+        state
+            .path
+            .as_ref()
+            .map(|s| s.to_string_lossy().into_owned())
+            .unwrap_or_default()
+    );
 
     std::io::stdout().flush().unwrap();
 }

@@ -4,7 +4,6 @@ use crate::script::jog;
 use crate::utils;
 use crate::git::clone;
 use clap::ArgMatches;
-use git2::Repository;
 use log::{debug, info};
 use question::{Answer, Question};
 use snafu::{ResultExt, Snafu};
