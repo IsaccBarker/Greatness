@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use snafu::{ResultExt, Snafu};
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -128,7 +128,7 @@ pub fn special_to_absolute(special: &PathBuf) -> PathBuf {
 
 /// Supplied a relative path, this function returns that
 /// scripts location in the script directory
-pub fn relative_to_script(manifest: &Manifest, rel: &PathBuf) -> PathBuf {
+pub fn relative_to_script(manifest: &State, rel: &PathBuf) -> PathBuf {
     let mut ret = manifest.greatness_scripts_dir.clone();
     ret.push(rel);
 

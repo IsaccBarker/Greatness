@@ -1,10 +1,10 @@
 // use std::path::PathBuf;
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 // use snafu::ResultExt;
 
-pub fn repel(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::CommonErrors> {
+pub fn repel(matches: &ArgMatches, manifest: &mut State) -> Result<(), utils::CommonErrors> {
     let to_repel = matches.value_of("name").unwrap();
 
     if let Some(requires) = &mut manifest.data.requires {

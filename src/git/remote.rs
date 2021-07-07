@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 use snafu::{Snafu, ResultExt};
@@ -13,7 +13,7 @@ pub enum RemoteErrors {
     }
 }
 
-pub fn set_remote(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn set_remote(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     let name = matches.value_of("remote").unwrap();
     let url = &utils::make_url_valid(matches.value_of("url").unwrap().to_string());
 

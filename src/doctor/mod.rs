@@ -1,4 +1,4 @@
-use crate::manifest::{Manifest, AddedFile};
+use crate::manifest::{State, AddedFile};
 use crate::utils;
 use clap::ArgMatches;
 use log::debug;
@@ -9,7 +9,7 @@ use std::path::PathBuf;
 ///     1. Simular tag names
 ///     2. Non-existant files
 ///     3. Non-existant scripts
-pub fn doctor(manifest: &Manifest, _matches: &ArgMatches) -> Option<Vec<String>> {
+pub fn doctor(manifest: &State, _matches: &ArgMatches) -> Option<Vec<String>> {
     let mut warnings = vec![];
 
     if let Some(files) = &manifest.data.files {

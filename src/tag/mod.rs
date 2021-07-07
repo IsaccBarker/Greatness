@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 use snafu::{ResultExt, Snafu};
@@ -15,7 +15,7 @@ pub enum TagError {
 
 pub fn tag(
     matches: &ArgMatches,
-    manifest: &mut Manifest,
+    manifest: &mut State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     for file in matches.values_of("files").unwrap() {
         tag_file(
@@ -33,7 +33,7 @@ pub fn tag(
 pub fn tag_file(
     file: PathBuf,
     tag: String,
-    manifest: &mut Manifest,
+    manifest: &mut State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if !file.as_path().exists() {
         Err(std::io::Error::new(

@@ -1,11 +1,11 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use snafu::ResultExt;
 use std::fs::File;
 use std::io::Write;
 use log::debug;
 
-pub fn jog(manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn jog(manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(files) = &manifest.data.files {
         for file in files {
             if let Some(scripts) = &file.scripts {

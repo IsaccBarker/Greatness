@@ -18,7 +18,7 @@ use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
 use log::LevelFilter;
 use log::{error, info};
-use manifest::ManifestData;
+use manifest::Manifest;
 use nix::unistd::Uid;
 use std::io::Write;
 use std::path::PathBuf;
@@ -237,7 +237,7 @@ fn main() {
         eprintln!(
             "You should not be great as root, or it might track files for the
 root user. The feeling might also go to your head, and being root
-may just tip you over into a state of catatonia.
+may just tip you over into a State of catatonia.
 If you got a permision error previously, please just change the permisions
 on the directory."
         );
@@ -253,8 +253,8 @@ on the directory."
         std::process::exit(1);
     }
 
-    let mut manifest: manifest::Manifest;
-    match manifest::Manifest::new(PathBuf::from(
+    let mut manifest: manifest::State;
+    match manifest::State::new(PathBuf::from(
         default_greatness_dir.as_os_str().to_str().unwrap(),
     )) {
         Ok(m) => manifest = m,
@@ -268,7 +268,7 @@ on the directory."
     }
 
     if matches.subcommand_name().unwrap_or("") != "init" {
-        let manifest_data: ManifestData = match ManifestData::populate_from_file(&manifest) {
+        let manifest_data: Manifest = match Manifest::populate_from_file(&manifest) {
             Ok(m) => m,
             Err(e) => {
                 error!(

@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 use log::debug;
@@ -16,7 +16,7 @@ pub enum PackError {
 
 /// Pack, and automatically call a packing backend
 pub fn pack(
-    manifest: &mut Manifest,
+    manifest: &mut State,
     _matches: &ArgMatches,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let original_manifest_location = manifest.greatness_manifest.clone();
@@ -41,7 +41,7 @@ pub fn pack(
 
 /// Pack the manifest. Thats it.
 fn pack_manifest(
-    manifest: &mut Manifest,
+    manifest: &mut State,
     original_manifest_location: &PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Pack the manifest
@@ -61,7 +61,7 @@ fn pack_manifest(
 }
 
 /// Packs all the files.
-pub fn pack_files(manifest: &Manifest, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub fn pack_files(manifest: &State, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(files) = &manifest.data.files {
         for file in files {
             pack_file(&base, &file.path)?;

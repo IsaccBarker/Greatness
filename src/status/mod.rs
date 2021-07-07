@@ -1,8 +1,8 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use log::info;
 
-pub fn print_status(manifest: &Manifest) {
+pub fn print_status(manifest: &State) {
     info!(
         "Greatness directory: \x1b[1m{}\x1b[0m",
         manifest.greatness_dir.display()

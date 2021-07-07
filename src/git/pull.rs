@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use clap::ArgMatches;
 use snafu::{Snafu, ResultExt};
 use log::{info, warn};
@@ -31,7 +31,7 @@ fn fast_forward(
     repo.checkout_head(Some(
         git2::build::CheckoutBuilder::default()
             // For some reason the force is required to make the working directory actually get updated
-            // I suspect we should be adding some logic to handle dirty working directory states.
+            // I suspect we should be adding some logic to handle dirty working directory States.
             .force(),
     ))?;
     Ok(())
@@ -79,7 +79,7 @@ fn normal_merge(
     Ok(())
 }
 
-pub fn pull(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn pull(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     let mut cb = git2::RemoteCallbacks::new();
     cb.transfer_progress(super::transfer_progress);
 

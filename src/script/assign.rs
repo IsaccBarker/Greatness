@@ -1,5 +1,5 @@
 use crate::manifest::AddedFile;
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 use log::{debug, warn};
@@ -9,7 +9,7 @@ use std::path::PathBuf;
 /// Assigns a script to a file
 pub fn assign(
     matches: &ArgMatches,
-    manifest: &mut Manifest,
+    manifest: &mut State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let target_base = PathBuf::from(matches.value_of("file").unwrap());
     let script_base = utils::relative_to_script(

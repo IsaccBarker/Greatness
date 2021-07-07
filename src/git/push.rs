@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use clap::ArgMatches;
 use snafu::{Snafu, ResultExt};
 use log::warn;
@@ -16,7 +16,7 @@ pub enum PushErrors {
     }
 }
 
-pub fn push(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn push(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(repo) = &manifest.repository {
         let mut remote = repo.find_remote(matches.value_of("remote").unwrap()).context(super::GitRemoteFindError{remote: "remote".to_owned()})?;
         let mut opts = git2::PushOptions::new();

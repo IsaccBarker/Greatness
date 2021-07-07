@@ -23,7 +23,7 @@ great pull add -m Wowee/GreatnessIsAmazing # Defaults to github. Put in a full U
 Greatness is you being great and better than everyone else. You have to uphold that superoprity complex don't you?
 
 ## How do I achieve greatness?
-Simple! Use this tool. This tool is designed to bring your system up to a working state that you like in a small amount of time. It is *very* flexible, 100% modular, and fast.
+Simple! Use this tool. This tool is designed to bring your system up to a working State that you like in a small amount of time. It is *very* flexible, 100% modular, and fast.
 
 You can view the documentation [here](docs/SUMMARY.md)!
 

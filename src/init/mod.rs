@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 use git2::Repository;
@@ -17,7 +17,7 @@ pub enum InitError {
 /// Initializes the environment and gets it ready for greatness.
 /// WILL OVERWRITE THE USERS CONFIGURATION!!! However, it will
 /// not delete any dotfiles themselves.
-pub fn init(_matches: &ArgMatches, manifest: &Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn init(_matches: &ArgMatches, manifest: &State) -> Result<(), Box<dyn std::error::Error>> {
     init_no_damage(_matches, manifest)?;
 
     let mut file;
@@ -36,7 +36,7 @@ pub fn init(_matches: &ArgMatches, manifest: &Manifest) -> Result<(), Box<dyn st
 /// Initialize, but don't damage anything
 pub fn init_no_damage(
     _matches: &ArgMatches,
-    manifest: &Manifest,
+    manifest: &State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if !manifest.greatness_dir.as_path().exists() {
         fs::create_dir_all(&manifest.greatness_dir).context(utils::DirCreationError {

@@ -1,5 +1,5 @@
 use crate::init;
-use crate::manifest::{Manifest, ManifestData};
+use crate::manifest::{State, Manifest};
 use crate::script::jog;
 use crate::utils;
 use crate::git::clone;
@@ -43,7 +43,7 @@ pub enum InstallError {
 pub fn clone_and_install_repo(
     user_url: String,
     matches: &ArgMatches,
-    manifest: &mut Manifest,
+    manifest: &mut State,
     sub_manifest: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if matches.is_present("as-main") {
@@ -63,8 +63,8 @@ pub fn clone_and_install_repo(
     clone::clone_repo(&url, &clone_to)?;
 
     // Parse the file. False as we want to enable git
-    let mut external_manifest = Manifest::new(PathBuf::from(clone_to.to_str().unwrap()))?;
-    external_manifest.data = ManifestData::populate_from_file(&&external_manifest)?;
+    let mut external_manifest = State::new(PathBuf::from(clone_to.to_str().unwrap()))?;
+    external_manifest.data = Manifest::populate_from_file(&&external_manifest)?;
 
     install(
         matches,
@@ -92,7 +92,7 @@ pub fn clone_and_install_repo(
 
 /// Return a tuple contains the URL of a repository and where
 /// to clone it to.
-fn get_git_pair(manifest: &Manifest, user_url: String, matches: &ArgMatches) -> (String, PathBuf) {
+fn get_git_pair(manifest: &State, user_url: String, matches: &ArgMatches) -> (String, PathBuf) {
     let url = utils::make_url_valid(user_url);
 
     let mut clone_to = PathBuf::from(&manifest.greatness_pulled_dir);
@@ -120,13 +120,13 @@ fn get_git_pair(manifest: &Manifest, user_url: String, matches: &ArgMatches) -> 
 /// Install external from a local directory
 /// * `url` - Optional URL that it was cloned from. Is used to update when wanted.
 /// * `from` - Where the external manifest is located on disk.
-/// * `manfiest` - Manifest to write into.
+/// * `manfiest` - State to write into.
 pub fn install(
     matches: &ArgMatches,
     url: Option<String>,
     install_from: &mut PathBuf,
-    manifest: &mut Manifest,
-    external_manifest: &mut Manifest,
+    manifest: &mut State,
+    external_manifest: &mut State,
     sub_manifest: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let external_manifest_data = external_manifest.data.clone();
@@ -165,7 +165,7 @@ pub fn install(
 }
 
 fn mark_as_dependency(
-    manifest: &mut Manifest,
+    manifest: &mut State,
     install_from: &mut PathBuf,
     url: Option<String>,
     sub_manifest: bool,

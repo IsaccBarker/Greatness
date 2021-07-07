@@ -1,10 +1,10 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 use snafu::ResultExt;
 use std::path::PathBuf;
 
-pub fn rm(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::CommonErrors> {
+pub fn rm(matches: &ArgMatches, manifest: &mut State) -> Result<(), utils::CommonErrors> {
     let files = matches.values_of("files").unwrap();
 
     for file in files.into_iter() {
@@ -16,7 +16,7 @@ pub fn rm(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), utils::Co
     Ok(())
 }
 
-fn rm_file(file: &str, manifest: &mut Manifest) -> Result<(), utils::CommonErrors> {
+fn rm_file(file: &str, manifest: &mut State) -> Result<(), utils::CommonErrors> {
     // We cannot canonicalize path if it doesn't exist, so we create it temporalily.
     let mut must_delete_tmp = false;
     if !PathBuf::from(file).exists() {

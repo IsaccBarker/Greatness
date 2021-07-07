@@ -1,11 +1,11 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
 use std::path::PathBuf;
 
 /// Given a file and a script, remove the script
 /// from the file.
-pub fn rm(matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn rm(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     let target_script = PathBuf::from(matches.value_of("script").unwrap());
     let target_file = PathBuf::from(matches.value_of("file").unwrap());
     let specified_script = utils::relative_to_special(&utils::relative_to_script(

@@ -1,4 +1,4 @@
-use crate::manifest::Manifest;
+use crate::manifest::State;
 use clap::ArgMatches;
 use snafu::{Snafu, ResultExt};
 
@@ -10,7 +10,7 @@ pub enum AddErrors {
     },
 }
 
-pub fn add(_matches: &ArgMatches, manifest: &mut Manifest) -> Result<(), Box<dyn std::error::Error>> {
+pub fn add(_matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(repo) = &manifest.repository {
         let mut index = repo.index().context(super::FailedGitIndex{})?;
 

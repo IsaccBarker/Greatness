@@ -1,7 +1,7 @@
 use clap::ArgMatches;
 use snafu::Snafu;
 
-use crate::manifest::{AddedFile, Manifest};
+use crate::manifest::{AddedFile, State};
 use crate::utils;
 use log::{debug, info, warn};
 use std::path::PathBuf;
@@ -25,7 +25,7 @@ pub enum TrackError {
 pub fn add_files(
     matches: &ArgMatches,
     mut files: Vec<PathBuf>,
-    manifest_info: &mut Manifest,
+    manifest_info: &mut State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Do some checks to figure out which files we should include
     // println!("{:?}", files);
@@ -41,7 +41,7 @@ pub fn add_files(
     Ok(())
 }
 
-fn only_retain_correct_files(files: &mut Vec<PathBuf>, manifest_info: &mut Manifest) {
+fn only_retain_correct_files(files: &mut Vec<PathBuf>, manifest_info: &mut State) {
     files.retain(|file| {
         if !std::path::Path::new(file).is_file() {
             info!(
@@ -79,7 +79,7 @@ fn only_retain_correct_files(files: &mut Vec<PathBuf>, manifest_info: &mut Manif
 
 fn add_file(
     file: &PathBuf,
-    manifest: &mut Manifest,
+    manifest: &mut State,
     _matches: &ArgMatches,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let special_file = utils::relative_to_special(&file)?;

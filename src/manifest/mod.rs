@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]
 /// Errors pretaining to the local manifest
-pub enum ManifestError {
+pub enum StateError {
     #[snafu(display("Could not parse great configuration file ({}): {}", filename.display(), source))]
     ParseError {
         filename: PathBuf,
@@ -25,7 +25,7 @@ pub enum ManifestError {
 
 /// Contains local data on disk and paths got dynamically.
 /// For any new entry, please add to the status code.
-pub struct Manifest {
+pub struct State {
     pub greatness_dir: PathBuf,
     pub greatness_pulled_dir: PathBuf,
     pub greatness_manifest: PathBuf,
@@ -34,7 +34,7 @@ pub struct Manifest {
     pub repository: Option<Repository>,
     pub script_state: ScriptsState,
 
-    pub data: ManifestData,
+    pub data: Manifest,
 }
 
 /// Contains information about an added file.
@@ -51,7 +51,7 @@ pub struct AddedFile {
 
 /// Data stored in the manifest that is stored locally on the computer
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct ManifestData {
+pub struct Manifest {
     /// Dot files
     pub files: Option<Vec<AddedFile>>,
     /// Required repositories of dotfiles. First element is an optional URL
@@ -89,10 +89,10 @@ impl Default for AddedFile {
     }
 }
 
-impl ManifestData {
+impl Manifest {
     /// Load on file data into the manifestData struct.
     pub fn populate_from_file(
-        manifest_info: &Manifest,
+        manifest_info: &State,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let manifest_file = &manifest_info.greatness_manifest;
         let x = serde_yaml::from_str(&fs::read_to_string(&manifest_file).context(
@@ -108,7 +108,7 @@ impl ManifestData {
     }
 
     /// Serialize data back into the local file on disk.
-    pub fn populate_file(&self, manifest: &Manifest) {
+    pub fn populate_file(&self, manifest: &State) {
         let mut s = serde_yaml::to_string(self).unwrap(); // TODO: Figure out if we actually have to worry about this
         let mut f = File::create(&manifest.greatness_manifest).unwrap();
 
@@ -207,7 +207,7 @@ impl ManifestData {
     }
 }
 
-impl Default for ManifestData {
+impl Default for Manifest {
     fn default() -> Self {
         Self {
             files: None,
@@ -216,7 +216,7 @@ impl Default for ManifestData {
     }
 }
 
-impl Manifest {
+impl State {
     /// Creates a new local manifest
     pub fn new(manifest_dir: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
         let mut greatness_pulled_dir = PathBuf::from(manifest_dir.clone());
@@ -251,7 +251,7 @@ impl Manifest {
             greatness_scripts_dir,
             repository,
             script_state,
-            data: ManifestData::default(),
+            data: Manifest::default(),
         })
     }
 }
