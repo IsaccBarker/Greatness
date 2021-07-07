@@ -28,7 +28,7 @@ Simple! Use this tool. This tool is designed to bring your system up to a workin
 You can view the documentation [here](docs/SUMMARY.md)!
 
 ## Why is Greatness *the* best?
-Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.  
+Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.
 #### Disclaimer
 You may recognise this chart from Chezmoi, but with some rows stripped out. This is because I do not know what they mean, and thus cannot implement them. If you want them, please file a great issue/pr.
 
@@ -52,6 +52,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Executable files                       | ✅                | ✅            | ✅                | ✅                | ✅                | ❌            | ✅         |
 | Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ❌            | ❌         |
 | Run once scripts                       | ✅                | 🕒            | ❌                | ❌                | ❌                | ❌            | ❌         |
+| Software Auto-Install                  | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Machine-to-machine symlink differences | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ❌         |
 | File Tagging                           | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Shell completion                       | 🕒                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
@@ -67,4 +68,3 @@ As you can see, greatness is best. However, a sort of close second [chezmoi], ha
 3. It's very diferent than MacOS and Unix, where most development happens.
 4. I don't have a Windows machine.
 Windows support may or may not be added in the future. The underlying code for supporting Windows is added to the best of my ability, but overall it should not work. Please note that not providing Windows support is mainly for your safety; I would hate for anything bad to happen to your files.
-
