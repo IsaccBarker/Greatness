@@ -55,8 +55,6 @@ fn main() {
         .subcommand(
             App::new("init")
                 .about("Initializes greatness!")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .arg(
                     Arg::from("--force 'Force to reinitialize greatness.'")
                         .required(false)
@@ -67,40 +65,29 @@ fn main() {
         .subcommand(
             App::new("doctor")
                 .about("Finds errors. Not that there are any, this software is great after all!")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>"),
         )
         .subcommand(
             App::new("status")
                 .about("Prints the status of the configuration.")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
         )
         .subcommand(
             App::new("add")
                 .about("Adds (a) file(s) to the manifest.")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .setting(AppSettings::TrailingVarArg)
                 .arg(Arg::from("<files>... 'File(s) to add.'").required(true)),
         )
         .subcommand(
             App::new("rm")
                 .about("Removes a file from the manifest. Does not remove the file itself.")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .setting(AppSettings::TrailingVarArg)
                 .arg(Arg::from("<files>... 'File(s) to remove.'").required(true))
         )
         .subcommand(
             App::new("pull")
                 .about("Fetches and merges external manifests.")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .subcommand(
                     App::new("add")
                         .about("Fetches and merges an external manifest.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<from> 'Where to fetch the external manifest.'")
                                 .required(true)
@@ -118,8 +105,6 @@ fn main() {
                 .subcommand(
                     App::new("rm")
                         .about("Removes an external manifest.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<name> 'The name of the external manifest to remove.'")
                                 .required(false)
@@ -130,8 +115,6 @@ fn main() {
         .subcommand(
             App::new("tag")
                 .about("Tag(s) (a) file(s).")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .setting(AppSettings::TrailingVarArg)
                 .arg(
                     Arg::from("<tag> 'What to tag the file(s) as.'")
@@ -147,14 +130,10 @@ fn main() {
         .subcommand(
             App::new("git")
                 .about("Git utilities. For more indepth commands, use `prompt`.")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .setting(AppSettings::SubcommandRequired)
                 .subcommand(
                     App::new("remote")
                         .about("Set a remote.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<url> 'The URL of the remote.'")
                                 .index(1)
@@ -170,14 +149,10 @@ fn main() {
                 .subcommand(
                     App::new("add")
                         .about("Adds all files to the git repository.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 )
                 .subcommand(
                     App::new("pull")
                         .about("Pull the latest from the git repository.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<remote> -r, --remote 'Remote to push to.'")
                                 .default_value("origin")
@@ -192,8 +167,6 @@ fn main() {
                 .subcommand(
                     App::new("push")
                         .about("Push your location configuration to the remote git repository.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<remote> -r, --remote 'Remote to push to.'")
                                 .default_value("origin")
@@ -215,14 +188,10 @@ fn main() {
         .subcommand(
             App::new("pack")
                 .about("Pack all your dotfiles into a git repository.")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincosft.dev>")
         )
         .subcommand(
             App::new("prompt")
                 .about("Change directory into the git repository, with special environment variables set for git.")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .arg(
                     Arg::from("<no-overwite-ps1> -c, --no-overwrite-ps1 'Dont overwrite the ps1 of your shell.'")
                         .required(false)
@@ -232,13 +201,9 @@ fn main() {
             App::new("script")
                 .setting(AppSettings::SubcommandRequired)
                 .about("Deal with Lua scripts.")
-                .version("0.1.0")
-                .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 .subcommand(
                     App::new("assign")
                         .about("Assign a Lua script to a added file.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<file> 'The file to operate on.'")
                         )
@@ -250,8 +215,6 @@ fn main() {
                     App::new("rm")    
                         .setting(AppSettings::TrailingVarArg)
                         .about("Remove a scripts from a file.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                         .arg(
                             Arg::from("<file> 'The file to operate on'")
                                 .index(1)
@@ -266,8 +229,6 @@ fn main() {
                 .subcommand(
                     App::new("jog")
                         .about("Run script associated with a file.")
-                        .version("0.1.0")
-                        .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
                 )
         )
         .get_matches(); // TODO: Push and pull commands?
