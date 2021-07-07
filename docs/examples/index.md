@@ -8,7 +8,7 @@ Pretend to be me. No, not lierally. That would be dellusional. But you know what
 Granted, I have more dotfiles, such as X config files, but lets not worry about those. Lets go through the steps in order to create greatness!
 
 ## Adding
-To add your files, just run `greatness add`:
+To add your files, just run `great add`:
 ```bash
 greatness add ~/.bashrc ~/.zshrc ~/.config/alacritty/alacritty.yml ~/.config/starship.toml
 ```
@@ -17,7 +17,7 @@ greatness add ~/.bashrc ~/.zshrc ~/.config/alacritty/alacritty.yml ~/.config/sta
 Encryption is not implemented yet. I just need to figure out how `rust-crypto` works.... **PRs welcome**!
 
 ## Scripting
-Lets also assume I'm horrible at writting machine agnostic configuration files, and we need to resolve our home directory before using our .zshrc...  
+Lets also assume I want to keep tabs on a person named Astrid Greenwood, but I don't really know her name at the time of writting. I might as well add it into a script later...  
 *~/.greatness/scripts/names.lua*
 ```lua
 function process(data, filename)
@@ -53,7 +53,7 @@ EX-SPOUSE: will mackenzie
 greatness script assign ~/.astrid.data names.lua # Don't provide the full name to the script file
 ```
 
-Bang! Now run `greatness jog` to rerun the script files, or `greatness pull` will do it for you if you push and repull.
+Bang! Now run `great jog` to rerun the script files, or `great pull` will do it for you if you push and repull.
 
 ## Packing
 In order to push your dotfiles to a remote, you must first pack them:
@@ -67,7 +67,7 @@ In order to do any git actions, it is recomended you use
 greatness prompt
 ```
 
-From there, run git commands as normal. Keep in mind that `greatness pack` automically commits. All you need to do is set up a remote and push! This may be automated in the future.
+From there, run git commands as normal. Keep in mind that `great pack` automically commits. All you need to do is set up a remote and push! This may be automated in the future.
 
 ## Updating
 Simply go back into the prompt:

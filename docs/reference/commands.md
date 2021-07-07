@@ -1,7 +1,7 @@
 # Command reference
 
 ## Usage
-`greatness <flags> <subcommand>`
+`great <flags> <subcommand>`
 
 ## Base flags
 * `-h`, Print help information.
