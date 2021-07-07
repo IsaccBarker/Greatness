@@ -216,12 +216,12 @@ fn main() {
                         .setting(AppSettings::TrailingVarArg)
                         .about("Remove a scripts from a file.")
                         .arg(
-                            Arg::from("<file> 'The file to operate on'")
+                            Arg::from("<file> 'The file to operate on.'")
                                 .index(1)
                                 .required(true)
                         )
                         .arg(
-                            Arg::from("<script> 'The script to operate on'")
+                            Arg::from("<script> 'The script to operate on.'")
                                 .index(2)
                                 .required(true)
                         )
