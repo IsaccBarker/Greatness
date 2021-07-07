@@ -7,7 +7,7 @@ on:
       - "**.toml"
   pull_request:
     paths:
-        - "**.rs"
+      - "**.rs"
       - "**.toml"
 
 jobs:
