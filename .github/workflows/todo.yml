@@ -1,2 +1,18 @@
-- name: todo-actions
-  uses: dtinth/todo-actions@v0.2.0
+name: build
+
+on:
+  push:
+    paths:
+      - "**.rs"
+      - "**.toml"
+  pull_request:
+    paths:
+        - "**.rs"
+      - "**.toml"
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: todo-actions
+        uses: dtinth/todo-actions@v0.2.0
