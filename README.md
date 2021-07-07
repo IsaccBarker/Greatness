@@ -37,7 +37,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Source repos                           | Single            | Single        | Single            | Multiple          | Single            | Single        | Single     |
 | dotfiles are...                        | Files             | Files         | Symlinks          | Files             | Symlinks          | Files         | Files      |
 | Config file                            | Required, Managed | Optional      | Required          | Optional          | None              | None          | Optional   |
-| Show differences without applying      | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
+| Dry Mode                               | 🕒                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
 | Password manager integration           | ❓                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Machine-to-machine file differences    | Scripting         | Templates     | Alternative files | Alternative files | Alternative files | Templates     | Manual     |
 | Custom variables in templates          | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
@@ -46,12 +46,12 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Modular                                | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Executable files                       | ✅                | ✅            | ✅                | ✅                | ✅                | ❌            | ✅         |
 | Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ❌            | ❌         |
-| Run once scripts                       | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
+| Run once scripts                       | ✅                | 🕒            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Machine-to-machine symlink differences | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ❌         |
 | File Tagging                           | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Shell completion                       | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
-| Archive import                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Archive export                         | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
+| Shell completion                       | 🕒                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
+| Archive import                         | 🕒                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
+| Archive export                         | 🕒                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
 | Implementation language                | Rust, Lua         | Go            | Python            | Perl              | Ruby              | Bash          | C          |
 
 As you can see, greatness is best. However, a sort of close second [chezmoi], has a weird name, is not scriptable, doesn't support dotfile merging, and isn't modular. This makes it not ideal for situations where you might want to pick parts of diferent peoples rices, merge them, script program installation (or have greatness do it for you), and then put it out into the world as a repository, which other people can then use as modules.
