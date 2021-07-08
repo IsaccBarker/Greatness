@@ -1,13 +1,13 @@
 [package]
 name = "great"
 description = "great(ness) a tool to manage your dotfiles, and bring every new system you have up to par with the rest!"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["IsaccBarker <plutoisaplanet4324@gmail.com>"]
 edition = "2018"
 license = "MIT"
 homepage = "https://github.com/IsaccBarker/greatness"
 repository = "https://github.com/IsaccBarker/greatness"
-documentation = "https://github.com/IsaccBarker/Greatness/blob/main/docs/SUMMARY.md"
+documentation = "https://github.com/IsaccBarker/Greatness/wiki"
 readme = "README.md"
 keywords = ["greatness", "dotfiles", "packages"]
 catagories = ["config"]
