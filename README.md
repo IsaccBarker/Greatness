@@ -2,8 +2,8 @@
 <p align="center">
   <a href="github.com/IsaccBarker/Greatness" target="blank"><img src="assets/greatness.png" alt="Greatness Logo" /></a>
   <img src="https://forthebadge.com/images/badges/powered-by-electricity.svg">
-  <img src="https://forthebadge.com/images/badges/does-not-contain-msg.svg">
   <img src="https://forthebadge.com/images/badges/uses-git.svg">
+  <img src="https://forthebadge.com/images/badges/does-not-contain-msg.svg">
   <br>
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square">
   <img src="https://img.shields.io/github/last-commit/IsaccBarker/Greatness">
