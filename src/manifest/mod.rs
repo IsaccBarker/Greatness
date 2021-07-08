@@ -2,6 +2,7 @@ use crate::script::ScriptsState;
 use crate::utils;
 use git2::Repository;
 use snafu::{ResultExt, Snafu};
+use std::collections::HashMap;
 use std::convert::From;
 use std::fs;
 use std::fs::File;
@@ -33,6 +34,7 @@ pub struct State {
     pub greatness_scripts_dir: PathBuf,
     pub repository: Option<Repository>,
     pub script_state: ScriptsState,
+    pub package_context: PackageContext,
 
     pub data: Manifest,
 }
@@ -49,13 +51,42 @@ pub struct AddedFile {
     pub scripts: Option<Vec<PathBuf>>,
 }
 
+/// Contains information about software that needs
+/// to be installed. For a new entry, please add to
+/// the status code.
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+pub struct AddedPackage {
+    #[serde(default)]
+    pub package: String,
+    #[serde(default)]
+    pub package_overloads: HashMap<String, String>,
+}
+
+/// Contains information pretaining to how to install
+/// a package.
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+pub struct PackageContext {
+    /// The command to install a package, based on the name of the
+    /// package manager. The first is to run as root, second is the
+    /// importance, and then prefix itself in third.
+    #[serde(default)]
+    pub package_install_prefix: HashMap<String, (bool, u8, Vec<String>)>,
+}
+
 /// Data stored in the manifest that is stored locally on the computer
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Manifest {
+    /// Software that needs to be installed
+    #[serde(default)]
+    pub packages: Option<Vec<AddedPackage>>,
+
     /// Dot files
+    #[serde(default)]
     pub files: Option<Vec<AddedFile>>,
+
     /// Required repositories of dotfiles. First element is an optional URL
     /// in which to update, and the second is a required path on the local disk.
+    #[serde(default)]
     pub requires: Option<Vec<(Option<String>, PathBuf)>>,
 }
 
@@ -89,11 +120,45 @@ impl Default for AddedFile {
     }
 }
 
+impl PackageContext {
+    pub fn new() -> Self {
+        Self {
+            // Add support for package managers here!
+            package_install_prefix: hashmap! {
+                // Manager Name 
+                "pacman".into() => (true, 0, vec!["-y".into(), "--needed".into(), "-S".into()]),
+                "paru".into() =>   (false, 1, vec!["--noconfirm".into(), "--needed".into(), "-S".into()]),
+                "yay".into() =>    (false, 2, vec!["--noconfirm".into(), "--needed".into(), "-S".into()]),
+                "emerge".into() => (false, 0, vec![]),
+                "apt".into() =>    (true, 0, vec!["install".into()]),
+                "rpm".into() =>    (true, 0, vec!["-i".into()]),
+                "dnf".into() =>    (true, 0, vec!["install".into()]),
+                "brew".into() =>   (false, 1, vec!["install".into()]),
+                "port".into() =>   (false, 0, vec!["install".into()]),
+            },
+        }
+    }
+}
+
+impl Default for PackageContext {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl AddedPackage {
+    #[allow(dead_code)]
+    pub fn new() -> Self {
+        Self {
+            package: "".into(),
+            package_overloads: hashmap! {},
+        }
+    }
+}
+
 impl Manifest {
     /// Load on file data into the manifestData struct.
-    pub fn populate_from_file(
-        manifest_info: &State,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn populate_from_file(manifest_info: &State) -> Result<Self, Box<dyn std::error::Error>> {
         let manifest_file = &manifest_info.greatness_manifest;
         let x = serde_yaml::from_str(&fs::read_to_string(&manifest_file).context(
             utils::FileReadError {
@@ -164,6 +229,26 @@ impl Manifest {
         self.files.replace(files);
     }
 
+    /// Adds a package. Will not add if the
+    /// package is not unique
+    pub fn add_package(&mut self, package: AddedPackage) {
+
+    }
+
+    /// Does the manifest already contain a
+    /// package?
+    pub fn contains_package(&mut self, w_package: String) -> Option<&mut AddedPackage> {
+        if let Some(packages) = &mut self.packages {
+            for package in packages {
+                if package.package == w_package {
+                    return Some(package);
+                }
+            }
+        }
+
+        None
+    }
+
     /// Gets all the tags in use
     pub fn all_tags(&self) -> Option<Vec<String>> {
         let mut tags = vec![];
@@ -196,12 +281,14 @@ impl Manifest {
 
             if let Some(file_scripts) = file.scripts {
                 for script in file_scripts {
-                    scripts.push(script); 
+                    scripts.push(script);
                 }
             }
         }
 
-        if scripts.len() == 0 { return None; }
+        if scripts.len() == 0 {
+            return None;
+        }
 
         Some(scripts)
     }
@@ -210,6 +297,7 @@ impl Manifest {
 impl Default for Manifest {
     fn default() -> Self {
         Self {
+            packages: None,
             files: None,
             requires: None,
         }
@@ -251,6 +339,7 @@ impl State {
             greatness_scripts_dir,
             repository,
             script_state,
+            package_context: PackageContext::new(),
             data: Manifest::default(),
         })
     }

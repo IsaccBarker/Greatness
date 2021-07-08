@@ -14,8 +14,6 @@ pub struct ScriptsState {
 
 impl ScriptsState {
     pub fn new() -> Self {
-        Self {
-            engine: Lua::new(),
-        }
+        Self { engine: Lua::new() }
     }
 }

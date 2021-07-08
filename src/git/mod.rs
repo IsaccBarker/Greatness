@@ -1,9 +1,9 @@
+pub mod add;
+pub mod clone;
+pub mod commit;
 pub mod pull;
 pub mod push;
 pub mod remote;
-pub mod commit;
-pub mod add;
-pub mod clone;
 
 use snafu::Snafu;
 use std::io::Write;
@@ -11,18 +11,13 @@ use std::io::Write;
 #[derive(Debug, Snafu)]
 pub enum GitErrors {
     #[snafu(display("Failed to get index of git repository: {}", source))]
-    FailedGitIndex {
-        source: git2::Error,
-    },
+    FailedGitIndex { source: git2::Error },
 
     #[snafu(display("Failed to get remote {} of git repository: {}", remote, source))]
-    GitRemoteFindError {
-        remote: String,
-        source: git2::Error,
-    }
+    GitRemoteFindError { remote: String, source: git2::Error },
 }
 
-pub fn transfer_progress(stats: git2::Progress) -> bool {        
+pub fn transfer_progress(stats: git2::Progress) -> bool {
     if stats.received_objects() == stats.total_objects() {
         print!(
             "Resolving deltas {}/{}\r",
@@ -38,9 +33,8 @@ pub fn transfer_progress(stats: git2::Progress) -> bool {
             stats.received_bytes()
         );
     }
-    
+
     std::io::stdout().flush().unwrap();
 
     true
 }
-

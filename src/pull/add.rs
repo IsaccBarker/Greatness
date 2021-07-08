@@ -1,8 +1,8 @@
+use crate::git::clone;
 use crate::init;
-use crate::manifest::{State, Manifest};
+use crate::manifest::{Manifest, State};
 use crate::script::jog;
 use crate::utils;
-use crate::git::clone;
 use clap::ArgMatches;
 use log::{debug, info};
 use question::{Answer, Question};

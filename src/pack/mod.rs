@@ -15,10 +15,7 @@ pub enum PackError {
 }
 
 /// Pack, and automatically call a packing backend
-pub fn pack(
-    manifest: &mut State,
-    _matches: &ArgMatches,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub fn pack(manifest: &mut State, _matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
     let original_manifest_location = manifest.greatness_manifest.clone();
     let base = PathBuf::from(&manifest.greatness_git_pack_dir);
     manifest.greatness_manifest = base.clone();

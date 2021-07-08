@@ -1,9 +1,9 @@
 use crate::manifest::State;
 use crate::utils;
+use log::debug;
 use snafu::ResultExt;
 use std::fs::File;
 use std::io::Write;
-use log::debug;
 
 pub fn jog(manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(files) = &manifest.data.files {

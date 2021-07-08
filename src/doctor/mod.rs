@@ -1,4 +1,4 @@
-use crate::manifest::{State, AddedFile};
+use crate::manifest::{AddedFile, State};
 use crate::utils;
 use clap::ArgMatches;
 use log::debug;
@@ -76,7 +76,7 @@ fn check_tag_simularity(warnings: &mut Vec<String>, tags: &Vec<String>) {
 
 fn check_script_existance(warnings: &mut Vec<String>, scripts: &Vec<PathBuf>) {
     for script in scripts {
-        if ! script.exists() {
+        if !script.exists() {
             warnings.push(format!(
                 "Script {} doesn't exist!",
                 utils::special_to_absolute(&script).display()
@@ -93,4 +93,3 @@ fn check_single_dotfile_existance(warnings: &mut Vec<String>, file: &AddedFile) 
         ));
     }
 }
-

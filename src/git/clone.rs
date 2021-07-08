@@ -1,6 +1,6 @@
-use snafu::{Snafu, ResultExt};
-use std::path::PathBuf;
+use snafu::{ResultExt, Snafu};
 use std::io::Write;
+use std::path::PathBuf;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]
@@ -58,7 +58,8 @@ pub fn clone_repo(url: &String, clone_to: &PathBuf) -> Result<(), CloneError> {
     git2::build::RepoBuilder::new()
         .fetch_options(fo)
         .with_checkout(co)
-        .clone(&url, &clone_to).context(CloneFailure {
+        .clone(&url, &clone_to)
+        .context(CloneFailure {
             url,
             dest: clone_to,
         })?;
@@ -101,4 +102,3 @@ fn clone_progress(state: &mut State) {
 
     std::io::stdout().flush().unwrap();
 }
-

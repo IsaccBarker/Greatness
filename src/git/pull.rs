@@ -1,15 +1,12 @@
 use crate::manifest::State;
 use clap::ArgMatches;
-use snafu::{Snafu, ResultExt};
 use log::{info, warn};
+use snafu::{ResultExt, Snafu};
 
 #[derive(Debug, Snafu)]
 pub enum PullErrors {
     #[snafu(display("Branch {} doesn't exist: {}", branch, source))]
-    BranchDoesntExist {
-        branch: String,
-        source: git2::Error,
-    }
+    BranchDoesntExist { branch: String, source: git2::Error },
 }
 
 #[allow(dead_code)]
@@ -22,10 +19,10 @@ fn fast_forward(
         Some(s) => s.to_string(),
         None => String::from_utf8_lossy(lb.name_bytes()).to_string(),
     };
-    
+
     let msg = format!("Fast-Forward: Setting {} to id: {}", name, rc.id());
     info!("Fast-Forward: Setting {} to id: {}", name, rc.id());
-    
+
     lb.set_target(rc.id(), &msg)?;
     repo.set_head(&name)?;
     repo.checkout_head(Some(
@@ -57,13 +54,13 @@ fn normal_merge(
     }
 
     let result_tree = repo.find_tree(idx.write_tree_to(repo)?)?;
-    
+
     // now create the merge commit
     let msg = format!("Merge: {} into {}", remote.id(), local.id());
     let sig = repo.signature()?;
     let local_commit = repo.find_commit(local.id())?;
     let remote_commit = repo.find_commit(remote.id())?;
-    
+
     // Do our merge commit and set current branch head to that commit.
     let _merge_commit = repo.commit(
         Some("HEAD"),
@@ -87,7 +84,11 @@ pub fn pull(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
     fo.download_tags(git2::AutotagOption::All);
 
     if let Some(repo) = &manifest.repository {
-        let mut remote = repo.find_remote(matches.value_of("remote").unwrap()).context(super::GitRemoteFindError{remote: "remote".to_owned()})?;
+        let mut remote = repo
+            .find_remote(matches.value_of("remote").unwrap())
+            .context(super::GitRemoteFindError {
+                remote: "remote".to_owned(),
+            })?;
         let remote_branch = &[matches.value_of("branch").unwrap()];
 
         remote.fetch(remote_branch, Some(&mut fo), None)?;
@@ -101,7 +102,9 @@ pub fn pull(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
             info!("Doing a fast forward....");
             // do a fast forward
             let refname = "refs/heads/".to_string() + remote_branch.get(0).unwrap();
-            let mut r = repo.find_reference(&refname).context(BranchDoesntExist{branch: matches.value_of("branch").unwrap()})?;
+            let mut r = repo.find_reference(&refname).context(BranchDoesntExist {
+                branch: matches.value_of("branch").unwrap(),
+            })?;
             fast_forward(repo, &mut r, &fetch_commit)?;
         } else if analysis.0.is_normal() {
             // do a normal merge
@@ -112,8 +115,5 @@ pub fn pull(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
         }
     }
 
-
     Ok(())
 }
-
-

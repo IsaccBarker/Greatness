@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate maplit;
+
 mod add;
 mod doctor;
 mod git;
@@ -5,6 +8,7 @@ mod init;
 mod log_utils;
 mod manifest;
 mod pack;
+mod package;
 mod progress;
 mod prompt;
 mod pull;
@@ -188,6 +192,32 @@ fn main() {
         .subcommand(
             App::new("pack")
                 .about("Pack all your dotfiles into a git repository.")
+        )
+        .subcommand(
+            App::new("package")
+                .about("Package utilities.")
+                .subcommand(
+                    App::new("jog")
+                        .about("Install all packages.")
+                )
+                .subcommand(
+                    App::new("add")
+                        .about("Add a package to install.")
+                        .arg(
+                            Arg::from("<packages>... 'Packages to mark to install.'")
+                                .required(true)
+                                .index(1)
+                        )
+                )
+                .subcommand(
+                    App::new("rm")
+                        .about("Removes a package from what to install.")
+                        .arg(
+                            Arg::from("<packages>... 'Packages to unmark to install.'")
+                                .required(true)
+                                .index(1)
+                        )
+                )
         )
         .subcommand(
             App::new("prompt")
@@ -394,67 +424,52 @@ on the directory."
             }
         }
 
-        Some(("git", git_matches)) => {
-            match git_matches.subcommand() {
-                Some(("remote", remote_matches)) => {
-                    match git::remote::set_remote(remote_matches, &mut manifest) {
-                        Ok(()) =>(),
-                        Err(e) => {
-                            error!(
-                                "An error occured whilst setting the remote: {}",
-                                e
-                            );
+        Some(("git", git_matches)) => match git_matches.subcommand() {
+            Some(("remote", remote_matches)) => {
+                match git::remote::set_remote(remote_matches, &mut manifest) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!("An error occured whilst setting the remote: {}", e);
 
-                            std::process::exit(1);
-                        }
+                        std::process::exit(1);
                     }
                 }
-
-                Some(("add", add_matches)) => {
-                    match git::add::add(add_matches, &mut manifest) {
-                        Ok(()) => (),
-                        Err(e) => {
-                            error!(
-                                "An error occured whilst adding files the the local repository: {}",
-                                e
-                            );
-
-                            std::process::exit(1);
-                        }
-                    }
-                }
-                
-                Some(("push", push_matches)) => {
-                    match git::push::push(push_matches, &mut manifest) {
-                        Ok(()) => (),
-                        Err(e) => {
-                            error!(
-                                "An error occured whilst pushing files to the remote: {}",
-                                e
-                            );
-
-                            std::process::exit(1);
-                        }
-                    }
-                }
-
-                Some(("pull", pull_matches)) => {
-                    match git::pull::pull(pull_matches, &mut manifest) {
-                        Ok(()) => (),
-                        Err(e) => {
-                            error!(
-                                "An error occured whilst pulling files to local: {}",
-                                e
-                            );
-
-                            std::process::exit(1);
-                        }
-                    }
-                }
-
-                _ => { unreachable!(); }
             }
-        }
+
+            Some(("add", add_matches)) => match git::add::add(add_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!(
+                        "An error occured whilst adding files the the local repository: {}",
+                        e
+                    );
+
+                    std::process::exit(1);
+                }
+            },
+
+            Some(("push", push_matches)) => match git::push::push(push_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst pushing files to the remote: {}", e);
+
+                    std::process::exit(1);
+                }
+            },
+
+            Some(("pull", pull_matches)) => match git::pull::pull(pull_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst pulling files to local: {}", e);
+
+                    std::process::exit(1);
+                }
+            },
+
+            _ => {
+                unreachable!();
+            }
+        },
 
         Some(("pack", pack_matches)) => match pack::pack(&mut manifest, pack_matches) {
             Ok(()) => (),
@@ -466,6 +481,40 @@ on the directory."
 
                 std::process::exit(1);
             }
+        },
+
+        Some(("package", package_matches)) => match package_matches.subcommand() {
+            Some(("jog", jog_matches)) => match package::jog::jog(jog_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst installing all packages: {}", e);
+
+                    std::process::exit(1);
+                }
+            },
+
+            Some(("add", add_matches)) => match package::add::add(add_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!("An error occured whilst adding a package to install: {}", e);
+
+                    std::process::exit(1);
+                }
+            },
+
+            Some(("rm", rm_matches)) => match package::rm::rm(rm_matches, &mut manifest) {
+                Ok(()) => (),
+                Err(e) => {
+                    error!(
+                        "An error occured whilst removing a package to install: {}",
+                        e
+                    );
+
+                    std::process::exit(1);
+                }
+            },
+
+            _ => unreachable!(),
         },
 
         Some(("tag", tag_matches)) => match tag::tag(tag_matches, &mut manifest) {

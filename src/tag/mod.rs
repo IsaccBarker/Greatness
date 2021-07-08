@@ -13,10 +13,7 @@ pub enum TagError {
     NoTrackedFileExistance { source: std::io::Error },
 }
 
-pub fn tag(
-    matches: &ArgMatches,
-    manifest: &mut State,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub fn tag(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     for file in matches.values_of("files").unwrap() {
         tag_file(
             PathBuf::from(file),
