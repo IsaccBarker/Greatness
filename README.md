@@ -1,10 +1,10 @@
 # Greatness!
 <p align="center">
   <a href="github.com/IsaccBarker/Greatness" target="blank"><img src="assets/greatness.png" alt="Greatness Logo" /></a>
-  <img src="https://forthebadge.com/images/badges/powered-by-electricity.svg)](https://forthebadge.com">
-  <img src="https://forthebadge.com/images/badges/compatibility-betamax.svg)](https://forthebadge.com">
-  <img src="https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com">
-  <img src="https://forthebadge.com/images/badges/uses-git.svg)](https://forthebadge.com">
+  <img src="https://forthebadge.com/images/badges/powered-by-electricity.svg">
+  <img src="https://forthebadge.com/images/badges/compatibility-betamax.svg">
+  <img src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
+  <img src="https://forthebadge.com/images/badges/uses-git.svg">
   <br>
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com">
   <img src="https://img.shields.io/github/last-commit/IsaccBarker/Greatness">
