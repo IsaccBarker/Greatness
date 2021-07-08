@@ -2,7 +2,6 @@
 <p align="center">
   <a href="github.com/IsaccBarker/Greatness" target="blank"><img src="assets/greatness.png" alt="Greatness Logo" /></a>
   <img src="https://forthebadge.com/images/badges/powered-by-electricity.svg">
-  <img src="https://forthebadge.com/images/badges/compatibility-betamax.svg">
   <img src="https://forthebadge.com/images/badges/works-on-my-machine.svg">
   <img src="https://forthebadge.com/images/badges/uses-git.svg">
   <br>
