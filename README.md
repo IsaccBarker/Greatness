@@ -6,7 +6,7 @@
   <img src="https://forthebadge.com/images/badges/does-not-contain-msg.svg">
   <br>
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square">
-  <img src="https://img.shields.io/github/last-commit/IsaccBarker/Greatness">
+  <img src="https://img.shields.io/github/last-commit/IsaccBarker/Greatness?style=flat-square">
 </p>
 Achieve it! How you ask? Well, it's pretty simple; just use greatness!
 
