@@ -53,24 +53,28 @@ pub fn jog(_matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
                 .2
                 .clone();
 
-            args.push(package_name.clone());
-
+            // Runs if we have overloads to deal with
             if package.package_overloads.len() != 0 {
-                // We have overloads to deal with
                 let mut to_use: (u8, String) = (0, "".into());
-                /* for overload in &package.package_overloads {
-                    let x = manifest.package_context.package_install_prefix.get(overload.0).unwrap();
+                for overload in &package.package_overloads {
+                    let x = manifest.package_context.package_install_prefix.get_key_value(overload.0).unwrap();
 
-                    if x.1 > to_use.0 {
-                        to_use = (x.1, x.2.get(0).unwrap().clone());
+                    if x.1.1 > to_use.0 {
+                        to_use = (x.1.1, x.0.clone());
                     }
-
-                    println!("{:?}\n{:?}", &overload, &x);
                 }
 
-                println!("decided to move from {} to {}....", &command, &to_use.1);
-                command = to_use.1; */
+                command = to_use.1;
             }
+
+
+            // Runs if we need to run the command as root.
+            if manifest.package_context.package_install_prefix.get(&command).unwrap().0 {
+                args.insert(0, command);
+                command = "sudo".into(); // TODO: Support doas.
+            };
+
+            args.push(package_name.clone());
 
             info!(
                 "Installing package great {} with manager {}....",
