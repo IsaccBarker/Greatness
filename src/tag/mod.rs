@@ -13,16 +13,16 @@ pub enum TagError {
     NoTrackedFileExistance { source: std::io::Error },
 }
 
-pub fn tag(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+pub fn tag(matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     for file in matches.values_of("files").unwrap() {
         tag_file(
             PathBuf::from(file),
             matches.value_of("tag").unwrap().to_string(),
-            manifest,
+            state,
         )?;
     }
 
-    manifest.data.populate_file(manifest);
+    state.data.populate_file(state);
 
     Ok(())
 }
@@ -30,7 +30,7 @@ pub fn tag(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std
 pub fn tag_file(
     file: PathBuf,
     tag: String,
-    manifest: &mut State,
+    state: &mut State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if !file.as_path().exists() {
         Err(std::io::Error::new(
@@ -41,7 +41,7 @@ pub fn tag_file(
     }
 
     let normalized_file = utils::relative_to_special(&file)?;
-    let mut contains = match manifest.data.contains(&normalized_file) {
+    let mut contains = match state.data.contains(&normalized_file) {
         Some(c) => c.0.clone(),
         None => {
             return Err(std::io::Error::new(
@@ -54,7 +54,7 @@ pub fn tag_file(
 
     contains.tag = Some(tag);
 
-    manifest.data.add_file(contains);
+    state.data.add_file(contains);
 
     Ok(())
 }

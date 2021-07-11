@@ -4,10 +4,10 @@ use crate::utils;
 use clap::ArgMatches;
 // use snafu::ResultExt;
 
-pub fn repel(matches: &ArgMatches, manifest: &mut State) -> Result<(), utils::CommonErrors> {
+pub fn repel(matches: &ArgMatches, state: &mut State) -> Result<(), utils::CommonErrors> {
     let to_repel = matches.value_of("name").unwrap();
 
-    if let Some(requires) = &mut manifest.data.requires {
+    if let Some(requires) = &mut state.data.requires {
         requires.retain(|e| {
             e.1.components()
                 .last()
@@ -19,7 +19,7 @@ pub fn repel(matches: &ArgMatches, manifest: &mut State) -> Result<(), utils::Co
         });
     }
 
-    manifest.data.populate_file(&manifest);
+    state.data.populate_file(&state);
 
     Ok(())
 }

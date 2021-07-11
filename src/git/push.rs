@@ -12,8 +12,8 @@ pub enum PushErrors {
     PushFileError { source: git2::Error },
 }
 
-pub fn push(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
-    if let Some(repo) = &manifest.repository {
+pub fn push(matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(repo) = &state.repository {
         let mut remote = repo
             .find_remote(matches.value_of("remote").unwrap())
             .context(super::GitRemoteFindError {

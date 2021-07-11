@@ -44,15 +44,15 @@ pub enum InstallError {
 pub fn clone_and_install_repo(
     user_url: String,
     matches: &ArgMatches,
-    manifest: &mut State,
-    sub_manifest: bool,
+    state: &mut State,
+    sub_state: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if matches.is_present("as-main") {
         debug!("Installing as main!");
     }
 
     // Normallize the URL and get a valid location to clone to
-    let (url, mut clone_to) = get_git_pair(manifest, user_url, matches);
+    let (url, mut clone_to) = get_git_pair(state, user_url, matches);
 
     // Create the clone to directory if none exists
     if clone_to.exists() {
@@ -64,28 +64,28 @@ pub fn clone_and_install_repo(
     clone::clone_repo(&url, &clone_to)?;
 
     // Parse the file. False as we want to enable git
-    let mut external_manifest = State::new(PathBuf::from(clone_to.to_str().unwrap()))?;
-    external_manifest.data = Manifest::populate_from_file(&&external_manifest)?;
+    let mut external_state = State::new(PathBuf::from(clone_to.to_str().unwrap()))?;
+    external_state.data = Manifest::populate_from_file(&&external_state)?;
 
     install(
         matches,
         Some(url),
         &mut clone_to,
-        manifest,
-        &mut external_manifest,
-        sub_manifest,
+        state,
+        &mut external_state,
+        sub_state,
     )?;
-    for requirement in external_manifest.data.requires.unwrap_or(vec![]) {
+    for requirement in external_state.data.requires.unwrap_or(vec![]) {
         clone_and_install_repo(
             requirement.0.unwrap_or("".to_string()),
             matches,
-            manifest,
+            state,
             true,
         )?;
     }
 
     if matches.is_present("as-main") {
-        init::init_no_damage(matches, manifest)?;
+        init::init_no_damage(matches, state)?;
     }
 
     Ok(())
@@ -93,10 +93,10 @@ pub fn clone_and_install_repo(
 
 /// Return a tuple contains the URL of a repository and where
 /// to clone it to.
-fn get_git_pair(manifest: &State, user_url: String, matches: &ArgMatches) -> (String, PathBuf) {
+fn get_git_pair(state: &State, user_url: String, matches: &ArgMatches) -> (String, PathBuf) {
     let url = utils::make_url_valid(user_url);
 
-    let mut clone_to = PathBuf::from(&manifest.greatness_pulled_dir);
+    let mut clone_to = PathBuf::from(&state.greatness_pulled_dir);
     #[allow(unused_assignments)]
     let mut dest_tmp = url.replace("https://", "");
     dest_tmp = url.replace("http://", "");
@@ -112,7 +112,7 @@ fn get_git_pair(manifest: &State, user_url: String, matches: &ArgMatches) -> (St
 
         clone_to.push(&dest);
     } else {
-        clone_to = manifest.greatness_dir.clone();
+        clone_to = state.greatness_dir.clone();
     }
 
     (url, clone_to)
@@ -120,18 +120,18 @@ fn get_git_pair(manifest: &State, user_url: String, matches: &ArgMatches) -> (St
 
 /// Install external from a local directory
 /// * `url` - Optional URL that it was cloned from. Is used to update when wanted.
-/// * `from` - Where the external manifest is located on disk.
+/// * `from` - Where the external state is located on disk.
 /// * `manfiest` - State to write into.
 pub fn install(
     matches: &ArgMatches,
     url: Option<String>,
     install_from: &mut PathBuf,
-    manifest: &mut State,
-    external_manifest: &mut State,
-    sub_manifest: bool,
+    state: &mut State,
+    external_state: &mut State,
+    sub_state: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let external_manifest_data = external_manifest.data.clone();
-    if let Some(files) = external_manifest_data.files {
+    let external_state_data = external_state.data.clone();
+    if let Some(files) = external_state_data.files {
         install_from.push("files");
 
         for file in files {
@@ -145,33 +145,33 @@ pub fn install(
         }
     }
 
-    install_mods(matches, external_manifest)?;
+    install_mods(matches, external_state)?;
 
     // Make sure we mark this as a dependency, only if we are not
     // installing it as main
     if !matches.is_present("as-main") {
-        mark_as_dependency(manifest, install_from, url, sub_manifest);
+        mark_as_dependency(state, install_from, url, sub_state);
     } else {
         debug!("--as-main specified, not marking specfied as a dependency....");
     }
 
-    // Don't overwrite the manifest with nothing if
+    // Don't overwrite the state with nothing if
     // we plan to pull as main.
     if !matches.is_present("as-main") {
-        manifest.data.populate_file(manifest);
+        state.data.populate_file(state);
     }
 
     Ok(())
 }
 
-pub fn install_mods(matches: &ArgMatches, external_manifest: &mut State) -> Result<(), Box<dyn std::error::Error>>{
+pub fn install_mods(matches: &ArgMatches, external_state: &mut State) -> Result<(), Box<dyn std::error::Error>>{
     // Run the scripts, and install the packages.
     if matches.is_present("allow-mods") {
         debug!("--allow-mods specified, running scripts....");
-        script::jog::jog(external_manifest)?;
+        script::jog::jog(external_state)?;
 
         debug!("--allow-mods specified, installing packages....");
-        package::jog::jog(matches, external_manifest)?;
+        package::jog::jog(matches, external_state)?;
     } else {
         warn!("The --allow-mods (-d) argument is not passed! No scripts will be run for security reasons :D");
     }
@@ -180,12 +180,12 @@ pub fn install_mods(matches: &ArgMatches, external_manifest: &mut State) -> Resu
 }
 
 fn mark_as_dependency(
-    manifest: &mut State,
+    state: &mut State,
     install_from: &mut PathBuf,
     url: Option<String>,
-    sub_manifest: bool,
+    sub_state: bool,
 ) {
-    if let Some(requires) = &mut manifest.data.requires {
+    if let Some(requires) = &mut state.data.requires {
         let mut add = true;
 
         // Check is already added. We do this last because the user may want to re-merge everything
@@ -195,11 +195,11 @@ fn mark_as_dependency(
             }
         });
 
-        if add && !sub_manifest {
+        if add && !sub_state {
             requires.push((url, utils::absolute_to_special(&install_from.clone())));
         }
     } else {
-        manifest.data.requires = Some(vec![(
+        state.data.requires = Some(vec![(
             url,
             utils::absolute_to_special(&install_from.clone()),
         )]);

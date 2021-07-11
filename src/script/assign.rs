@@ -9,11 +9,11 @@ use std::path::PathBuf;
 /// Assigns a script to a file
 pub fn assign(
     matches: &ArgMatches,
-    manifest: &mut State,
+    state: &mut State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let target_base = PathBuf::from(matches.value_of("file").unwrap());
     let script_base = utils::relative_to_script(
-        manifest,
+        state,
         &PathBuf::from(matches.value_of("script").unwrap()),
     );
 
@@ -30,12 +30,12 @@ pub fn assign(
             .context(utils::NoFileExistsError { file: script_base })?,
     );
 
-    if manifest.data.contains(&target).is_none() {
+    if state.data.contains(&target).is_none() {
         return Err(std::io::Error::from(std::io::ErrorKind::InvalidData))
             .context(utils::FileNotTracked { file: target })?;
     }
 
-    if let Some(files) = &mut manifest.data.files {
+    if let Some(files) = &mut state.data.files {
         for file in files {
             if assign_file(file, script.clone(), &target) {
                 break;
@@ -43,7 +43,7 @@ pub fn assign(
         }
     }
 
-    manifest.data.populate_file(&manifest);
+    state.data.populate_file(&state);
 
     Ok(())
 }

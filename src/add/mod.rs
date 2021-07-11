@@ -25,23 +25,23 @@ pub enum TrackError {
 pub fn add_files(
     matches: &ArgMatches,
     mut files: Vec<PathBuf>,
-    manifest_info: &mut State,
+    state_info: &mut State,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Do some checks to figure out which files we should include
     // println!("{:?}", files);
-    only_retain_correct_files(&mut files, manifest_info);
+    only_retain_correct_files(&mut files, state_info);
 
     for file in files.iter() {
         debug!("Adding file {}....", file.display());
-        add_file(&PathBuf::from(file), manifest_info, matches)?;
+        add_file(&PathBuf::from(file), state_info, matches)?;
     }
 
-    manifest_info.data.populate_file(manifest_info);
+    state_info.data.populate_file(state_info);
 
     Ok(())
 }
 
-fn only_retain_correct_files(files: &mut Vec<PathBuf>, manifest_info: &mut State) {
+fn only_retain_correct_files(files: &mut Vec<PathBuf>, state_info: &mut State) {
     files.retain(|file| {
         if !std::path::Path::new(file).is_file() {
             info!(
@@ -51,7 +51,7 @@ fn only_retain_correct_files(files: &mut Vec<PathBuf>, manifest_info: &mut State
             return false;
         }
 
-        if manifest_info
+        if state_info
             .data
             .contains(&utils::relative_to_special(&file).unwrap())
             .is_some()
@@ -79,14 +79,14 @@ fn only_retain_correct_files(files: &mut Vec<PathBuf>, manifest_info: &mut State
 
 fn add_file(
     file: &PathBuf,
-    manifest: &mut State,
+    state: &mut State,
     _matches: &ArgMatches,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let special_file = utils::relative_to_special(&file)?;
-    if let Some(ref mut files) = manifest.data.files {
+    if let Some(ref mut files) = state.data.files {
         files.push(AddedFile::from(special_file.clone()));
     } else {
-        manifest.data.files = Some(vec![AddedFile::from(special_file.clone())]);
+        state.data.files = Some(vec![AddedFile::from(special_file.clone())]);
     }
 
     Ok(())

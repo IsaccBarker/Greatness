@@ -2,31 +2,31 @@ use crate::manifest::State;
 use crate::utils;
 use log::info;
 
-pub fn print_status(manifest: &State) {
+pub fn print_status(state: &State) {
     info!(
         "Greatness directory: \x1b[1m{}\x1b[0m",
-        manifest.greatness_dir.display()
+        state.greatness_dir.display()
     );
     info!(
         "Greatness pulling  : \x1b[1m{}\x1b[0m",
-        manifest.greatness_pulled_dir.display()
+        state.greatness_pulled_dir.display()
     );
     info!(
-        "Greatness manifest : \x1b[1m{}\x1b[0m",
-        manifest.greatness_manifest.display()
+        "Greatness state : \x1b[1m{}\x1b[0m",
+        state.greatness_state.display()
     );
     info!(
         "Greatness git pack : \x1b[1m{}\x1b[0m",
-        manifest.greatness_git_pack_dir.display(),
+        state.greatness_git_pack_dir.display(),
     );
     info!(
         "Greatness scripts  : \x1b[1m{}\x1b[0m",
-        manifest.greatness_scripts_dir.display()
+        state.greatness_scripts_dir.display()
     );
 
     print!("\n");
 
-    if let Some(packages) = &manifest.data.packages {
+    if let Some(packages) = &state.data.packages {
         info!("Packages: ");
 
         for package in packages {
@@ -45,7 +45,7 @@ pub fn print_status(manifest: &State) {
         }
     }
 
-    if let Some(files) = &manifest.data.files {
+    if let Some(files) = &state.data.files {
         info!("Added files:");
 
         for file in files {
@@ -69,7 +69,7 @@ pub fn print_status(manifest: &State) {
         info!("\x1b[1mNo files added!\x1b[0m");
     }
 
-    if let Some(requires) = &manifest.data.requires {
+    if let Some(requires) = &state.data.requires {
         info!("\nExternal repositories of dotfiless:");
 
         for required in requires {

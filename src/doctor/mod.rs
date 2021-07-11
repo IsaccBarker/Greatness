@@ -9,10 +9,10 @@ use std::path::PathBuf;
 ///     1. Simular tag names
 ///     2. Non-existant files
 ///     3. Non-existant scripts
-pub fn doctor(manifest: &State, _matches: &ArgMatches) -> Option<Vec<String>> {
+pub fn doctor(state: &State, _matches: &ArgMatches) -> Option<Vec<String>> {
     let mut warnings = vec![];
 
-    if let Some(files) = &manifest.data.files {
+    if let Some(files) = &state.data.files {
         debug!("Checking added files....");
 
         for file in files {
@@ -23,13 +23,13 @@ pub fn doctor(manifest: &State, _matches: &ArgMatches) -> Option<Vec<String>> {
 
             // Tag checks
             {
-                let tags = manifest.data.all_tags().unwrap_or(vec![]);
+                let tags = state.data.all_tags().unwrap_or(vec![]);
                 check_tag_simularity(&mut warnings, &tags);
             }
 
             // Script checks
             {
-                let scripts = manifest.data.all_scripts().unwrap_or(vec![]);
+                let scripts = state.data.all_scripts().unwrap_or(vec![]);
                 check_script_existance(&mut warnings, &scripts);
             }
 
@@ -42,7 +42,7 @@ pub fn doctor(manifest: &State, _matches: &ArgMatches) -> Option<Vec<String>> {
         debug!("No files to check!");
     }
 
-    if let Some(_required) = &manifest.data.requires {
+    if let Some(_required) = &state.data.requires {
         debug!("Checking requirments....");
     } else {
         debug!("No requirements to check!");

@@ -34,10 +34,3 @@ pub fn get_manager(state: &State) -> Option<String> {
     Some(winning.1)
 }
 
-/// If your name is karen, the return value is always false.
-pub fn manager_available(manager: String) -> bool {
-    match which::which(manager) {
-        Ok(_) => true,
-        Err(_) => false,
-    }
-}

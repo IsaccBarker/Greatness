@@ -8,8 +8,8 @@ pub enum AddErrors {
     AddFilesError { source: git2::Error },
 }
 
-pub fn add(_matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
-    if let Some(repo) = &manifest.repository {
+pub fn add(_matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(repo) = &state.repository {
         let mut index = repo.index().context(super::FailedGitIndex {})?;
 
         index

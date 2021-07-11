@@ -128,8 +128,8 @@ pub fn special_to_absolute(special: &PathBuf) -> PathBuf {
 
 /// Supplied a relative path, this function returns that
 /// scripts location in the script directory
-pub fn relative_to_script(manifest: &State, rel: &PathBuf) -> PathBuf {
-    let mut ret = manifest.greatness_scripts_dir.clone();
+pub fn relative_to_script(state: &State, rel: &PathBuf) -> PathBuf {
+    let mut ret = state.greatness_scripts_dir.clone();
     ret.push(rel);
 
     ret

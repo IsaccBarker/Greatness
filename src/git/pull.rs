@@ -77,14 +77,14 @@ fn normal_merge(
     Ok(())
 }
 
-pub fn pull(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+pub fn pull(matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     let mut cb = git2::RemoteCallbacks::new();
     cb.transfer_progress(super::transfer_progress);
 
     let mut fo = git2::FetchOptions::new();
     fo.download_tags(git2::AutotagOption::All);
 
-    if let Some(repo) = &manifest.repository {
+    if let Some(repo) = &state.repository {
         let mut remote = repo
             .find_remote(matches.value_of("remote").unwrap())
             .context(super::GitRemoteFindError {
@@ -116,7 +116,7 @@ pub fn pull(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
         }
     }
 
-    pull::add::install_mods(matches, manifest)?;
+    pull::add::install_mods(matches, state)?;
 
     Ok(())
 }

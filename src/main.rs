@@ -79,24 +79,24 @@ fn main() {
         )
         .subcommand(
             App::new("add")
-                .about("Adds (a) file(s) to the manifest.")
+                .about("Adds (a) file(s) to the state.")
                 .setting(AppSettings::TrailingVarArg)
                 .arg(Arg::from("<files>... 'File(s) to add.'").required(true)),
         )
         .subcommand(
             App::new("rm")
-                .about("Removes a file from the manifest. Does not remove the file itself.")
+                .about("Removes a file from the state. Does not remove the file itself.")
                 .setting(AppSettings::TrailingVarArg)
                 .arg(Arg::from("<files>... 'File(s) to remove.'").required(true))
         )
         .subcommand(
             App::new("pull")
-                .about("Fetches and merges external manifests.")
+                .about("Fetches and merges external states.")
                 .subcommand(
                     App::new("add")
-                        .about("Fetches and merges an external manifest.")
+                        .about("Fetches and merges an external state.")
                         .arg(
-                            Arg::from("<from> 'Where to fetch the external manifest.'")
+                            Arg::from("<from> 'Where to fetch the external state.'")
                                 .required(true)
                                 .index(1),
                         )
@@ -117,9 +117,9 @@ fn main() {
                     )
                 .subcommand(
                     App::new("rm")
-                        .about("Removes an external manifest.")
+                        .about("Removes an external state.")
                         .arg(
-                            Arg::from("<name> 'The name of the external manifest to remove.'")
+                            Arg::from("<name> 'The name of the external state to remove.'")
                                 .required(false)
                                 .index(1)
                         )
@@ -335,14 +335,14 @@ on the directory."
         std::process::exit(1);
     }
 
-    let mut manifest: manifest::State;
+    let mut state: manifest::State;
     match manifest::State::new(PathBuf::from(
         default_greatness_dir.as_os_str().to_str().unwrap(),
     )) {
-        Ok(m) => manifest = m,
+        Ok(m) => state = m,
         Err(e) => {
             error!(
-                "An error occured whilst getting the greatness manifest: {}",
+                "An error occured whilst getting the greatness state: {}",
                 e
             );
             std::process::exit(1);
@@ -350,27 +350,27 @@ on the directory."
     }
 
     if matches.subcommand_name().unwrap_or("") != "init" {
-        let manifest_data: Manifest = match Manifest::populate_from_file(&manifest) {
+        let state_data: Manifest = match Manifest::populate_from_file(&state) {
             Ok(m) => m,
             Err(e) => {
                 error!(
-                    "An error occured whilst parsing the greatness manifest: {}",
+                    "An error occured whilst parsing the greatness state: {}",
                     e
                 );
                 std::process::exit(1);
             }
         };
 
-        manifest.data = manifest_data;
+        state.data = state_data;
     }
 
     match matches.subcommand() {
         Some(("status", _status_matches)) => {
-            status::print_status(&mut manifest);
+            status::print_status(&mut state);
         }
 
         Some(("doctor", doctor_matches)) => {
-            let verdict = doctor::doctor(&manifest, doctor_matches);
+            let verdict = doctor::doctor(&state, doctor_matches);
             if verdict.is_none() {
                 info!("No errors in your great configuration were found!");
 
@@ -394,7 +394,7 @@ on the directory."
                     .into_iter()
                     .map(|file| std::path::PathBuf::from(file))
                     .collect(),
-                &mut manifest,
+                &mut state,
             ) {
                 Ok(()) => (),
                 Err(e) => {
@@ -405,7 +405,7 @@ on the directory."
             }
         }
 
-        Some(("rm", rm_matches)) => match rm::rm(rm_matches, &mut manifest) {
+        Some(("rm", rm_matches)) => match rm::rm(rm_matches, &mut state) {
             Ok(()) => (),
             Err(e) => {
                 error!(
@@ -424,7 +424,7 @@ on the directory."
                 std::process::exit(1);
             }
 
-            match init::init(init_matches, &manifest) {
+            match init::init(init_matches, &state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!("An error occured whilst initialising your local great greatness environment: {}", e);
@@ -440,13 +440,13 @@ on the directory."
                     match pull::add::clone_and_install_repo(
                         add_matches.value_of("from").unwrap().to_string(),
                         add_matches,
-                        &mut manifest,
+                        &mut state,
                         false, // This is the original project
                     ) {
                         Ok(()) => (),
                         Err(e) => {
                             error!(
-                                "An error occured whilst cloning/installing the external manifest: {}",
+                                "An error occured whilst cloning/installing the external state: {}",
                                 e
                             );
 
@@ -455,11 +455,11 @@ on the directory."
                     }
                 }
 
-                Some(("rm", rm_matches)) => match pull::rm::repel(rm_matches, &mut manifest) {
+                Some(("rm", rm_matches)) => match pull::rm::repel(rm_matches, &mut state) {
                     Ok(()) => (),
                     Err(e) => {
                         error!(
-                            "An error occured whilst removing an external manifest: {}",
+                            "An error occured whilst removing an external state: {}",
                             e
                         );
 
@@ -478,7 +478,7 @@ on the directory."
 
         Some(("git", git_matches)) => match git_matches.subcommand() {
             Some(("remote", remote_matches)) => {
-                match git::remote::set_remote(remote_matches, &mut manifest) {
+                match git::remote::set_remote(remote_matches, &mut state) {
                     Ok(()) => (),
                     Err(e) => {
                         error!("An error occured whilst setting the remote: {}", e);
@@ -488,7 +488,7 @@ on the directory."
                 }
             }
 
-            Some(("add", add_matches)) => match git::add::add(add_matches, &mut manifest) {
+            Some(("add", add_matches)) => match git::add::add(add_matches, &mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!(
@@ -500,7 +500,7 @@ on the directory."
                 }
             },
 
-            Some(("push", push_matches)) => match git::push::push(push_matches, &mut manifest) {
+            Some(("push", push_matches)) => match git::push::push(push_matches, &mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!("An error occured whilst pushing files to the remote: {}", e);
@@ -509,7 +509,7 @@ on the directory."
                 }
             },
 
-            Some(("pull", pull_matches)) => match git::pull::pull(pull_matches, &mut manifest) {
+            Some(("pull", pull_matches)) => match git::pull::pull(pull_matches, &mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!("An error occured whilst pulling files to local: {}", e);
@@ -523,7 +523,7 @@ on the directory."
             }
         },
 
-        Some(("pack", pack_matches)) => match pack::pack(&mut manifest, pack_matches) {
+        Some(("pack", pack_matches)) => match pack::pack(&mut state, pack_matches) {
             Ok(()) => (),
             Err(e) => {
                 error!(
@@ -536,7 +536,7 @@ on the directory."
         },
 
         Some(("package", package_matches)) => match package_matches.subcommand() {
-            Some(("jog", jog_matches)) => match package::jog::jog(jog_matches, &mut manifest) {
+            Some(("jog", jog_matches)) => match package::jog::jog(jog_matches, &mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!("An error occured whilst installing all packages: {}", e);
@@ -545,7 +545,7 @@ on the directory."
                 }
             },
 
-            Some(("add", add_matches)) => match package::add::add(add_matches, &mut manifest) {
+            Some(("add", add_matches)) => match package::add::add(add_matches, &mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!("An error occured whilst adding a package to install: {}", e);
@@ -554,7 +554,7 @@ on the directory."
                 }
             },
 
-            Some(("rm", rm_matches)) => match package::rm::rm(rm_matches, &mut manifest) {
+            Some(("rm", rm_matches)) => match package::rm::rm(rm_matches, &mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!(
@@ -569,7 +569,7 @@ on the directory."
             Some(("overload", overload_matches)) => {
                 match overload_matches.subcommand() {
                     Some(("add", add_matches)) => {
-                        match package::overload::add::add(add_matches, &mut manifest) {
+                        match package::overload::add::add(add_matches, &mut state) {
                             Ok(()) => (),
                             Err(e) => {
                                 error!("An error occured whilst adding an overload: {}", e);
@@ -580,7 +580,7 @@ on the directory."
                     },
 
                     Some(("rm", rm_matches)) => {
-                        match package::overload::rm::rm(rm_matches, &mut manifest) {
+                        match package::overload::rm::rm(rm_matches, &mut state) {
                             Ok(()) => (),
                             Err(e) => {
                                 error!("An error occured whilst removing an overload: {}", e);
@@ -597,7 +597,7 @@ on the directory."
             _ => unreachable!(),
         },
 
-        Some(("tag", tag_matches)) => match tag::tag(tag_matches, &mut manifest) {
+        Some(("tag", tag_matches)) => match tag::tag(tag_matches, &mut state) {
             Ok(()) => (),
             Err(e) => {
                 error!("An error occured whilst tagging the file(s): {}", e);
@@ -606,7 +606,7 @@ on the directory."
             }
         },
 
-        Some(("prompt", prompt_matches)) => match prompt::prompt(prompt_matches, &mut manifest) {
+        Some(("prompt", prompt_matches)) => match prompt::prompt(prompt_matches, &mut state) {
             Ok(()) => (),
             Err(e) => {
                 error!(
@@ -620,7 +620,7 @@ on the directory."
 
         Some(("script", script_matches)) => match script_matches.subcommand() {
             Some(("assign", assign_matches)) => {
-                match script::assign::assign(assign_matches, &mut manifest) {
+                match script::assign::assign(assign_matches, &mut state) {
                     Ok(()) => (),
                     Err(e) => {
                         error!(
@@ -633,7 +633,7 @@ on the directory."
                 }
             }
 
-            Some(("rm", rm_matches)) => match script::rm::rm(rm_matches, &mut manifest) {
+            Some(("rm", rm_matches)) => match script::rm::rm(rm_matches, &mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!(
@@ -645,7 +645,7 @@ on the directory."
                 }
             },
 
-            Some(("jog", _jog_matches)) => match script::jog::jog(&mut manifest) {
+            Some(("jog", _jog_matches)) => match script::jog::jog(&mut state) {
                 Ok(()) => (),
                 Err(e) => {
                     error!("An error occured whilst going jogging: {}", e);

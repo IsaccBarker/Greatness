@@ -1,6 +1,6 @@
  use crate::manifest::{State, AddedPackage};
 use clap::ArgMatches;
-use snafu::{Snafu, ResultExt};
+use snafu::Snafu;
 
 #[derive(Debug, Snafu)]
 pub enum AddPackageError {
@@ -23,20 +23,20 @@ pub enum AddPackageError {
     }
 }
 
-pub fn add(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+pub fn add(matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     for package in matches.values_of("packages").unwrap() {
         let mut added = AddedPackage::new();
         
         added.package = package.to_string();
 
-        if let Some(packages) = &mut manifest.data.packages {
+        if let Some(packages) = &mut state.data.packages {
             packages.push(added);
         } else {
-            manifest.data.packages = Some(vec![added]);
+            state.data.packages = Some(vec![added]);
         }
     }
 
-    manifest.data.populate_file(&manifest);
+    state.data.populate_file(&state);
 
     Ok(())
 }

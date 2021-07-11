@@ -1,6 +1,6 @@
 use crate::manifest::State;
 use clap::ArgMatches;
-use log::{debug, info, warn};
+use log::{debug, info};
 use snafu::{ResultExt, Snafu};
 
 #[derive(Debug, Snafu)]
@@ -32,8 +32,8 @@ pub enum PackageJogError {
     },
 }
 
-pub fn jog(_matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
-    let manager = match super::get_manager(manifest) {
+pub fn jog(_matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    let manager = match super::get_manager(state) {
         Some(m) => m,
         None => {
             Err(std::io::Error::from(std::io::ErrorKind::InvalidInput)).context(NoManager {})?
@@ -41,11 +41,11 @@ pub fn jog(_matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
     };
 
     // TODO: Option to install all packages at once
-    if let Some(packages) = &manifest.data.packages {
+    if let Some(packages) = &state.data.packages {
         for package in packages {
-            let mut command = manifest.package_context.package_install_prefix.get_key_value(&manager).unwrap().0.clone();
+            let mut command = state.package_context.package_install_prefix.get_key_value(&manager).unwrap().0.clone();
             let package_name = package.package.clone();
-            let mut args = manifest
+            let mut args = state
                 .package_context
                 .package_install_prefix
                 .get(&manager)
@@ -57,7 +57,7 @@ pub fn jog(_matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
             if package.package_overloads.len() != 0 {
                 let mut to_use: (u8, String) = (0, "".into());
                 for overload in &package.package_overloads {
-                    let x = manifest.package_context.package_install_prefix.get_key_value(overload.0).unwrap();
+                    let x = state.package_context.package_install_prefix.get_key_value(overload.0).unwrap();
 
                     if x.1.1 > to_use.0 {
                         to_use = (x.1.1, x.0.clone());
@@ -69,7 +69,7 @@ pub fn jog(_matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
 
 
             // Runs if we need to run the command as root.
-            if manifest.package_context.package_install_prefix.get(&command).unwrap().0 {
+            if state.package_context.package_install_prefix.get(&command).unwrap().0 {
                 args.insert(0, command);
                 command = "sudo".into(); // TODO: Support doas.
             };

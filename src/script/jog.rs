@@ -5,13 +5,13 @@ use snafu::ResultExt;
 use std::fs::File;
 use std::io::Write;
 
-pub fn jog(manifest: &mut State) -> Result<(), Box<dyn std::error::Error>> {
-    if let Some(files) = &manifest.data.files {
+pub fn jog(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(files) = &state.data.files {
         for file in files {
             if let Some(scripts) = &file.scripts {
                 for script in scripts {
                     let abs = utils::special_to_absolute(&file.path);
-                    let processed = manifest
+                    let processed = state
                         .script_state
                         .script_on_file(&abs, &utils::special_to_absolute(script))?;
 

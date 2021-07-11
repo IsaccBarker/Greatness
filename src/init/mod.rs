@@ -17,21 +17,21 @@ pub enum InitError {
 /// Initializes the environment and gets it ready for greatness.
 /// WILL OVERWRITE THE USERS CONFIGURATION!!! However, it will
 /// not delete any dotfiles themselves.
-pub fn init(_matches: &ArgMatches, manifest: &State) -> Result<(), Box<dyn std::error::Error>> {
-    init_no_damage(_matches, manifest)?;
+pub fn init(_matches: &ArgMatches, state: &State) -> Result<(), Box<dyn std::error::Error>> {
+    init_no_damage(_matches, state)?;
 
     let mut file;
-    file = File::create(&manifest.greatness_manifest).context(utils::FileCreationError {
-        file: &manifest.greatness_manifest,
+    file = File::create(&state.greatness_state).context(utils::FileCreationError {
+        file: &state.greatness_state,
     })?;
 
     // For some reason, we need non-valid YAML to not get an error
     file.write_all(b"{}").context(utils::FileWriteError {
-        file: &manifest.greatness_manifest,
+        file: &state.greatness_state,
     })?;
 
-    Repository::init(&manifest.greatness_git_pack_dir).context(NoRepoInit {
-        dir: &manifest.greatness_git_pack_dir,
+    Repository::init(&state.greatness_git_pack_dir).context(NoRepoInit {
+        dir: &state.greatness_git_pack_dir,
     })?;
 
     Ok(())
@@ -40,29 +40,29 @@ pub fn init(_matches: &ArgMatches, manifest: &State) -> Result<(), Box<dyn std::
 /// Initialize, but don't damage anything
 pub fn init_no_damage(
     _matches: &ArgMatches,
-    manifest: &State,
+    state: &State,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    if !manifest.greatness_dir.as_path().exists() {
-        fs::create_dir_all(&manifest.greatness_dir).context(utils::DirCreationError {
-            dir: &manifest.greatness_dir,
+    if !state.greatness_dir.as_path().exists() {
+        fs::create_dir_all(&state.greatness_dir).context(utils::DirCreationError {
+            dir: &state.greatness_dir,
         })?;
     }
 
-    if !manifest.greatness_pulled_dir.as_path().exists() {
-        fs::create_dir_all(&manifest.greatness_pulled_dir).context(utils::DirCreationError {
-            dir: &manifest.greatness_pulled_dir,
+    if !state.greatness_pulled_dir.as_path().exists() {
+        fs::create_dir_all(&state.greatness_pulled_dir).context(utils::DirCreationError {
+            dir: &state.greatness_pulled_dir,
         })?;
     }
 
-    if !manifest.greatness_git_pack_dir.as_path().exists() {
-        fs::create_dir_all(&manifest.greatness_git_pack_dir).context(utils::DirCreationError {
-            dir: &manifest.greatness_git_pack_dir,
+    if !state.greatness_git_pack_dir.as_path().exists() {
+        fs::create_dir_all(&state.greatness_git_pack_dir).context(utils::DirCreationError {
+            dir: &state.greatness_git_pack_dir,
         })?;
     }
 
-    if !manifest.greatness_scripts_dir.as_path().exists() {
-        fs::create_dir_all(&manifest.greatness_scripts_dir).context(utils::DirCreationError {
-            dir: &manifest.greatness_scripts_dir,
+    if !state.greatness_scripts_dir.as_path().exists() {
+        fs::create_dir_all(&state.greatness_scripts_dir).context(utils::DirCreationError {
+            dir: &state.greatness_scripts_dir,
         })?;
     }
 

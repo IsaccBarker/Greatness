@@ -15,43 +15,43 @@ pub enum PackError {
 }
 
 /// Pack, and automatically call a packing backend
-pub fn pack(manifest: &mut State, _matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
-    let original_manifest_location = manifest.greatness_manifest.clone();
-    let base = PathBuf::from(&manifest.greatness_git_pack_dir);
-    manifest.greatness_manifest = base.clone();
+pub fn pack(state: &mut State, _matches: &ArgMatches) -> Result<(), Box<dyn std::error::Error>> {
+    let original_state_location = state.greatness_state.clone();
+    let base = PathBuf::from(&state.greatness_git_pack_dir);
+    state.greatness_state = base.clone();
     if !base.as_path().exists() {
         std::fs::create_dir(&base).context(utils::DirCreationError { dir: &base })?;
     }
 
-    manifest.greatness_manifest.push("greatness.yaml");
-    if !manifest.greatness_manifest.as_path().exists() {
-        std::fs::File::create(&manifest.greatness_manifest).context(utils::FileCreationError {
-            file: &manifest.greatness_manifest,
+    state.greatness_state.push("greatness.yaml");
+    if !state.greatness_state.as_path().exists() {
+        std::fs::File::create(&state.greatness_state).context(utils::FileCreationError {
+            file: &state.greatness_state,
         })?;
     }
 
-    pack_manifest(manifest, &original_manifest_location)?;
-    pack_files(manifest, &base)?;
-    pack_scripts(manifest, &base)?;
+    pack_state(state, &original_state_location)?;
+    pack_files(state, &base)?;
+    pack_scripts(state, &base)?;
 
     Ok(())
 }
 
-/// Pack the manifest. Thats it.
-fn pack_manifest(
-    manifest: &mut State,
-    original_manifest_location: &PathBuf,
+/// Pack the state. Thats it.
+fn pack_state(
+    state: &mut State,
+    original_state_location: &PathBuf,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Pack the manifest
+    // Pack the state
     debug!(
-        "Packing manifest from {} -> {}....",
-        original_manifest_location.display(),
-        &manifest.greatness_manifest.display()
+        "Packing state from {} -> {}....",
+        original_state_location.display(),
+        &state.greatness_state.display()
     );
-    std::fs::copy(&original_manifest_location, &manifest.greatness_manifest).context(
+    std::fs::copy(&original_state_location, &state.greatness_state).context(
         utils::FileCopyError {
-            src: &original_manifest_location,
-            dest: &manifest.greatness_manifest,
+            src: &original_state_location,
+            dest: &state.greatness_state,
         },
     )?;
 
@@ -59,7 +59,7 @@ fn pack_manifest(
 }
 
 /// Packs the scripts
-fn pack_scripts(manifest: &mut State, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+fn pack_scripts(state: &mut State, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let mut to = base.clone();
     to.push("scripts");
 
@@ -72,19 +72,19 @@ fn pack_scripts(manifest: &mut State, base: &PathBuf) -> Result<(), Box<dyn std:
 
     debug!(
         "Packing script directory from {} -> {}....",
-        manifest.greatness_scripts_dir.display(),
+        state.greatness_scripts_dir.display(),
         to.display(),
     );
 
     // Copy the directory recursively
-    fs_extra::dir::copy(&manifest.greatness_scripts_dir, to.parent().unwrap(), &fs_extra::dir::CopyOptions::new())?;
+    fs_extra::dir::copy(&state.greatness_scripts_dir, to.parent().unwrap(), &fs_extra::dir::CopyOptions::new())?;
 
     Ok(())
 }
 
 /// Packs all the files.
-pub fn pack_files(manifest: &State, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
-    if let Some(files) = &manifest.data.files {
+pub fn pack_files(state: &State, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(files) = &state.data.files {
         for file in files {
             pack_file(&base, &file.path)?;
         }

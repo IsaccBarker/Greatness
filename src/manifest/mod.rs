@@ -1,6 +1,5 @@
 use crate::script::ScriptsState;
 use crate::utils;
-use crate::git::pull;
 use git2::Repository;
 use snafu::{ResultExt, Snafu};
 use std::collections::HashMap;
@@ -16,7 +15,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]
-/// Errors pretaining to the local manifest
+/// Errors pretaining to the local state
 pub enum StateError {
     #[snafu(display("Could not parse great configuration file ({}): {}", filename.display(), source))]
     ParseError {
@@ -30,7 +29,7 @@ pub enum StateError {
 pub struct State {
     pub greatness_dir: PathBuf,
     pub greatness_pulled_dir: PathBuf,
-    pub greatness_manifest: PathBuf,
+    pub greatness_state: PathBuf,
     pub greatness_git_pack_dir: PathBuf,
     pub greatness_scripts_dir: PathBuf,
     pub repository: Option<Repository>,
@@ -74,7 +73,7 @@ pub struct PackageContext {
     pub package_install_prefix: HashMap<String, (bool, u8, Vec<String>)>,
 }
 
-/// Data stored in the manifest that is stored locally on the computer
+/// Data stored in the state that is stored locally on the computer
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Manifest {
     /// Software that needs to be installed
@@ -158,25 +157,25 @@ impl AddedPackage {
 }
 
 impl Manifest {
-    /// Load on file data into the manifestData struct.
-    pub fn populate_from_file(manifest_info: &State) -> Result<Self, Box<dyn std::error::Error>> {
-        let manifest_file = &manifest_info.greatness_manifest;
-        let x = serde_yaml::from_str(&fs::read_to_string(&manifest_file).context(
+    /// Load on file data into the stateData struct.
+    pub fn populate_from_file(state_info: &State) -> Result<Self, Box<dyn std::error::Error>> {
+        let state_file = &state_info.greatness_state;
+        let x = serde_yaml::from_str(&fs::read_to_string(&state_file).context(
             utils::FileReadError {
-                file: &manifest_file,
+                file: &state_file,
             },
         )?)
         .context(ParseError {
-            filename: manifest_file,
+            filename: state_file,
         })?;
 
         Ok(x)
     }
 
     /// Serialize data back into the local file on disk.
-    pub fn populate_file(&self, manifest: &State) {
+    pub fn populate_file(&self, state: &State) {
         let mut s = serde_yaml::to_string(self).unwrap(); // TODO: Figure out if we actually have to worry about this
-        let mut f = File::create(&manifest.greatness_manifest).unwrap();
+        let mut f = File::create(&state.greatness_state).unwrap();
 
         debug!("Writing to file:\n{}", s);
 
@@ -230,7 +229,7 @@ impl Manifest {
         self.files.replace(files);
     }
 
-    /// Does the manifest already contain a
+    /// Does the state already contain a
     /// package?
     pub fn contains_package(&mut self, w_package: String) -> Option<&mut AddedPackage> {
         if let Some(packages) = &mut self.packages {
@@ -300,16 +299,16 @@ impl Default for Manifest {
 }
 
 impl State {
-    /// Creates a new local manifest
-    pub fn new(manifest_dir: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
-        let mut greatness_pulled_dir = PathBuf::from(manifest_dir.clone());
+    /// Creates a new local state
+    pub fn new(state_dir: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
+        let mut greatness_pulled_dir = PathBuf::from(state_dir.clone());
         greatness_pulled_dir.push("pulled");
-        let mut greatness_manifest = PathBuf::from(manifest_dir.clone());
-        greatness_manifest.push("greatness.yaml");
-        let mut greatness_git_pack_dir = PathBuf::from(manifest_dir.clone());
+        let mut greatness_state = PathBuf::from(state_dir.clone());
+        greatness_state.push("greatness.yaml");
+        let mut greatness_git_pack_dir = PathBuf::from(state_dir.clone());
         greatness_git_pack_dir.push("packed");
         greatness_git_pack_dir.push("git");
-        let mut greatness_scripts_dir = PathBuf::from(manifest_dir.clone());
+        let mut greatness_scripts_dir = PathBuf::from(state_dir.clone());
         greatness_scripts_dir.push("scripts");
 
         let mut script_state = ScriptsState::new();
@@ -329,12 +328,12 @@ impl State {
 
         debug!(
             "Working the greatest directory of {}!",
-            manifest_dir.display()
+            state_dir.display()
         );
 
         Ok(Self {
-            greatness_dir: manifest_dir,
-            greatness_manifest,
+            greatness_dir: state_dir,
+            greatness_state,
             greatness_pulled_dir,
             greatness_git_pack_dir,
             greatness_scripts_dir,
