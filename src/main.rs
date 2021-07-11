@@ -341,10 +341,7 @@ on the directory."
     )) {
         Ok(m) => state = m,
         Err(e) => {
-            error!(
-                "An error occured whilst getting the greatness state: {}",
-                e
-            );
+            error!("An error occured whilst getting the greatness state: {}", e);
             std::process::exit(1);
         }
     }
@@ -353,10 +350,7 @@ on the directory."
         let state_data: Manifest = match Manifest::populate_from_file(&state) {
             Ok(m) => m,
             Err(e) => {
-                error!(
-                    "An error occured whilst parsing the greatness state: {}",
-                    e
-                );
+                error!("An error occured whilst parsing the greatness state: {}", e);
                 std::process::exit(1);
             }
         };
@@ -458,10 +452,7 @@ on the directory."
                 Some(("rm", rm_matches)) => match pull::rm::repel(rm_matches, &mut state) {
                     Ok(()) => (),
                     Err(e) => {
-                        error!(
-                            "An error occured whilst removing an external state: {}",
-                            e
-                        );
+                        error!("An error occured whilst removing an external state: {}", e);
 
                         std::process::exit(1);
                     }
@@ -566,33 +557,33 @@ on the directory."
                 }
             },
 
-            Some(("overload", overload_matches)) => {
-                match overload_matches.subcommand() {
-                    Some(("add", add_matches)) => {
-                        match package::overload::add::add(add_matches, &mut state) {
-                            Ok(()) => (),
-                            Err(e) => {
-                                error!("An error occured whilst adding an overload: {}", e);
+            Some(("overload", overload_matches)) => match overload_matches.subcommand() {
+                Some(("add", add_matches)) => {
+                    match package::overload::add::add(add_matches, &mut state) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!("An error occured whilst adding an overload: {}", e);
 
-                                std::process::exit(1);
-                            }
-                        }
-                    },
-
-                    Some(("rm", rm_matches)) => {
-                        match package::overload::rm::rm(rm_matches, &mut state) {
-                            Ok(()) => (),
-                            Err(e) => {
-                                error!("An error occured whilst removing an overload: {}", e);
-
-                                std::process::exit(1);
-                            }
+                            std::process::exit(1);
                         }
                     }
-
-                    _ => { unreachable!() }
                 }
-            }
+
+                Some(("rm", rm_matches)) => {
+                    match package::overload::rm::rm(rm_matches, &mut state) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!("An error occured whilst removing an overload: {}", e);
+
+                            std::process::exit(1);
+                        }
+                    }
+                }
+
+                _ => {
+                    unreachable!()
+                }
+            },
 
             _ => unreachable!(),
         },

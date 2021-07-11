@@ -30,10 +30,7 @@ pub fn print_status(state: &State) {
         info!("Packages: ");
 
         for package in packages {
-            info!(
-                "\tname: {}",
-                package.package
-            );
+            info!("\tname: {}", package.package);
 
             if package.package_overloads.len() != 0 {
                 info!("\t\toverlods:");

@@ -1,13 +1,17 @@
-pub mod overload;
 pub mod add;
-pub mod rm;
 pub mod jog;
+pub mod overload;
+pub mod rm;
 
 use crate::manifest::State;
 
 /// Get the default package manager on your system.
 pub fn get_manager(state: &State) -> Option<String> {
-    let managers = state.package_context.package_install_prefix.keys().collect::<Vec<&String>>();
+    let managers = state
+        .package_context
+        .package_install_prefix
+        .keys()
+        .collect::<Vec<&String>>();
     let mut ok_managers: Vec<String> = vec![];
     let mut winning = (0 as u8, "".to_owned());
 
@@ -21,8 +25,25 @@ pub fn get_manager(state: &State) -> Option<String> {
     // Given a list of managers, get the one with the
     // highest priority.
     for ok_manager in ok_managers {
-        if state.package_context.package_install_prefix.get_key_value(&ok_manager).unwrap().1.1 >= winning.0 {
-            winning = (state.package_context.package_install_prefix.get_key_value(&ok_manager).unwrap().1.1, ok_manager);
+        if state
+            .package_context
+            .package_install_prefix
+            .get_key_value(&ok_manager)
+            .unwrap()
+            .1
+             .1
+            >= winning.0
+        {
+            winning = (
+                state
+                    .package_context
+                    .package_install_prefix
+                    .get_key_value(&ok_manager)
+                    .unwrap()
+                    .1
+                     .1,
+                ok_manager,
+            );
         }
     }
 
@@ -33,4 +54,3 @@ pub fn get_manager(state: &State) -> Option<String> {
 
     Some(winning.1)
 }
-

@@ -125,7 +125,7 @@ impl PackageContext {
         Self {
             // Add support for package managers here!
             package_install_prefix: hashmap! {
-                // Manager Name 
+                // Manager Name
                 "pacman".into() => (true, 0, vec!["-y".into(), "--needed".into(), "-S".into()]),
                 "paru".into() =>   (false, 1, vec!["--noconfirm".into(), "--needed".into(), "-S".into()]),
                 "yay".into() =>    (false, 2, vec!["--noconfirm".into(), "--needed".into(), "-S".into()]),
@@ -160,11 +160,9 @@ impl Manifest {
     /// Load on file data into the stateData struct.
     pub fn populate_from_file(state_info: &State) -> Result<Self, Box<dyn std::error::Error>> {
         let state_file = &state_info.greatness_state;
-        let x = serde_yaml::from_str(&fs::read_to_string(&state_file).context(
-            utils::FileReadError {
-                file: &state_file,
-            },
-        )?)
+        let x = serde_yaml::from_str(
+            &fs::read_to_string(&state_file).context(utils::FileReadError { file: &state_file })?,
+        )
         .context(ParseError {
             filename: state_file,
         })?;
@@ -326,10 +324,7 @@ impl State {
             });
         }
 
-        debug!(
-            "Working the greatest directory of {}!",
-            state_dir.display()
-        );
+        debug!("Working the greatest directory of {}!", state_dir.display());
 
         Ok(Self {
             greatness_dir: state_dir,

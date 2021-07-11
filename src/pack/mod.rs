@@ -64,10 +64,11 @@ fn pack_scripts(state: &mut State, base: &PathBuf) -> Result<(), Box<dyn std::er
     to.push("scripts");
 
     if !to.as_path().exists() {
-        debug!("Scripts dir doesn't exist! Creating at {}....", &to.display());
-        std::fs::create_dir_all(&to).context(utils::DirCreationError {
-            dir: &to,
-        })?;
+        debug!(
+            "Scripts dir doesn't exist! Creating at {}....",
+            &to.display()
+        );
+        std::fs::create_dir_all(&to).context(utils::DirCreationError { dir: &to })?;
     }
 
     debug!(
@@ -77,7 +78,11 @@ fn pack_scripts(state: &mut State, base: &PathBuf) -> Result<(), Box<dyn std::er
     );
 
     // Copy the directory recursively
-    fs_extra::dir::copy(&state.greatness_scripts_dir, to.parent().unwrap(), &fs_extra::dir::CopyOptions::new())?;
+    fs_extra::dir::copy(
+        &state.greatness_scripts_dir,
+        to.parent().unwrap(),
+        &fs_extra::dir::CopyOptions::new(),
+    )?;
 
     Ok(())
 }

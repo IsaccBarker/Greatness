@@ -43,7 +43,13 @@ pub fn jog(_matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::
     // TODO: Option to install all packages at once
     if let Some(packages) = &state.data.packages {
         for package in packages {
-            let mut command = state.package_context.package_install_prefix.get_key_value(&manager).unwrap().0.clone();
+            let mut command = state
+                .package_context
+                .package_install_prefix
+                .get_key_value(&manager)
+                .unwrap()
+                .0
+                .clone();
             let package_name = package.package.clone();
             let mut args = state
                 .package_context
@@ -57,19 +63,28 @@ pub fn jog(_matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::
             if package.package_overloads.len() != 0 {
                 let mut to_use: (u8, String) = (0, "".into());
                 for overload in &package.package_overloads {
-                    let x = state.package_context.package_install_prefix.get_key_value(overload.0).unwrap();
+                    let x = state
+                        .package_context
+                        .package_install_prefix
+                        .get_key_value(overload.0)
+                        .unwrap();
 
-                    if x.1.1 > to_use.0 {
-                        to_use = (x.1.1, x.0.clone());
+                    if x.1 .1 > to_use.0 {
+                        to_use = (x.1 .1, x.0.clone());
                     }
                 }
 
                 command = to_use.1;
             }
 
-
             // Runs if we need to run the command as root.
-            if state.package_context.package_install_prefix.get(&command).unwrap().0 {
+            if state
+                .package_context
+                .package_install_prefix
+                .get(&command)
+                .unwrap()
+                .0
+            {
                 args.insert(0, command);
                 command = "sudo".into(); // TODO: Support doas.
             };

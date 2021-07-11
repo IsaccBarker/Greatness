@@ -7,15 +7,10 @@ use snafu::ResultExt;
 use std::path::PathBuf;
 
 /// Assigns a script to a file
-pub fn assign(
-    matches: &ArgMatches,
-    state: &mut State,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub fn assign(matches: &ArgMatches, state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     let target_base = PathBuf::from(matches.value_of("file").unwrap());
-    let script_base = utils::relative_to_script(
-        state,
-        &PathBuf::from(matches.value_of("script").unwrap()),
-    );
+    let script_base =
+        utils::relative_to_script(state, &PathBuf::from(matches.value_of("script").unwrap()));
 
     debug!(
         "Assigning script at {} to {} (non special paths)....",

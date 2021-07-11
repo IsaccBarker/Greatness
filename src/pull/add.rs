@@ -1,8 +1,8 @@
 use crate::git::clone;
 use crate::init;
 use crate::manifest::{Manifest, State};
-use crate::script;
 use crate::package;
+use crate::script;
 use crate::utils;
 use clap::ArgMatches;
 use log::{debug, info, warn};
@@ -164,7 +164,10 @@ pub fn install(
     Ok(())
 }
 
-pub fn install_mods(matches: &ArgMatches, external_state: &mut State) -> Result<(), Box<dyn std::error::Error>>{
+pub fn install_mods(
+    matches: &ArgMatches,
+    external_state: &mut State,
+) -> Result<(), Box<dyn std::error::Error>> {
     // Run the scripts, and install the packages.
     if matches.is_present("allow-mods") {
         debug!("--allow-mods specified, running scripts....");

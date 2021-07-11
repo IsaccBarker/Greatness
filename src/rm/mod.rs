@@ -1,9 +1,9 @@
 use crate::manifest::State;
 use crate::utils;
 use clap::ArgMatches;
+use log::warn;
 use snafu::ResultExt;
 use std::path::PathBuf;
-use log::warn;
 
 pub fn rm(matches: &ArgMatches, state: &mut State) -> Result<(), utils::CommonErrors> {
     let files = matches.values_of("files").unwrap();
