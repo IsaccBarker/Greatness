@@ -1,5 +1,6 @@
 use crate::script::ScriptsState;
 use crate::utils;
+use crate::git::pull;
 use git2::Repository;
 use snafu::{ResultExt, Snafu};
 use std::collections::HashMap;
@@ -319,7 +320,10 @@ impl State {
         if greatness_git_pack_dir.exists() {
             repository = Some(match Repository::open(&greatness_git_pack_dir) {
                 Ok(r) => r,
-                Err(_) => Repository::init(&greatness_git_pack_dir).unwrap()
+                Err(_) => {
+                    let r = Repository::init(&greatness_git_pack_dir).unwrap();
+                    r
+                }
             });
         }
 

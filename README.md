@@ -1,6 +1,5 @@
 # Greatness!
 <p align="center">
-  <h1>Do not use until v1.0.0!</h1>
   <a href="github.com/IsaccBarker/Greatness" target="blank"><img src="assets/greatness.png" alt="Greatness Logo" /></a>
   <img src="https://forthebadge.com/images/badges/powered-by-electricity.svg">
   <img src="https://forthebadge.com/images/badges/uses-git.svg">
@@ -17,7 +16,12 @@ Achieve it! How you ask? Well, it's pretty simple; just use greatness!
 # Only run this if you don't have rust installed.
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-# Inside the cloned repo
+# Install from crates.io
+cargo install great
+
+# Or build the latest!
+git cloen https://github.com/IsaccBarker/greatness.git
+cd greatness
 cargo install --path .
 ```
 ### Short way
@@ -37,7 +41,7 @@ You can view the documentation (wiki) [here](https://github.com/IsaccBarker/Grea
 ## Why is Greatness *the* best?
 Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.
 #### Disclaimer
-You may recognise this chart from Chezmoi, but with some rows stripped out. This is because I do not know what they mean, and thus cannot implement them. If you want them, please file a great issue/pr.
+You may recognise this chart from Chezmoi, but with some rows stripped out. This is because I do not know what they mean, and thus cannot implement them. A clock simply means that it will be supported, but isn't yet. If you want them, please file a great issue/pr.
 
 |                                        | greatness         | chezmoi       | dotbot            | rcm               | homesick          | yadm          | bare git   |
 | -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | ------------- | ---------- |
