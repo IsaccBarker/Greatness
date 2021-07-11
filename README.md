@@ -72,9 +72,6 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 
 As you can see, greatness is best. However, a sort of close second [chezmoi], has a weird name, is not scriptable, doesn't support dotfile merging, and isn't modular. This makes it not ideal for situations where you might want to pick parts of diferent peoples rices, merge them, script program installation (or have greatness do it for you), and then put it out into the world as a repository, which other people can then use as modules.
 
-### But don't use Windows. There are four reasons for this
-1. The use case is really small (not many people develop on Windows to the point where you need a dotfile manager).
-2. Windows is not great.
-3. It's very diferent than MacOS and Unix, where most development happens.
-4. I don't have a Windows machine.
+### But don't use Windows. There is one reasons for this
+1. I don't have a Windows machine.
 Windows support may or may not be added in the future. The underlying code for supporting Windows is added to the best of my ability, but overall it should not work. Please note that not providing Windows support is mainly for your safety; I would hate for anything bad to happen to your files.
