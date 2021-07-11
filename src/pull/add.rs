@@ -1,10 +1,11 @@
 use crate::git::clone;
 use crate::init;
 use crate::manifest::{Manifest, State};
-use crate::script::jog;
+use crate::script;
+use crate::package;
 use crate::utils;
 use clap::ArgMatches;
-use log::{debug, info};
+use log::{debug, info, warn};
 use question::{Answer, Question};
 use snafu::{ResultExt, Snafu};
 use std::path::PathBuf;
@@ -144,6 +145,8 @@ pub fn install(
         }
     }
 
+    install_mods(matches, external_manifest)?;
+
     // Make sure we mark this as a dependency, only if we are not
     // installing it as main
     if !matches.is_present("as-main") {
@@ -152,13 +155,25 @@ pub fn install(
         debug!("--as-main specified, not marking specfied as a dependency....");
     }
 
-    // Run the scripts
-    jog::jog(external_manifest)?;
-
     // Don't overwrite the manifest with nothing if
     // we plan to pull as main.
     if !matches.is_present("as-main") {
         manifest.data.populate_file(manifest);
+    }
+
+    Ok(())
+}
+
+pub fn install_mods(matches: &ArgMatches, external_manifest: &mut State) -> Result<(), Box<dyn std::error::Error>>{
+    // Run the scripts, and install the packages.
+    if matches.is_present("allow-mods") {
+        debug!("--allow-mods specified, running scripts....");
+        script::jog::jog(external_manifest)?;
+
+        debug!("--allow-mods specified, installing packages....");
+        package::jog::jog(matches, external_manifest)?;
+    } else {
+        warn!("The --allow-mods (-d) argument is not passed! No scripts will be run for security reasons :D");
     }
 
     Ok(())

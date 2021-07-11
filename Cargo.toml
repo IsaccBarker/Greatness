@@ -37,4 +37,5 @@ subprocess = "0.2.7"
 lazy_static = "1.4.0"
 encryptfile = "0.1.3"
 maplit = "1.0.2"
+fs_extra = "1.2.0"
 

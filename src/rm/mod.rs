@@ -3,6 +3,7 @@ use crate::utils;
 use clap::ArgMatches;
 use snafu::ResultExt;
 use std::path::PathBuf;
+use log::warn;
 
 pub fn rm(matches: &ArgMatches, manifest: &mut State) -> Result<(), utils::CommonErrors> {
     let files = matches.values_of("files").unwrap();
@@ -27,17 +28,18 @@ fn rm_file(file: &str, manifest: &mut State) -> Result<(), utils::CommonErrors> 
     let data = manifest.data.clone();
     let contains = data.contains(&utils::relative_to_special(&PathBuf::from(file)).unwrap());
     if contains.is_none() {
-        Err(std::io::Error::from(std::io::ErrorKind::NotFound))
-            .context(utils::FileNotTracked { file })?;
+        warn!("Not-yet-great file {} is not tracked! Skipping....", file);
     }
 
     let mut added_files = manifest.data.files.take().unwrap_or(vec![]);
-    added_files.remove(contains.unwrap().1);
-    manifest.data.files.replace(added_files);
+    if let Some(c) = &contains {
+        added_files.remove(c.1);
+        manifest.data.files.replace(added_files);
 
-    // Delete said temporary file if it exists
-    if must_delete_tmp {
-        std::fs::remove_file(file).context(utils::FileDeletionError { file })?;
+        // Delete said temporary file if it exists
+        if must_delete_tmp {
+            std::fs::remove_file(file).context(utils::FileDeletionError { file })?;
+        }
     }
 
     Ok(())

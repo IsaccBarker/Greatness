@@ -32,6 +32,7 @@ pub fn pack(manifest: &mut State, _matches: &ArgMatches) -> Result<(), Box<dyn s
 
     pack_manifest(manifest, &original_manifest_location)?;
     pack_files(manifest, &base)?;
+    pack_scripts(manifest, &base)?;
 
     Ok(())
 }
@@ -53,6 +54,30 @@ fn pack_manifest(
             dest: &manifest.greatness_manifest,
         },
     )?;
+
+    Ok(())
+}
+
+/// Packs the scripts
+fn pack_scripts(manifest: &mut State, base: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    let mut to = base.clone();
+    to.push("scripts");
+
+    if !to.as_path().exists() {
+        debug!("Scripts dir doesn't exist! Creating at {}....", &to.display());
+        std::fs::create_dir_all(&to).context(utils::DirCreationError {
+            dir: &to,
+        })?;
+    }
+
+    debug!(
+        "Packing script directory from {} -> {}....",
+        manifest.greatness_scripts_dir.display(),
+        to.display(),
+    );
+
+    // Copy the directory recursively
+    fs_extra::dir::copy(&manifest.greatness_scripts_dir, to.parent().unwrap(), &fs_extra::dir::CopyOptions::new())?;
 
     Ok(())
 }
@@ -81,6 +106,7 @@ fn pack_file(base: &PathBuf, file: &PathBuf) -> Result<(), utils::CommonErrors> 
         &to.display()
     );
     if !to.as_path().exists() {
+        debug!("Files dir doesn't exist! Creating at {}....", &to.display());
         std::fs::create_dir_all(to.parent().unwrap()).context(utils::DirCreationError {
             dir: to.parent().unwrap(),
         })?;

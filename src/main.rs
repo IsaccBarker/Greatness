@@ -102,10 +102,16 @@ fn main() {
                                 .required(false)
                         )
                         .arg(
+                            Arg::from("<allow-mods> -d, --allow-mods 'Allow scripts and package installation. Please do not use this argument without trusting the source.'")
+                                .required(false)
+                                .takes_value(false)
+                       )
+                        .arg(
                             Arg::from("<as-main> -m, --as-main 'Install the file, overwriting the main configuration.'")
                                 .required(false)
+                                .takes_value(false)
                         )
-                )
+                    )
                 .subcommand(
                     App::new("rm")
                         .about("Removes an external manifest.")
@@ -167,6 +173,11 @@ fn main() {
                                 .default_value("main")
                                 .required(false)
                         )
+                        .arg(
+                            Arg::from("<allow-mods> -d, --allow-mods 'Allow scripts and package installation. Please do not use this argument without trusting the source.'")
+                                .required(false)
+                        )
+
                 )
                 .subcommand(
                     App::new("push")
@@ -218,6 +229,38 @@ fn main() {
                                 .index(1)
                         )
                 )
+                .subcommand(
+                    App::new("overload")
+                        .about("Deal with package overloading.")
+                        .subcommand(
+                            App::new("add")
+                                .about("Add an overload to a added package.")
+                                .arg(
+                                    Arg::from("<manager> 'The manager to overload'")
+                                        .index(1)
+                                        .required(true)
+                                )
+                                .arg(
+                                    Arg::from("<original> 'The original package to overload'")
+                                        .index(2)
+                                        .required(true)
+                                )
+                                .arg(
+                                    Arg::from("<overload> 'The overload itself'")
+                                        .index(3)
+                                        .required(true)
+                                )
+                        )
+                        .subcommand(
+                            App::new("rm")
+                                .about("Remove a overload from an added package.")
+                                .arg(
+                                    Arg::from("<overloads>.... 'The overload(s) to remove'")
+                                        .index(1)
+                                        .required(true)
+                                )
+                        )
+                )
         )
         .subcommand(
             App::new("prompt")
@@ -242,7 +285,7 @@ fn main() {
                         )
                 )
                 .subcommand(
-                    App::new("rm")    
+                    App::new("rm")
                         .setting(AppSettings::TrailingVarArg)
                         .about("Remove a scripts from a file.")
                         .arg(
@@ -513,6 +556,34 @@ on the directory."
                     std::process::exit(1);
                 }
             },
+
+            Some(("overload", overload_matches)) => {
+                match overload_matches.subcommand() {
+                    Some(("add", add_matches)) => {
+                        match package::overload::add::add(add_matches, &mut manifest) {
+                            Ok(()) => (),
+                            Err(e) => {
+                                error!("An error occured whilst adding an overload: {}", e);
+
+                                std::process::exit(1);
+                            }
+                        }
+                    },
+
+                    Some(("rm", rm_matches)) => {
+                        match package::overload::rm::rm(rm_matches, &mut manifest) {
+                            Ok(()) => (),
+                            Err(e) => {
+                                error!("An error occured whilst removing an overload: {}", e);
+
+                                std::process::exit(1);
+                            }
+                        }
+                    }
+
+                    _ => { unreachable!() }
+                }
+            }
 
             _ => unreachable!(),
         },

@@ -1,4 +1,5 @@
 use crate::manifest::State;
+use crate::pull;
 use clap::ArgMatches;
 use log::{info, warn};
 use snafu::{ResultExt, Snafu};
@@ -114,6 +115,8 @@ pub fn pull(matches: &ArgMatches, manifest: &mut State) -> Result<(), Box<dyn st
             info!("Nothing to do!");
         }
     }
+
+    pull::add::install_mods(matches, manifest)?;
 
     Ok(())
 }

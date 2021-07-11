@@ -26,6 +26,25 @@ pub fn print_status(manifest: &State) {
 
     print!("\n");
 
+    if let Some(packages) = &manifest.data.packages {
+        info!("Packages: ");
+
+        for package in packages {
+            info!(
+                "\tname: {}",
+                package.package
+            );
+
+            if package.package_overloads.len() != 0 {
+                info!("\t\toverlods:");
+                for (manager, overload) in package.package_overloads.clone().into_iter() {
+                    info!("\t\t\tmanager: {}", manager);
+                    info!("\t\t\toverload: {}", overload);
+                }
+            }
+        }
+    }
+
     if let Some(files) = &manifest.data.files {
         info!("Added files:");
 

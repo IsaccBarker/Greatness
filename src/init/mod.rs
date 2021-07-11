@@ -30,6 +30,10 @@ pub fn init(_matches: &ArgMatches, manifest: &State) -> Result<(), Box<dyn std::
         file: &manifest.greatness_manifest,
     })?;
 
+    Repository::init(&manifest.greatness_git_pack_dir).context(NoRepoInit {
+        dir: &manifest.greatness_git_pack_dir,
+    })?;
+
     Ok(())
 }
 
@@ -61,10 +65,6 @@ pub fn init_no_damage(
             dir: &manifest.greatness_scripts_dir,
         })?;
     }
-
-    Repository::init(&manifest.greatness_git_pack_dir).context(NoRepoInit {
-        dir: &manifest.greatness_git_pack_dir,
-    })?;
 
     Ok(())
 }
