@@ -20,7 +20,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 cargo install great
 
 # Or build the latest!
-git cloen https://github.com/IsaccBarker/greatness.git
+git clone https://github.com/IsaccBarker/greatness.git
 cd greatness
 cargo install --path .
 ```
