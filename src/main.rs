@@ -45,8 +45,6 @@ fn main() {
     #[cfg(not(debug_assertions))]
     builder.filter_level(LevelFilter::Info);
 
-    builder.init();
-
     // CLI Interface (RAS Syndrome)
     let mut default_greatness_dir = std::path::PathBuf::new();
     default_greatness_dir.push(home::home_dir().unwrap());
@@ -56,6 +54,11 @@ fn main() {
         .version("0.1.0")
         .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
         .about("Helps you to achieve greatness!")
+        .arg(
+            Arg::from("<verbose> -v, --verbose 'Enable verbose mode.'")
+                .required(false)
+                .takes_value(false)
+        )
         .subcommand(
             App::new("init")
                 .about("Initializes greatness!")
@@ -305,6 +308,12 @@ fn main() {
                 )
         )
         .get_matches(); // TODO: Push and pull commands?
+
+    if matches.is_present("verbose") {
+        builder.filter_level(LevelFilter::Debug);
+    }
+
+    builder.init();
 
     if Uid::effective().is_root() {
         eprintln!(
