@@ -31,15 +31,15 @@ great pull add -m Wowee/GreatnessIsAmazing # Defaults to github. Put in a full U
 ```
 
 ## What is greatness?
-Greatness is you being great and better than everyone else. You have to uphold that superoprity complex don't you?
+Greatness is you being great and better than everyone else. You have to uphold that superiority complex don't you?
 
 ## How do I achieve greatness?
-Simple! Use this tool. This tool is designed to bring your system up to a working state that you like in a small amount of time. It is *very* flexible, 100% modular, and fast.
+Simple! Use this tool. This tool is designed to bring your system up to a working state that you like in a small amount of time. It is flexible, 100% modular, and fast.
 
 You can view the documentation (wiki) [here](https://github.com/IsaccBarker/Greatness/wiki/)!
 
 ## Why is Greatness *the* best?
-Well, just remember the name. Greatness has to be the best. But if you are stupid (but still great), here is a comparision chart.
+Well, just remember the name. Greatness has to be the best. But if you are dim (but still great), here is a comparision chart.
 #### Disclaimer
 You may recognise this chart from Chezmoi, but with some rows stripped out. This is because I do not know what they mean, and thus cannot implement them. A clock simply means that it will be supported, but isn't yet. If you want them, please file a great issue/pr.
 
