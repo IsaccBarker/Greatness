@@ -51,7 +51,7 @@ fn main() {
     default_greatness_dir.push(".greatness");
 
     let matches = App::new("Achieve Greatness!")
-        .version("0.1.0")
+        .version(env!("CARGO_PKG_VERSION"))
         .author("Milo Banks (Isacc Barker) <milobanks@zincsoft.dev>")
         .about("Helps you to achieve greatness!")
         .arg(

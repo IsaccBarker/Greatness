@@ -229,12 +229,6 @@ impl Manifest {
         self.files.replace(files);
     }
 
-    /// Adds a package. Will not add if the
-    /// package is not unique
-    pub fn add_package(&mut self, package: AddedPackage) {
-
-    }
-
     /// Does the manifest already contain a
     /// package?
     pub fn contains_package(&mut self, w_package: String) -> Option<&mut AddedPackage> {
@@ -323,7 +317,10 @@ impl State {
         let mut repository: Option<Repository> = None;
 
         if greatness_git_pack_dir.exists() {
-            repository = Some(Repository::open(&greatness_git_pack_dir).unwrap());
+            repository = Some(match Repository::open(&greatness_git_pack_dir) {
+                Ok(r) => r,
+                Err(_) => Repository::init(&greatness_git_pack_dir).unwrap()
+            });
         }
 
         debug!(
