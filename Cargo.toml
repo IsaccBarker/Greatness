@@ -1,7 +1,7 @@
 [package]
 name = "great"
 description = "Great(ness) is a tool to manage your dotfiles, and bring every new system you get up to par with the rest!"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["IsaccBarker <plutoisaplanet4324@gmail.com>"]
 edition = "2018"
 license = "MIT"

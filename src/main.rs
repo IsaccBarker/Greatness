@@ -509,6 +509,12 @@ on the directory."
                 }
             },
 
+            Some(("commit", _)) => {
+                error!("Commiting is not yet supported. Please use the prompt subcommand instead!");
+
+                std::process::exit(1);
+            }
+
             _ => {
                 unreachable!();
             }
