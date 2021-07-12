@@ -21,10 +21,11 @@ mod status;
 mod tag;
 mod utils;
 
+use isahc::ReadResponseExt;
 use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
 use log::LevelFilter;
-use log::{error, info};
+use log::{warn, error, info};
 use manifest::Manifest;
 use nix::unistd::Uid;
 use std::io::Write;
@@ -338,6 +339,26 @@ on the directory."
         std::process::exit(1);
     }
 
+    // Check for updates, but only on release
+    #[cfg(not(debug_assertions))]
+    if futures::executor::block_on(online::check(None)).is_ok() {
+        // We are online, and can check for updates.
+        if let Ok(mut great_vers_blob_response) = isahc::get("https://raw.githubusercontent.com/rust-lang/crates.io-index/master/gr/ea/great") {
+            let great_verbs_blob = great_vers_blob_response.text().unwrap();
+
+            // great_verbs_blob has multiple root elements, extract the last
+            let lines = great_verbs_blob.split("\n").collect::<Vec<&str>>();
+            let last = lines.get(lines.len()-2).unwrap();
+
+            let seps = last.split("\"").collect::<Vec<&str>>();
+            let latest_vers = seps.get(7).unwrap_or(&"");
+            if latest_vers != &env!("CARGO_PKG_VERSION") {
+                // We are dealing with an out of date version, or a version from the future
+                warn!("You are using an out of date version! The lastest is {}, and you have {}. Please update for the latest and greatest features and fixes!", latest_vers, env!("CARGO_PKG_VERSION"));
+            }
+        }
+    }
+
     let mut state: manifest::State;
     match manifest::State::new(PathBuf::from(
         default_greatness_dir.as_os_str().to_str().unwrap(),
@@ -470,58 +491,63 @@ on the directory."
             }
         }
 
-        Some(("git", git_matches)) => match git_matches.subcommand() {
-            Some(("remote", remote_matches)) => {
-                match git::remote::set_remote(remote_matches, &mut state) {
+        Some(("git", git_matches)) => {
+            warn!("The maintainer of this project does not recomend using the git subcommand, as they do not test it regularly. Consider using the prompt subcommand.");
+            match git_matches.subcommand() {
+                Some(("remote", remote_matches)) => {
+                    match git::remote::set_remote(remote_matches, &mut state) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!("An error occured whilst setting the remote: {}", e);
+
+                            std::process::exit(1);
+                        }
+                    }
+                }
+
+                Some(("add", add_matches)) => match git::add::add(add_matches, &mut state) {
                     Ok(()) => (),
                     Err(e) => {
-                        error!("An error occured whilst setting the remote: {}", e);
+                        error!(
+                            "An error occured whilst adding files the the local repository: {}",
+                            e
+                        );
 
                         std::process::exit(1);
                     }
-                }
-            }
+                },
 
-            Some(("add", add_matches)) => match git::add::add(add_matches, &mut state) {
-                Ok(()) => (),
-                Err(e) => {
+                Some(("push", push_matches)) => match git::push::push(push_matches, &mut state) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!("An error occured whilst pushing files to the remote: {}", e);
+
+                        std::process::exit(1);
+                    }
+                },
+
+                Some(("pull", pull_matches)) => match git::pull::pull(pull_matches, &mut state) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!("An error occured whilst pulling files to local: {}", e);
+
+                        std::process::exit(1);
+                    }
+                },
+
+                Some(("commit", _)) => {
                     error!(
-                        "An error occured whilst adding files the the local repository: {}",
-                        e
+                        "Commiting is not yet supported. Please use the prompt subcommand instead!"
                     );
 
                     std::process::exit(1);
                 }
-            },
 
-            Some(("push", push_matches)) => match git::push::push(push_matches, &mut state) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst pushing files to the remote: {}", e);
-
-                    std::process::exit(1);
+                _ => {
+                    unreachable!();
                 }
-            },
-
-            Some(("pull", pull_matches)) => match git::pull::pull(pull_matches, &mut state) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst pulling files to local: {}", e);
-
-                    std::process::exit(1);
-                }
-            },
-
-            Some(("commit", _)) => {
-                error!("Commiting is not yet supported. Please use the prompt subcommand instead!");
-
-                std::process::exit(1);
             }
-
-            _ => {
-                unreachable!();
-            }
-        },
+        }
 
         Some(("pack", pack_matches)) => match pack::pack(&mut state, pack_matches) {
             Ok(()) => (),
