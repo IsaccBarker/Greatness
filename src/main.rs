@@ -18,10 +18,11 @@ mod status;
 mod tag;
 mod utils;
 
+use isahc::ReadResponseExt;
 use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
 use log::LevelFilter;
-use log::{error, info};
+use log::{warn, error, info};
 use manifest::Manifest;
 use nix::unistd::Uid;
 use std::io::Write;
@@ -333,6 +334,26 @@ on the directory."
         error!("It looks you haven't initialized yet! Use `greatness init` to initialize. P.S, we found this out by looking through some pretty great binoculars.");
 
         std::process::exit(1);
+    }
+
+    // Check for updates, but only on release
+    #[cfg(not(debug_assertions))]
+    if futures::executor::block_on(online::check(None)).is_ok() {
+        // We are online, and can check for updates.
+        if let Ok(mut great_vers_blob_response) = isahc::get("https://raw.githubusercontent.com/rust-lang/crates.io-index/master/gr/ea/great") {
+            let great_verbs_blob = great_vers_blob_response.text().unwrap();
+
+            // great_verbs_blob has multiple root elements, extract the last
+            let lines = great_verbs_blob.split("\n").collect::<Vec<&str>>();
+            let last = lines.get(lines.len()-2).unwrap();
+
+            let seps = last.split("\"").collect::<Vec<&str>>();
+            let latest_vers = seps.get(7).unwrap_or(&"");
+            if latest_vers != &env!("CARGO_PKG_VERSION") {
+                // We are dealing with an out of date version, or a version from the future
+                warn!("You are using an out of date version! The lastest is {}, and you have {}. Please update for the latest and greatest features and fixes!", latest_vers, env!("CARGO_PKG_VERSION"));
+            }
+        }
     }
 
     let mut state: manifest::State;
