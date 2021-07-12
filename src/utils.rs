@@ -1,7 +1,6 @@
 use crate::manifest::State;
 use snafu::{ResultExt, Snafu};
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub(crate)")]
@@ -176,9 +175,6 @@ pub fn relative_to_script(state: &State, rel: &PathBuf) -> PathBuf {
 /// Given a origin file, create a backup file with a unique name
 pub fn backup_file(original: &PathBuf) -> Result<(), CommonErrors> {
     let mut backup = original.clone();
-    // https://softwareengineering.stackexchange.com/questions/339125/acceptable-to-rely-on-random-ints-being-unique
-
-    let datetime = SystemTime::now().duration_since(UNIX_EPOCH).expect("woah dude, something got fucked up. time went backwards. what the hell is going on. HELP!").as_secs();
     backup.set_extension(
         backup
             .extension()
@@ -186,7 +182,6 @@ pub fn backup_file(original: &PathBuf) -> Result<(), CommonErrors> {
             .to_str()
             .unwrap()
             .to_string()
-            + datetime.to_string().as_str()
             + ".bak",
     );
 
