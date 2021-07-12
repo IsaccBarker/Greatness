@@ -21,7 +21,7 @@ mod utils;
 use clap::{App, AppSettings, Arg};
 use env_logger::{Builder, Target};
 use log::LevelFilter;
-use log::{error, info};
+use log::{error, info, warn};
 use manifest::Manifest;
 use nix::unistd::Uid;
 use std::io::Write;
@@ -467,58 +467,63 @@ on the directory."
             }
         }
 
-        Some(("git", git_matches)) => match git_matches.subcommand() {
-            Some(("remote", remote_matches)) => {
-                match git::remote::set_remote(remote_matches, &mut state) {
+        Some(("git", git_matches)) => {
+            warn!("The maintainer of this project does not recomend using the git subcommand, as they do not test it regularly. Consider using the prompt subcommand.");
+            match git_matches.subcommand() {
+                Some(("remote", remote_matches)) => {
+                    match git::remote::set_remote(remote_matches, &mut state) {
+                        Ok(()) => (),
+                        Err(e) => {
+                            error!("An error occured whilst setting the remote: {}", e);
+
+                            std::process::exit(1);
+                        }
+                    }
+                }
+
+                Some(("add", add_matches)) => match git::add::add(add_matches, &mut state) {
                     Ok(()) => (),
                     Err(e) => {
-                        error!("An error occured whilst setting the remote: {}", e);
+                        error!(
+                            "An error occured whilst adding files the the local repository: {}",
+                            e
+                        );
 
                         std::process::exit(1);
                     }
-                }
-            }
+                },
 
-            Some(("add", add_matches)) => match git::add::add(add_matches, &mut state) {
-                Ok(()) => (),
-                Err(e) => {
+                Some(("push", push_matches)) => match git::push::push(push_matches, &mut state) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!("An error occured whilst pushing files to the remote: {}", e);
+
+                        std::process::exit(1);
+                    }
+                },
+
+                Some(("pull", pull_matches)) => match git::pull::pull(pull_matches, &mut state) {
+                    Ok(()) => (),
+                    Err(e) => {
+                        error!("An error occured whilst pulling files to local: {}", e);
+
+                        std::process::exit(1);
+                    }
+                },
+
+                Some(("commit", _)) => {
                     error!(
-                        "An error occured whilst adding files the the local repository: {}",
-                        e
+                        "Commiting is not yet supported. Please use the prompt subcommand instead!"
                     );
 
                     std::process::exit(1);
                 }
-            },
 
-            Some(("push", push_matches)) => match git::push::push(push_matches, &mut state) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst pushing files to the remote: {}", e);
-
-                    std::process::exit(1);
+                _ => {
+                    unreachable!();
                 }
-            },
-
-            Some(("pull", pull_matches)) => match git::pull::pull(pull_matches, &mut state) {
-                Ok(()) => (),
-                Err(e) => {
-                    error!("An error occured whilst pulling files to local: {}", e);
-
-                    std::process::exit(1);
-                }
-            },
-
-            Some(("commit", _)) => {
-                error!("Commiting is not yet supported. Please use the prompt subcommand instead!");
-
-                std::process::exit(1);
             }
-
-            _ => {
-                unreachable!();
-            }
-        },
+        }
 
         Some(("pack", pack_matches)) => match pack::pack(&mut state, pack_matches) {
             Ok(()) => (),
