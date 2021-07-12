@@ -144,7 +144,7 @@ pub fn absolute_to_special(absolute: &PathBuf) -> PathBuf {
             .replace(pictures_to_replace.to_str().unwrap(), "{{PICTURES}}")
             .replace(publicshare_to_replace.to_str().unwrap(), "{{PUBLICSHARE}}")
             .replace(templates_to_replace.to_str().unwrap(), "{{TEMPLATES}}")
-            .replace(video_to_replace.to_str().unwrap(), "{{VIDEOS}}")
+            .replace(video_to_replace.to_str().unwrap(), "{{VIDEOS}}"),
     )
 }
 
