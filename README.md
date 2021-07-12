@@ -78,3 +78,6 @@ As you can see, greatness is best. However, a sort of close second [chezmoi], ha
 ### But don't use Windows. There is one reasons for this
 1. I don't have a Windows machine.
 Windows support may or may not be added in the future. The underlying code for supporting Windows is added to the best of my ability, but overall it should not work. Please note that not providing Windows support is mainly for your safety; I would hate for anything bad to happen to your files.
+
+### What is greatness isn't to my taste, but I want to stick with rust?
+No worries! Check out [chezmoi](https://github.com/twpayne/chezmoi), [dotter](https://github.com/SuperCuber/dotter), or [toml bombadil](https://github.com/oknozor/toml-bombadil).
