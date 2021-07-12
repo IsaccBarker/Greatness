@@ -73,6 +73,55 @@ pub enum CommonErrors {
     },
 }
 
+lazy_static! {
+    static ref REPLACE_DATA: std::collections::HashMap<String, String> = {
+        let replace: std::collections::HashMap<String, String>;
+        let home_to_replace = home::home_dir().unwrap();
+        let mut desktop_to_replace = home_to_replace.clone();
+        desktop_to_replace.push("/Desktops");
+        let mut documents_to_replace = home_to_replace.clone();
+        documents_to_replace.push("/Documents");
+        let mut downloads_to_replace = home_to_replace.clone();
+        downloads_to_replace.push("/Downloads");
+        let mut music_to_replace = home_to_replace.clone();
+        music_to_replace.push("/Music");
+        let mut pictures_to_replace = home_to_replace.clone();
+        pictures_to_replace.push("/Pictures");
+        let mut publicshare_to_replace = home_to_replace.clone();
+        publicshare_to_replace.push("/Public");
+        let mut templates_to_replace = home_to_replace.clone();
+        templates_to_replace.push("/Templates");
+        let mut video_to_replace = home_to_replace.clone();
+        video_to_replace.push("/Videos");
+
+        if std::env::var("XDG_PUBLICSHARE_DIR").unwrap_or("".to_owned()) != "" {
+            // XDG is installed
+            desktop_to_replace = PathBuf::from(std::env::var("XDG_DESKTOP_DIR").unwrap());
+            documents_to_replace = PathBuf::from(std::env::var("XDG_DOCUMENTS_DIR").unwrap());
+            downloads_to_replace = PathBuf::from(std::env::var("XDG_DOWNLOAD_DIR").unwrap());
+            music_to_replace = PathBuf::from(std::env::var("XDG_MUSIC_DIR").unwrap());
+            pictures_to_replace = PathBuf::from(std::env::var("XDG_PICTURES_DIR").unwrap());
+            publicshare_to_replace = PathBuf::from(std::env::var("XDG_PUBLICSHARE_DIR").unwrap());
+            templates_to_replace = PathBuf::from(std::env::var("XDG_TEMPLATES_DIR").unwrap());
+            video_to_replace = PathBuf::from(std::env::var("XDG_VIDEOS_DIR").unwrap());
+        }
+
+        replace = hashmap! {
+            "{{HOME}}".to_owned() => home_to_replace.to_str().unwrap().to_string(),
+            "{{DESKTOP}}".to_owned() => desktop_to_replace.to_str().unwrap().to_string(),
+            "{{DOCUMENTS}}".to_owned() => documents_to_replace.to_str().unwrap().to_string(),
+            "{{DOWNLOADS}}".to_owned() => downloads_to_replace.to_str().unwrap().to_string(),
+            "{{MUSIC}}".to_owned() => music_to_replace.to_str().unwrap().to_string(),
+            "{{PICTURES}}".to_owned() => pictures_to_replace.to_str().unwrap().to_string(),
+            "{{PUBLICSHARE}}".to_owned() => publicshare_to_replace.to_str().unwrap().to_string(),
+            "{{TEMPLATES}}".to_owned() => templates_to_replace.to_str().unwrap().to_string(),
+            "{{VIDEOS}}".to_owned() => video_to_replace.to_str().unwrap().to_string(),
+        };
+
+        replace
+    };
+}
+
 /// Transmute urls into something git can handle. For example:
 /// Pattern 	        HTTPS Repo
 /// user 	            https://github.com/user/dotfiles.git
@@ -101,51 +150,13 @@ pub fn make_url_valid(url: String) -> String {
 /// Transforms an absolute path to a special one.
 /// /home/milo/.zshrc -> {{HOME}}/.zshrc
 pub fn absolute_to_special(absolute: &PathBuf) -> PathBuf {
-    // Abstract this data into a singleton so we only have to popualte it once?
-    let home_to_replace = home::home_dir().unwrap();
-    let mut desktop_to_replace = home_to_replace.clone();
-    desktop_to_replace.push("/Desktops");
-    let mut documents_to_replace = home_to_replace.clone();
-    documents_to_replace.push("/Documents");
-    let mut downloads_to_replace = home_to_replace.clone();
-    downloads_to_replace.push("/Downloads");
-    let mut music_to_replace = home_to_replace.clone();
-    music_to_replace.push("/Music");
-    let mut pictures_to_replace = home_to_replace.clone();
-    pictures_to_replace.push("/Pictures");
-    let mut publicshare_to_replace = home_to_replace.clone();
-    publicshare_to_replace.push("/Public");
-    let mut templates_to_replace = home_to_replace.clone();
-    templates_to_replace.push("/Templates");
-    let mut video_to_replace = home_to_replace.clone();
-    video_to_replace.push("/Videos");
+    let mut ret = absolute.clone().to_str().unwrap().to_string();
 
-    if std::env::var("XDG_PUBLICSHARE_DIR").unwrap_or("".to_owned()) != "" {
-        // XDG is installed
-        desktop_to_replace = PathBuf::from(std::env::var("XDG_DESKTOP_DIR").unwrap());
-        documents_to_replace = PathBuf::from(std::env::var("XDG_DOCUMENTS_DIR").unwrap());
-        downloads_to_replace = PathBuf::from(std::env::var("XDG_DOWNLOAD_DIR").unwrap());
-        music_to_replace = PathBuf::from(std::env::var("XDG_MUSIC_DIR").unwrap());
-        pictures_to_replace = PathBuf::from(std::env::var("XDG_PICTURES_DIR").unwrap());
-        publicshare_to_replace = PathBuf::from(std::env::var("XDG_PUBLICSHARE_DIR").unwrap());
-        templates_to_replace = PathBuf::from(std::env::var("XDG_TEMPLATES_DIR").unwrap());
-        video_to_replace = PathBuf::from(std::env::var("XDG_VIDEOS_DIR").unwrap());
+    for (k, v) in REPLACE_DATA.clone().into_iter() {
+        ret = ret.replace(k.as_str(), v.as_str());
     }
 
-    PathBuf::from(
-        absolute
-            .to_str()
-            .unwrap()
-            .replace(home_to_replace.to_str().unwrap(), "{{HOME}}")
-            .replace(desktop_to_replace.to_str().unwrap(), "{{DESKTOP}}")
-            .replace(downloads_to_replace.to_str().unwrap(), "{{DOWNLOADS}}")
-            .replace(documents_to_replace.to_str().unwrap(), "{{DOCUMENTS}}")
-            .replace(music_to_replace.to_str().unwrap(), "{{MUSIC}}")
-            .replace(pictures_to_replace.to_str().unwrap(), "{{PICTURES}}")
-            .replace(publicshare_to_replace.to_str().unwrap(), "{{PUBLICSHARE}}")
-            .replace(templates_to_replace.to_str().unwrap(), "{{TEMPLATES}}")
-            .replace(video_to_replace.to_str().unwrap(), "{{VIDEOS}}")
-    )
+    PathBuf::from(ret)
 }
 
 /// Calls absolute_to_special, but calls .cannonicalize()

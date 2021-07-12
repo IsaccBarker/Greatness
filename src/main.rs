@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate maplit;
 
+#[macro_use]
+extern crate lazy_static;
+
 mod add;
 mod doctor;
 mod git;
