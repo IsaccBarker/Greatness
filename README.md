@@ -10,6 +10,9 @@
 </p>
 Achieve it! How you ask? Well, it's pretty simple; just use greatness!
 
+#### Disclaimer
+I do not believe that greatness is the best. It fits a medium sized niche, and thus cannot be best. Hence, we use the name greatness, not best.
+
 ## Install greatness
 ### Long way:
 ```bash
