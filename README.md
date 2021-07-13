@@ -41,7 +41,7 @@ Simple! Use this tool. This tool is designed to bring your system up to a workin
 
 You can view the documentation (wiki) [here](https://github.com/IsaccBarker/Greatness/wiki/)!
 
-## Why is Greatness *the* best?
+## Why is Greatness *great*?
 Well, just remember the name. Greatness has to be the best. But if you are dim (but still great), here is a comparision chart.
 #### Disclaimer
 You may recognise this chart from Chezmoi, but with some rows stripped out. This is because I do not know what they mean, and thus cannot implement them. A clock simply means that it will be supported, but isn't yet. If you want them, please file a great issue/pr.
