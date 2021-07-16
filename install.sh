@@ -1,5 +1,3 @@
-echo "$@"
-exit
 
 if [[ $OSTYPE == 'darwin'* ]]; then
     echo ">>>> Mac detected!"
