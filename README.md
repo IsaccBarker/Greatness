@@ -42,7 +42,7 @@ Simple! Use this tool. This tool is designed to bring your system up to a workin
 You can view the documentation (wiki) [here](https://github.com/IsaccBarker/Greatness/wiki/)!
 
 ## Why is Greatness *great*?
-Well, just remember the name. Greatness has to be the best. But if you are dim (but still great), here is a comparision chart.
+Well, just remember the name. Greatness has to be the best. But if you are dim (but still great), here is a comparison chart.
 #### Disclaimer
 You may recognise this chart from Chezmoi, but with some rows stripped out. This is because I do not know what they mean, and thus cannot implement them. A clock simply means that it will be supported, but isn't yet. If you want them, please file a great issue/pr.
 
@@ -73,7 +73,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Archive export                         | 🕒                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
 | Implementation language                | Rust, Lua         | Go            | Python            | Perl              | Ruby              | Bash          | C          |
 
-As you can see, greatness is best. However, a sort of close second [chezmoi], has a weird name, is not scriptable, doesn't support dotfile merging, and isn't modular. This makes it not ideal for situations where you might want to pick parts of diferent peoples rices, merge them, script program installation (or have greatness do it for you), and then put it out into the world as a repository, which other people can then use as modules.
+As you can see, greatness is best. However, a sort of close second [chezmoi], has a weird name, is not scriptable, doesn't support dotfile merging, and isn't modular. This makes it not ideal for situations where you might want to pick parts of different peoples rices, merge them, script program installation (or have greatness do it for you), and then put it out into the world as a repository, which other people can then use as modules.
 
 ### But don't use Windows. There is one reasons for this
 1. I don't have a Windows machine.
