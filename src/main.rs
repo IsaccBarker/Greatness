@@ -334,7 +334,7 @@ on the directory."
     if !default_greatness_dir.as_path().exists()
         && matches.subcommand_name().unwrap_or("") != "init"
     {
-        error!("It looks you haven't initialized yet! Use `greatness init` to initialize. P.S, we found this out by looking through some pretty great binoculars.");
+        error!("It looks you haven't initialized yet! Use `great init` to initialize. P.S, we found this out by looking through some pretty great binoculars.");
 
         std::process::exit(1);
     }
