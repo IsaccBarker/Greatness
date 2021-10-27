@@ -1,3 +1,6 @@
+# *Notice!*
+I don't really have the time to maintain Greatness (with school), so I'll be merging these features into another dotfiles manager in the coming months. Until then, I will continue to maintain this project, but after that, it will become defunct. I'll add a link to the dotfile manager I decide to commit these changes to (probably Dotter).
+
 # Greatness!
 <p align="center">
   <a href="github.com/IsaccBarker/Greatness" target="blank"><img src="assets/greatness.png" alt="Greatness Logo" /></a>
