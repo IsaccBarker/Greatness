@@ -60,7 +60,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | dotfiles are...                        | Files             | Files         | Symlinks          | Files             | Symlinks          | Files         | Files      |
 | Config file                            | Required, Managed | Optional      | Required          | Optional          | None              | Optional      | Optional   |
 | Password manager integration           | ❓                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Machine-to-machine file differences    | Scripting         | Templates     | Alternative files | Alternative files | Alternative files | Templates     | Manual     |
+| Machine-to-machine file differences    | Scripting         | Templates     | Alternative files | Alternative files | Alternative files | Alternative files, templates | Manual |
 | Custom variables in templates          | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Dotfile Merging                        | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Scriptable                             | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
