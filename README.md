@@ -66,8 +66,8 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Scriptable                             | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Modular                                | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Executable files                       | ✅                | ✅            | ✅                | ✅                | ✅                | ✅            | ✅         |
-| Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ❌            | ❌         |
-| Run once scripts                       | ✅                | 🕒            | ❌                | ❌                | ❌                | ❌            | ❌         |
+| Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ✅            | ❌         |
+| Run once scripts                       | ✅                | 🕒            | ❌                | ❌                | ❌                | ✅            | ❌         |
 | Software Auto-Install                  | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Machine-to-machine symlink differences | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ❌         |
 | File Tagging                           | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
