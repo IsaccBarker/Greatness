@@ -54,7 +54,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Distribution                           | Source/Binary     | Single binary | Python package    | Multiple files    | Ruby gem          | Single script | n/a        |
 | Install method                         | Many              | Many          | git submodule     | Many              | Ruby gem          | Many          | Manual     |
 | Non-root install on bare system        | ✅                | ✅            | Difficult         | Difficult         | Difficult         | ✅            | ✅         |
-| Windows support                        | ❌                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
+| Windows support                        | ❌                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
 | Bootstrap requirements                 | Rust, automatic   | Go, automatic | Python, git       | Perl, git         | Ruby, git         | git           | git        |
 | Source repos                           | Single            | Single        | Single            | Multiple          | Single            | Single        | Single     |
 | dotfiles are...                        | Files             | Files         | Symlinks          | Files             | Symlinks          | Files         | Files      |
