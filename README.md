@@ -65,7 +65,7 @@ You may recognise this chart from Chezmoi, but with some rows stripped out. This
 | Dotfile Merging                        | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Scriptable                             | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Modular                                | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Executable files                       | ✅                | ✅            | ✅                | ✅                | ✅                | ❌            | ✅         |
+| Executable files                       | ✅                | ✅            | ✅                | ✅                | ✅                | ✅            | ✅         |
 | Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ❌            | ❌         |
 | Run once scripts                       | ✅                | 🕒            | ❌                | ❌                | ❌                | ❌            | ❌         |
 | Software Auto-Install                  | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
