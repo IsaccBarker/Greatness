@@ -49,32 +49,32 @@ Well, just remember the name. Greatness has to be the best. But if you are dim (
 #### Disclaimer
 You may recognise this chart from Chezmoi, but with some rows stripped out. This is because I do not know what they mean, and thus cannot implement them. A clock simply means that it will be supported, but isn't yet. If you want them, please file a great issue/pr.
 
-|                                        | greatness         | chezmoi       | dotbot            | rcm               | homesick          | yadm          | bare git   |
-| -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | ------------- | ---------- |
-| Distribution                           | Source/Binary     | Single binary | Python package    | Multiple files    | Ruby gem          | Single script | n/a        |
-| Install method                         | Many              | Many          | git submodule     | Many              | Ruby gem          | Many          | Manual     |
-| Non-root install on bare system        | ✅                | ✅            | Difficult         | Difficult         | Difficult         | ✅            | ✅         |
-| Windows support                        | ❌                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
-| Bootstrap requirements                 | Rust, automatic   | Go, automatic | Python, git       | Perl, git         | Ruby, git         | git           | git        |
-| Source repos                           | Single            | Single        | Single            | Multiple          | Single            | Single        | Single     |
-| dotfiles are...                        | Files             | Files         | Symlinks          | Files             | Symlinks          | Files         | Files      |
-| Config file                            | Required, Managed | Optional      | Required          | Optional          | None              | None          | Optional   |
-| Password manager integration           | ❓                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Machine-to-machine file differences    | Scripting         | Templates     | Alternative files | Alternative files | Alternative files | Templates     | Manual     |
-| Custom variables in templates          | ✅                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Dotfile Merging                        | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Scriptable                             | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Modular                                | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Executable files                       | ✅                | ✅            | ✅                | ✅                | ✅                | ❌            | ✅         |
-| Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ❌            | ❌         |
-| Run once scripts                       | ✅                | 🕒            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Software Auto-Install                  | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Machine-to-machine symlink differences | ✅                | ✅            | ❌                | ❌                | ❌                | ✅            | ❌         |
-| File Tagging                           | ✅                | ❌            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Shell completion                       | 🕒                | ✅            | ❌                | ❌                | ❌                | ✅            | ✅         |
-| Archive import                         | 🕒                | ✅            | ❌                | ❌                | ❌                | ❌            | ❌         |
-| Archive export                         | 🕒                | ✅            | ❌                | ❌                | ❌                | ❌            | ✅         |
-| Implementation language                | Rust, Lua         | Go            | Python            | Perl              | Ruby              | Bash          | C          |
+|                                        | greatness         | chezmoi       | dotbot            | rcm               | homesick          | yadm                         | bare git   |
+| -------------------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ----------------- | -------------                | ---------- |
+| Distribution                           | Source/Binary     | Single binary | Python package    | Multiple files    | Ruby gem          | Single script                | n/a        |
+| Install method                         | Many              | Many          | git submodule     | Many              | Ruby gem          | Many                         | Manual     |
+| Non-root install on bare system        | ✅                | ✅            | Difficult         | Difficult         | Difficult         | ✅                           | ✅         |
+| Windows support                        | ❌                | ✅            | ❌                | ❌                | ❌                | ✅                           | ✅         |
+| Bootstrap requirements                 | Rust, automatic   | Go, automatic | Python, git       | Perl, git         | Ruby, git         | git                          | git        |
+| Source repos                           | Single            | Single        | Single            | Multiple          | Single            | Single                       | Single     |
+| dotfiles are...                        | Files             | Files         | Symlinks          | Files             | Symlinks          | Files                        | Files      |
+| Config file                            | Required, Managed | Optional      | Required          | Optional          | None              | Optional                     | Optional   |
+| Password manager integration           | ❓                | ✅            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Machine-to-machine file differences    | Scripting         | Templates     | Alternative files | Alternative files | Alternative files | Alternative files, templates | Manual     |
+| Custom variables in templates          | ✅                | ✅            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Dotfile Merging                        | ✅                | ❌            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Scriptable                             | ✅                | ❌            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Modular                                | ✅                | ❌            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Executable files                       | ✅                | ✅            | ✅                | ✅                | ✅                | ✅                           | ✅         |
+| Run scripts                            | ✅                | ✅            | ✅                | ✅                | ❌                | ✅                           | ❌         |
+| Run once scripts                       | ✅                | 🕒            | ❌                | ❌                | ❌                | ✅                           | ❌         |
+| Software Auto-Install                  | ✅                | ❌            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Machine-to-machine symlink differences | ✅                | ✅            | ❌                | ❌                | ❌                | ✅                           | ❌         |
+| File Tagging                           | ✅                | ❌            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Shell completion                       | 🕒                | ✅            | ❌                | ❌                | ❌                | ✅                           | ✅         |
+| Archive import                         | 🕒                | ✅            | ❌                | ❌                | ❌                | ❌                           | ❌         |
+| Archive export                         | 🕒                | ✅            | ❌                | ❌                | ❌                | ❌                           | ✅         |
+| Implementation language                | Rust, Lua         | Go            | Python            | Perl              | Ruby              | Bash                         | C          |
 
 As you can see, greatness is best. However, a sort of close second [chezmoi], has a weird name, is not scriptable, doesn't support dotfile merging, and isn't modular. This makes it not ideal for situations where you might want to pick parts of different peoples rices, merge them, script program installation (or have greatness do it for you), and then put it out into the world as a repository, which other people can then use as modules.
 
