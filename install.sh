@@ -22,7 +22,7 @@ git clone https://github.com/IsaccBarker/greatness.git
 cd greatness
 
 echo ">>>>> Building...."
-cargo install --release --path .
+cargo install --path .
 
 echo ">>>>> Done! <<<<<"
 echo "run \`great\` to get started!"
